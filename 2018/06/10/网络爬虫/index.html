@@ -1,0 +1,61 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.9.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>网络爬虫 | Mr Bluyee's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = 'https://hm.baidu.com/hm.js?' + '3dbaf3043b34b1c894c4cd063629b6a9';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">网络爬虫</h1><a id="logo" href="/.">Mr Bluyee's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">网络爬虫</h1><div class="post-meta">Jun 10, 2018<span> | </span><span class="category"><a href="/categories/学习笔记——网络协议/">学习笔记——网络协议</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 984</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-hourglass-half"></i><span class="post-count"> 3</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#通用爬虫"><span class="toc-number">1.</span> <span class="toc-text">通用爬虫</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#工作原理"><span class="toc-number">1.1.</span> <span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#局限性"><span class="toc-number">1.2.</span> <span class="toc-text">局限性</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#聚焦爬虫"><span class="toc-number">2.</span> <span class="toc-text">聚焦爬虫</span></a></li></ol></div></div><div class="post-content"><h3 id="通用爬虫"><a href="#通用爬虫" class="headerlink" title="通用爬虫"></a>通用爬虫</h3><p>搜索引擎用的爬虫系统，目标就是尽可能把互联网上所有的网页下载下来，放到本地服务器里形成备份，再对这些网页做相关处理（提取关键字、去掉广告），最后提供一个用户检索接口。</p>
+<a id="more"></a>
+
+<h4 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h4><p><strong>第一步：抓取网页</strong><br>首先选取一部分的种子URL，将这些URL放入待抓取URL队列；</p>
+<p>取出待抓取URL，解析DNS得到主机的IP，并将URL对应的网页下载下来，存储进已下载网页库中，并且将这些URL放进已抓取URL队列。</p>
+<p>分析已抓取URL队列中的URL，分析其中的其他URL，并且将URL放入待抓取URL队列，从而进入下一个循环….</p>
+<p>搜索引擎如何获取一个新网站的URL：</p>
+<ul>
+<li><ol>
+<li>新网站向搜索引擎主动提交网址</li>
+</ol>
+</li>
+<li>2.在其他网站上设置新网站外链（尽可能处于搜索引擎爬虫爬取范围）</li>
+<li><ol start="3">
+<li>搜索引擎和DNS解析服务商(如DNSPod等）合作，新网站域名将被迅速抓取。</li>
+</ol>
+</li>
+<li>搜索引擎蜘蛛的爬行是被输入了一定的规则的，它需要遵从一些命令或文件的内容，如标注为nofollow的链接，或者是Robots协议。</li>
+</ul>
+<p><strong>第二步：数据存储</strong><br>搜索引擎通过爬虫爬取到的网页，将数据存入原始页面数据库。其中的页面数据与用户浏览器得到的HTML是完全一样的。</p>
+<p>除了HTML文件外，搜索引擎通常还能抓取和索引以文字为基础的多种文件类型。</p>
+<p>搜索引擎蜘蛛在抓取页面时，也做一定的重复内容检测，一旦遇到访问权重很低的网站上有大量抄袭、采集或者复制的内容，很可能就不再爬行。</p>
+<p><strong>第三步：预处理</strong><br>搜索引擎将爬虫抓取回来的页面，进行各种步骤的预处理。</p>
+<ul>
+<li>提取文字</li>
+<li>中文分词</li>
+<li>消除噪音（比如版权声明文字、导航条、广告等……）</li>
+<li>索引处理</li>
+<li>链接关系计算</li>
+<li>特殊文件处理</li>
+</ul>
+<p><strong>第四步：提供检索服务，网站排名</strong><br>搜索引擎在对信息进行组织和处理后，为用户提供关键字检索服务，将用户检索相关的信息展示给用户。</p>
+<p>同时会根据页面的PageRank值（链接的访问量排名）来进行网站排名，这样Rank值高的网站在搜索结果中会排名较前，当然也可以直接使用 Money 购买搜索引擎网站排名，简单粗暴。</p>
+<h4 id="局限性"><a href="#局限性" class="headerlink" title="局限性"></a>局限性</h4><p>通用搜索引擎所返回的结果都是网页，而大多情况下，网页里90%的内容对用户来说都是无用的。</p>
+<p>不同领域、不同背景的用户往往具有不同的检索目的和需求，搜索引擎无法提供针对具体某个用户的搜索结果。</p>
+<p>万维网数据形式的丰富和网络技术的不断发展，图片、数据库、音频、视频多媒体等不同数据大量出现，通用搜索引擎对这些文件无能为力，不能很好地发现和获取。</p>
+<p>通用搜索引擎大多提供基于关键字的检索，难以支持根据语义信息提出的查询，无法准确理解用户的具体需求。</p>
+<p>针对这些情况，聚焦爬虫技术得以广泛使用。</p>
+<h3 id="聚焦爬虫"><a href="#聚焦爬虫" class="headerlink" title="聚焦爬虫"></a>聚焦爬虫</h3><p>爬虫程序员写的针对某种内容爬虫，是”面向特定主题需求”的一种网络爬虫程序。</p>
+<p>与通用搜索引擎爬虫的区别在于： 聚焦爬虫在实施网页抓取时会对内容进行处理筛选，尽量保证只抓取与需求相关的网页信息。</p>
+</div><iframe src="/donate/?AliPayQR=/images/AlipayQR.jpg&amp;WeChatQR=/images/WeChatQR.png&amp;GitHub=null&amp;BTCQR=null&amp;BTCKEY=null&amp;PayPal=null" style="overflow-x:hidden; overflow-y:hidden; border:0xp none #fff; min-height:240px; width:100%;" frameborder="0" scrolling="no"></iframe><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Mr Bluyee</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="/2018/06/10/网络爬虫/">https://www.mrbluyee.com/2018/06/10/网络爬虫/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>The author owns the copyright, please indicate the source reproduced.</li></ul></div><br><div class="tags"><a href="/tags/网络协议/">网络协议</a></div><div class="post-nav"><a class="pre" href="/2018/06/14/Python函数/">Python函数</a><a class="next" href="/2018/06/08/Pythonic/">Pythonic</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zOTYxNS8xNjE0Mg"><script>(function(d, s) {
+   var j, e = d.getElementsByTagName(s)[0];
+   if (typeof LivereTower === 'function') { return; }
+   j = d.createElement(s);
+   j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+   j.async = true;
+   e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1 pure-u-md-1-4"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"><div id="local-search-result"></div></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——C-算法/">学习笔记——C 算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——C数据结构/">学习笔记——C数据结构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——Python/">学习笔记——Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——android/">学习笔记——android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——expert-c-programming/">学习笔记——expert c programming</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——linux/">学习笔记——linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——opencv/">学习笔记——opencv</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——代码管理/">学习笔记——代码管理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——低功耗技术/">学习笔记——低功耗技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——嵌入式开发/">学习笔记——嵌入式开发</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——机器学习/">学习笔记——机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——物联网/">学习笔记——物联网</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——网络协议/">学习笔记——网络协议</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——计算机系统/">学习笔记——计算机系统</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/计算机系统/" style="font-size: 15px;">计算机系统</a> <a href="/tags/android/" style="font-size: 15px;">android</a> <a href="/tags/C/" style="font-size: 15px;">C</a> <a href="/tags/网络协议/" style="font-size: 15px;">网络协议</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/opencv/" style="font-size: 15px;">opencv</a> <a href="/tags/机器学习/" style="font-size: 15px;">机器学习</a> <a href="/tags/嵌入式开发/" style="font-size: 15px;">嵌入式开发</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/03/04/常用路由方式/">常用路由方式</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/19/无线传感网WSN概述/">无线传感网WSN概述</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/18/无线模块休眠与激活机制/">无线模块休眠与激活机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/SOC的低功耗设计/">SOC的低功耗设计</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/03/电源管理的低功耗/">电源管理的低功耗</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/02/SOC的低功耗应用/">SOC的低功耗应用</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/01/无线网络的低功耗软件方案/">无线网络的低功耗软件方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/24/CMOS电路的功耗/">CMOS电路的功耗</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/23/物联网万物皆文件特性的思考/">物联网万物皆文件特性的思考</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/23/对物联网的一些思考/">对物联网的一些思考</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://xiaofan8421.com/" title="人生的小站" target="_blank">人生的小站</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">Mr Bluyee's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/javascript" src="/js/search.js?v=0.0.0"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+   search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.9.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>ubuntu安装nginx启用HTTPS并端口重定向 | Mr Bluyee's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = 'https://hm.baidu.com/hm.js?' + '3dbaf3043b34b1c894c4cd063629b6a9';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">ubuntu安装nginx启用HTTPS并端口重定向</h1><a id="logo" href="/.">Mr Bluyee's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">ubuntu安装nginx启用HTTPS并端口重定向</h1><div class="post-meta">Jun 7, 2018<span> | </span><span class="category"><a href="/categories/学习笔记——linux/">学习笔记——linux</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 713</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-hourglass-half"></i><span class="post-count"> 3</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#ubuntu安装nginx"><span class="toc-number">1.</span> <span class="toc-text">ubuntu安装nginx:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ubuntu安装Certbot"><span class="toc-number">2.</span> <span class="toc-text">ubuntu安装Certbot:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#部署证书"><span class="toc-number">3.</span> <span class="toc-text">部署证书:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#修改Nginx的虚拟主机配置文件，新建一个443端口的server配置："><span class="toc-number">4.</span> <span class="toc-text">修改Nginx的虚拟主机配置文件，新建一个443端口的server配置：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#重启nginx："><span class="toc-number">5.</span> <span class="toc-text">重启nginx：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#nginx-80端口重定向到443端口："><span class="toc-number">6.</span> <span class="toc-text">nginx 80端口重定向到443端口：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Let’s-Encrypt-生成的免费证书为3个月时间，到期要更新证书："><span class="toc-number">7.</span> <span class="toc-text">Let’s Encrypt 生成的免费证书为3个月时间，到期要更新证书：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用crontab-e的命令来启用自动更新证书任务："><span class="toc-number">8.</span> <span class="toc-text">使用crontab -e的命令来启用自动更新证书任务：</span></a></li></ol></div></div><div class="post-content"><p>Nginx是一款轻量级的Web 服务器/反向代理服务器及电子邮件（IMAP/POP3）代理服务器，并在一个BSD-like 协议下发行。其特点是占有内存少，并发能力强。</p>
+<a id="more"></a>
+
+<h4 id="ubuntu安装nginx"><a href="#ubuntu安装nginx" class="headerlink" title="ubuntu安装nginx:"></a>ubuntu安装nginx:</h4><p>sudo apt-get update</p>
+<p>sudo apt-get install nginx</p>
+<pre><code>Let’s Encrypt 是 一个叫 ISRG （ Internet Security Research Group ，互联网安全研究小组）的组织推出的免费安全证书计划。
+
+Certbot是EFF的自动部署Let’s Encrypt证书的工具，使用简单。</code></pre><h4 id="ubuntu安装Certbot"><a href="#ubuntu安装Certbot" class="headerlink" title="ubuntu安装Certbot:"></a>ubuntu安装Certbot:</h4><p>sudo apt-get install certbot python-certbot-nginx</p>
+<h4 id="部署证书"><a href="#部署证书" class="headerlink" title="部署证书:"></a>部署证书:</h4><p>sudo certbot certonly –webroot -w /var/www/html/ -d your.site.com</p>
+<p>中间过程要同意协议以及填写邮箱，部署成功返回：</p>
+<p>IMPORTANT NOTES:</p>
+<ul>
+<li><p>Congratulations! Your certificate and chain have been saved at:</p>
+<p>/etc/letsencrypt/live/your.site.com/fullchain.pem</p>
+<p>Your key file has been saved at:</p>
+<p>/etc/letsencrypt/live/your.site.com/privkey.pem</p>
+<p>Your cert will expire on 2018-09-04. To obtain a new or tweaked</p>
+<p>version of this certificate in the future, simply run certbot</p>
+<p>again. To non-interactively renew <em>all</em> of your certificates, run</p>
+<p>“certbot renew”</p>
+</li>
+<li><p>Your account credentials have been saved in your Certbot</p>
+<p>configuration directory at /etc/letsencrypt. You should make a</p>
+<p>secure backup of this folder now. This configuration directory will</p>
+<p>also contain certificates and private keys obtained by Certbot so</p>
+<p>making regular backups of this folder is ideal.</p>
+</li>
+<li><p>If you like Certbot, please consider supporting our work by:</p>
+<p>Donating to ISRG / Let’s Encrypt:  <a href="https://letsencrypt.org/donate" target="_blank" rel="noopener">https://letsencrypt.org/donate</a></p>
+<p>Donating to EFF:                    <a href="https://eff.org/donate-le" target="_blank" rel="noopener">https://eff.org/donate-le</a></p>
+</li>
+</ul>
+<h4 id="修改Nginx的虚拟主机配置文件，新建一个443端口的server配置："><a href="#修改Nginx的虚拟主机配置文件，新建一个443端口的server配置：" class="headerlink" title="修改Nginx的虚拟主机配置文件，新建一个443端口的server配置："></a>修改Nginx的虚拟主机配置文件，新建一个443端口的server配置：</h4><p>配置文件:/etc/nginx/sites-available/default</p>
+<p>新增内容：</p>
+<p>server {</p>
+<pre><code>listen 443 ssl;
+
+listen [::]:443 ssl ipv6only=on;
+
+ssl_certificate /etc/letsencrypt/live/your.site.com/fullchain.pem;
+
+ssl_certificate_key /etc/letsencrypt/live/your.site.com/privkey.pem;
+
+ssl_trusted_certificate /etc/letsencrypt/live/your.site.com/chain.pem;
+
+root /var/www/html;
+
+index index.html index.htm index.nginx-debian.html index.php;
+
+server_name your.site.com;</code></pre><p>}</p>
+<h4 id="重启nginx："><a href="#重启nginx：" class="headerlink" title="重启nginx："></a>重启nginx：</h4><p>sudo service nginx reload</p>
+<p>此时，访问<a href="https://your.site.com已经可以显示安全标记。" target="_blank" rel="noopener">https://your.site.com已经可以显示安全标记。</a></p>
+<h4 id="nginx-80端口重定向到443端口："><a href="#nginx-80端口重定向到443端口：" class="headerlink" title="nginx 80端口重定向到443端口："></a>nginx 80端口重定向到443端口：</h4><p>server {</p>
+<pre><code>listen 80;
+
+server_name your.site.com;
+
+rewrite ^(.*)$ https://${server_name}$1 permanent;</code></pre><p>}</p>
+<h4 id="Let’s-Encrypt-生成的免费证书为3个月时间，到期要更新证书："><a href="#Let’s-Encrypt-生成的免费证书为3个月时间，到期要更新证书：" class="headerlink" title="Let’s Encrypt 生成的免费证书为3个月时间，到期要更新证书："></a>Let’s Encrypt 生成的免费证书为3个月时间，到期要更新证书：</h4><p>sudo certbot renew –dry-run</p>
+<p>成功更新返回：</p>
+<p>Saving debug log to /var/log/letsencrypt/letsencrypt.log</p>
+<hr>
+<p>Processing /etc/letsencrypt/renewal/your.site.com.conf</p>
+<hr>
+<p>Cert not due for renewal, but simulating renewal for dry run</p>
+<p>Plugins selected: Authenticator webroot, Installer None</p>
+<p>Renewing an existing certificate</p>
+<p>Performing the following challenges:</p>
+<p>http-01 challenge for your.site.com</p>
+<p>Waiting for verification…</p>
+<p>Cleaning up challenges</p>
+<hr>
+<p>new certificate deployed without reload, fullchain is</p>
+<p>/etc/letsencrypt/live/your.site.com/fullchain.pem</p>
+<hr>
+<hr>
+<p>** DRY RUN: simulating ‘certbot renew’ close to cert expiry</p>
+<p>**          (The test certificates below have not been saved.)</p>
+<p>Congratulations, all renewals succeeded. The following certs have been renewed:</p>
+<p>  /etc/letsencrypt/live/your.site.com/fullchain.pem (success)</p>
+<p>** DRY RUN: simulating ‘certbot renew’ close to cert expiry</p>
+<p>**          (The test certificates above have not been saved.)</p>
+<hr>
+<p>IMPORTANT NOTES:</p>
+<ul>
+<li><p>Your account credentials have been saved in your Certbot</p>
+<p>configuration directory at /etc/letsencrypt. You should make a</p>
+<p>secure backup of this folder now. This configuration directory will</p>
+<p>also contain certificates and private keys obtained by Certbot so</p>
+<p>making regular backups of this folder is ideal.</p>
+</li>
+</ul>
+<h4 id="使用crontab-e的命令来启用自动更新证书任务："><a href="#使用crontab-e的命令来启用自动更新证书任务：" class="headerlink" title="使用crontab -e的命令来启用自动更新证书任务："></a>使用crontab -e的命令来启用自动更新证书任务：</h4><p>sudo crontab -e</p>
+<p>添加配置：</p>
+<p>30 2 * * 1 /usr/bin/certbot renew  &gt;&gt; /var/log/le-renew.log</p>
+<p>上面的执行时间为：每周一半夜2点30分执行renew任务。</p>
+</div><iframe src="/donate/?AliPayQR=/images/AlipayQR.jpg&amp;WeChatQR=/images/WeChatQR.png&amp;GitHub=null&amp;BTCQR=null&amp;BTCKEY=null&amp;PayPal=null" style="overflow-x:hidden; overflow-y:hidden; border:0xp none #fff; min-height:240px; width:100%;" frameborder="0" scrolling="no"></iframe><div><ul class="post-copyright"><li class="post-copyright-author"><strong>本文作者：</strong>Mr Bluyee</li><li class="post-copyright-link"><strong>本文链接：</strong><a href="/2018/06/07/ubuntu安装nginx启用HTTPS并端口重定向/">https://www.mrbluyee.com/2018/06/07/ubuntu安装nginx启用HTTPS并端口重定向/</a></li><li class="post-copyright-license"><strong>版权声明：</strong>The author owns the copyright, please indicate the source reproduced.</li></ul></div><br><div class="tags"><a href="/tags/linux/">linux</a></div><div class="post-nav"><a class="pre" href="/2018/06/07/ubuntu开启BBR加速/">ubuntu开启BBR加速</a><a class="next" href="/2018/06/04/Python字符编码/">Python字符编码</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zOTYxNS8xNjE0Mg"><script>(function(d, s) {
+   var j, e = d.getElementsByTagName(s)[0];
+   if (typeof LivereTower === 'function') { return; }
+   j = d.createElement(s);
+   j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+   j.async = true;
+   e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1 pure-u-md-1-4"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"><div id="local-search-result"></div></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——C-算法/">学习笔记——C 算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——C数据结构/">学习笔记——C数据结构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——Python/">学习笔记——Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——android/">学习笔记——android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——expert-c-programming/">学习笔记——expert c programming</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——linux/">学习笔记——linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——opencv/">学习笔记——opencv</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——代码管理/">学习笔记——代码管理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——低功耗技术/">学习笔记——低功耗技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——嵌入式开发/">学习笔记——嵌入式开发</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——机器学习/">学习笔记——机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——物联网/">学习笔记——物联网</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——网络协议/">学习笔记——网络协议</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/学习笔记——计算机系统/">学习笔记——计算机系统</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/计算机系统/" style="font-size: 15px;">计算机系统</a> <a href="/tags/android/" style="font-size: 15px;">android</a> <a href="/tags/C/" style="font-size: 15px;">C</a> <a href="/tags/网络协议/" style="font-size: 15px;">网络协议</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/opencv/" style="font-size: 15px;">opencv</a> <a href="/tags/机器学习/" style="font-size: 15px;">机器学习</a> <a href="/tags/嵌入式开发/" style="font-size: 15px;">嵌入式开发</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/03/04/常用路由方式/">常用路由方式</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/19/无线传感网WSN概述/">无线传感网WSN概述</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/18/无线模块休眠与激活机制/">无线模块休眠与激活机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/SOC的低功耗设计/">SOC的低功耗设计</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/03/电源管理的低功耗/">电源管理的低功耗</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/02/SOC的低功耗应用/">SOC的低功耗应用</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/01/无线网络的低功耗软件方案/">无线网络的低功耗软件方案</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/01/24/CMOS电路的功耗/">CMOS电路的功耗</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/23/物联网万物皆文件特性的思考/">物联网万物皆文件特性的思考</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/12/23/对物联网的一些思考/">对物联网的一些思考</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://xiaofan8421.com/" title="人生的小站" target="_blank">人生的小站</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2019 <a href="/." rel="nofollow">Mr Bluyee's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/javascript" src="/js/search.js?v=0.0.0"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+   search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
