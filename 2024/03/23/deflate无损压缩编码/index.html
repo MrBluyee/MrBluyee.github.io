@@ -1,0 +1,614 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>deflate无损压缩编码 | Mr Bluyee's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?' + '3dbaf3043b34b1c894c4cd063629b6a9';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><meta name="generator" content="Hexo 7.1.1"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">deflate无损压缩编码</h1><a id="logo" href="/.">Mr Bluyee's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">deflate无损压缩编码</h1><div class="post-meta">2024-03-23<span> | </span><span class="category"><a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%95%B0%E6%8D%AE%E5%8E%8B%E7%BC%A9/">学习笔记——数据压缩</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 1.5k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-clock-o"></i><span class="post-count"> 8</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#deflate"><span class="toc-number">1.</span> <span class="toc-text">deflate</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#deflate-blocks"><span class="toc-number">1.1.</span> <span class="toc-text">deflate blocks</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#no-compression-block-aka-stored-block"><span class="toc-number">1.1.1.</span> <span class="toc-text">no compression block (aka stored block)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#dynamic-Huffman-block"><span class="toc-number">1.1.2.</span> <span class="toc-text">dynamic Huffman block</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#how-to-get-the-stored-huffman-tree"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">how to get the stored huffman tree</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#fixed-Huffman-block"><span class="toc-number">1.1.3.</span> <span class="toc-text">fixed Huffman block</span></a></li></ol></li></ol></li></ol></div></div><div class="post-content"><h2 id="deflate"><a href="#deflate" class="headerlink" title="deflate"></a>deflate</h2><p>DEFLATE 是基于LZ77 算法 + 哈夫曼编码（Huffman Coding）的一种无损数据压缩算法。</p>
+<h3 id="deflate-blocks"><a href="#deflate-blocks" class="headerlink" title="deflate blocks"></a>deflate blocks</h3><p>deflate是分块压缩的，raw deflate 仅包含一组块，每一个块(block)都对应一段数据压缩后存储的比特流，块与块之间不要求字节对齐。<br>每一个块都有一个3bit的头，其格式如下：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>bit 0</td>
+<td>BFINAL</td>
+</tr>
+<tr>
+<td>bit 1-2</td>
+<td>BTYPE</td>
+</tr>
+</tbody></table>
+<p>如果当前的block是最后一个block时，BFINAL bit会置上。<br>BTYPE则指明了当前block的类型：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>b’00</td>
+<td>no compression</td>
+</tr>
+<tr>
+<td>b’01</td>
+<td>compressed with fixed Huffman codes</td>
+</tr>
+<tr>
+<td>b’10</td>
+<td>compressed with dynamic Huffman codes</td>
+</tr>
+<tr>
+<td>b’11</td>
+<td>reserved (error)</td>
+</tr>
+</tbody></table>
+<h4 id="no-compression-block-aka-stored-block"><a href="#no-compression-block-aka-stored-block" class="headerlink" title="no compression block (aka stored block)"></a>no compression block (aka stored block)</h4><p>no compression block 存放的是没有经过压缩算法处理的原文。</p>
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>size</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>BFINAL</td>
+<td>1 bit</td>
+<td>b’* (0 or 1)</td>
+</tr>
+<tr>
+<td>BTYPE</td>
+<td>2 bits</td>
+<td>b’00</td>
+</tr>
+<tr>
+<td>Reserved bits</td>
+<td>&lt; 8 bits</td>
+<td>make sure the offset of LEN is byte aligned</td>
+</tr>
+<tr>
+<td>LEN</td>
+<td>2 bytes</td>
+<td>number of data bytes in the block</td>
+</tr>
+<tr>
+<td>NLEN</td>
+<td>2 bytes</td>
+<td>NLEN &#x3D; 65535 - LEN, used for the number validation</td>
+</tr>
+<tr>
+<td>Literal data</td>
+<td>LEN in bytes</td>
+<td>uncompressed data</td>
+</tr>
+</tbody></table>
+<h4 id="dynamic-Huffman-block"><a href="#dynamic-Huffman-block" class="headerlink" title="dynamic Huffman block"></a>dynamic Huffman block</h4><p>fixed Huffman block 是数据经过压缩的块，它是用动态生成的huffman coding tree来进行字符编码的，所以这个动态生成的huffman tree的信息也存储在当前block里。</p>
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>size</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>BFINAL</td>
+<td>1 bit</td>
+<td>b’* (0 or 1)</td>
+</tr>
+<tr>
+<td>BTYPE</td>
+<td>2 bits</td>
+<td>b’10</td>
+</tr>
+<tr>
+<td>HLIT</td>
+<td>5 bits</td>
+<td>number of Literal&#x2F;Length codes - 257 (257 - 286)</td>
+</tr>
+<tr>
+<td>HDIST</td>
+<td>5 bits</td>
+<td>number of Distance codes - 1 (1 - 32)</td>
+</tr>
+<tr>
+<td>HCLEN</td>
+<td>4 bits</td>
+<td>number of Code Length codes - 4 (4 - 19)</td>
+</tr>
+<tr>
+<td>Code Length codes</td>
+<td>3 bits * (HCLEN + 4)</td>
+<td>code lengths for the code length table</td>
+</tr>
+<tr>
+<td>literal&#x2F;length distance table</td>
+<td>* bits (related to the HLIT, HDIST and the code length table)</td>
+<td>2 huffman tree stored</td>
+</tr>
+<tr>
+<td>huffman encoded bit stream</td>
+<td>* bits</td>
+<td>end with EOB symbol (256)</td>
+</tr>
+</tbody></table>
+<h5 id="how-to-get-the-stored-huffman-tree"><a href="#how-to-get-the-stored-huffman-tree" class="headerlink" title="how to get the stored huffman tree"></a>how to get the stored huffman tree</h5><p>deflate 有一些预定义好的编码和表。</p>
+<p><em>code length table (19 code length code, code length range: 0-15 bits)</em></p>
+<table>
+<thead>
+<tr>
+<th>index</th>
+<th>code length</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>16</td>
+<td>repeat last length for (3 + extra: 3-6) times, follow with extra info (2 bits)</td>
+</tr>
+<tr>
+<td>1</td>
+<td>17</td>
+<td>repeat zero for (3 + extra: 3-10) times, follow with extra info (3 bits)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>18</td>
+<td>repeat zero for (11 + extra: 11-138) times, follow with extra info (7 bits)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 0 bit</td>
+</tr>
+<tr>
+<td>4</td>
+<td>8</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 8 bits</td>
+</tr>
+<tr>
+<td>5</td>
+<td>7</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 7 bits</td>
+</tr>
+<tr>
+<td>6</td>
+<td>9</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 9 bits</td>
+</tr>
+<tr>
+<td>7</td>
+<td>6</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 6 bits</td>
+</tr>
+<tr>
+<td>8</td>
+<td>10</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 10 bits</td>
+</tr>
+<tr>
+<td>9</td>
+<td>5</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 5 bits</td>
+</tr>
+<tr>
+<td>10</td>
+<td>11</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 11 bits</td>
+</tr>
+<tr>
+<td>11</td>
+<td>4</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 4 bits</td>
+</tr>
+<tr>
+<td>12</td>
+<td>12</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 12 bits</td>
+</tr>
+<tr>
+<td>13</td>
+<td>3</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 3 bits</td>
+</tr>
+<tr>
+<td>14</td>
+<td>13</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 13 bits</td>
+</tr>
+<tr>
+<td>15</td>
+<td>2</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 2 bits</td>
+</tr>
+<tr>
+<td>16</td>
+<td>14</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 14 bits</td>
+</tr>
+<tr>
+<td>17</td>
+<td>1</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 1 bit</td>
+</tr>
+<tr>
+<td>18</td>
+<td>15</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 15 bits</td>
+</tr>
+</tbody></table>
+<p>4 bits HCLEN 表明了存储的Code Length codes的大小，其值范围0-15，对应的存储的code length数量为4-19。<br>举个例子，如果HCLEN&#x3D;12，那么前16(12+4)个code length以每个3 bit值存储在block中，表中index 16-18没有存储在block中，这表示index 16-18 对应的code length 14，1，15 没有被用到。而这3 bits的值表示了对code length再进行huffman编码后的code长度，3 bit 值如果为0的话表明当前对应的code length也没有被用到。<br>假设这16个code length存储的3bit值为：[1,0,5,5,3,0,5,0,4,0,0,4,0,5,0,3]<br>那么对应的：</p>
+<table>
+<thead>
+<tr>
+<th>index</th>
+<th>code length</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>16</td>
+<td>code length code 16 huffman encoded length: 1 bit</td>
+</tr>
+<tr>
+<td>1</td>
+<td>17</td>
+<td>code length code 17 not used</td>
+</tr>
+<tr>
+<td>2</td>
+<td>18</td>
+<td>code length code 18 huffman encoded length: 5 bits</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0</td>
+<td>code length code 0 huffman encoded length: 5 bits</td>
+</tr>
+<tr>
+<td>4</td>
+<td>8</td>
+<td>code length code 8 huffman encoded length: 3 bits</td>
+</tr>
+<tr>
+<td>5</td>
+<td>7</td>
+<td>code length code 7 not used</td>
+</tr>
+<tr>
+<td>6</td>
+<td>9</td>
+<td>code length code 9 huffman encoded length: 5 bits</td>
+</tr>
+<tr>
+<td>7</td>
+<td>6</td>
+<td>code length code 6 not used</td>
+</tr>
+<tr>
+<td>8</td>
+<td>10</td>
+<td>code length code 10 huffman encoded length: 4 bits</td>
+</tr>
+<tr>
+<td>9</td>
+<td>5</td>
+<td>code length code 5 not used</td>
+</tr>
+<tr>
+<td>10</td>
+<td>11</td>
+<td>code length code 11 not used</td>
+</tr>
+<tr>
+<td>11</td>
+<td>4</td>
+<td>code length code 4 huffman encoded length: 4 bits</td>
+</tr>
+<tr>
+<td>12</td>
+<td>12</td>
+<td>code length code 12 not used</td>
+</tr>
+<tr>
+<td>13</td>
+<td>3</td>
+<td>code length code 3 huffman encoded length: 5 bits</td>
+</tr>
+<tr>
+<td>14</td>
+<td>13</td>
+<td>code length code 13 not used</td>
+</tr>
+<tr>
+<td>15</td>
+<td>2</td>
+<td>code length code 2 huffman encoded length: 3 bits</td>
+</tr>
+<tr>
+<td>16</td>
+<td>14</td>
+<td>code length code 14 not used, value not stored</td>
+</tr>
+<tr>
+<td>17</td>
+<td>1</td>
+<td>code length code 1 not used, value not stored</td>
+</tr>
+<tr>
+<td>18</td>
+<td>15</td>
+<td>code length code 15 not used, value not stored</td>
+</tr>
+</tbody></table>
+<p>那么根据存储的Code Length codes，我们可以重构出其对应的huffman tree：</p>
+<table>
+<thead>
+<tr>
+<th>index</th>
+<th>code length</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>16</td>
+<td>code length code 16 encoded to 0 (b’0)</td>
+</tr>
+<tr>
+<td>1</td>
+<td>17</td>
+<td>-</td>
+</tr>
+<tr>
+<td>2</td>
+<td>18</td>
+<td>code length code 18 encoded to 31 (b’11111)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0</td>
+<td>code length code 0 encoded to 28 (b’11100)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>8</td>
+<td>code length code 8 encoded to 5 (b’101)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>7</td>
+<td>-</td>
+</tr>
+<tr>
+<td>6</td>
+<td>9</td>
+<td>code length code 9 encoded to 30 (b’11110)</td>
+</tr>
+<tr>
+<td>7</td>
+<td>6</td>
+<td>-</td>
+</tr>
+<tr>
+<td>8</td>
+<td>10</td>
+<td>code length code 10 encoded to 13 (b’1101)</td>
+</tr>
+<tr>
+<td>9</td>
+<td>5</td>
+<td>-</td>
+</tr>
+<tr>
+<td>10</td>
+<td>11</td>
+<td>-</td>
+</tr>
+<tr>
+<td>11</td>
+<td>4</td>
+<td>code length code 4 encoded to 12 (b’1100)</td>
+</tr>
+<tr>
+<td>12</td>
+<td>12</td>
+<td>-</td>
+</tr>
+<tr>
+<td>13</td>
+<td>3</td>
+<td>code length code 3 encoded to 29 (b’11101)</td>
+</tr>
+<tr>
+<td>14</td>
+<td>13</td>
+<td>-</td>
+</tr>
+<tr>
+<td>15</td>
+<td>2</td>
+<td>code length code 2 encoded to 4 (b’100)</td>
+</tr>
+<tr>
+<td>16</td>
+<td>14</td>
+<td>-</td>
+</tr>
+<tr>
+<td>17</td>
+<td>1</td>
+<td>-</td>
+</tr>
+<tr>
+<td>18</td>
+<td>15</td>
+<td>-</td>
+</tr>
+</tbody></table>
+<p>这个code length huffman tree是用来解出接下来literal&#x2F;length distance table里面的两个huffman tree，<br>分别是literal&#x2F;length huffman tree和distance huffman tree。</p>
+<p>对literal&#x2F;length的编码：<br>deflate规范中，长度信息与普通字符共用同一编码空间. 这个编码空间一共有286个编码, 范围是从0至285.<br>其中0至255 为普通字符编码, 256表示压缩块的结束; 而257至285则表示长度. 长度编码的含义如下表所示:</p>
+<table>
+<thead>
+<tr>
+<th>code</th>
+<th>extra info bits</th>
+<th>length range</th>
+<th>code</th>
+<th>extra info bits</th>
+<th>length range</th>
+<th>code</th>
+<th>extra info bits</th>
+<th>length range</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>257</td>
+<td>0</td>
+<td>3</td>
+<td>267</td>
+<td>1</td>
+<td>15,16</td>
+<td>277</td>
+<td>4</td>
+<td>67-82</td>
+</tr>
+<tr>
+<td>258</td>
+<td>0</td>
+<td>4</td>
+<td>268</td>
+<td>1</td>
+<td>17,18</td>
+<td>278</td>
+<td>4</td>
+<td>83-98</td>
+</tr>
+<tr>
+<td>259</td>
+<td>0</td>
+<td>5</td>
+<td>269</td>
+<td>2</td>
+<td>19-22</td>
+<td>279</td>
+<td>4</td>
+<td>99-114</td>
+</tr>
+<tr>
+<td>260</td>
+<td>0</td>
+<td>6</td>
+<td>270</td>
+<td>2</td>
+<td>23-26</td>
+<td>280</td>
+<td>4</td>
+<td>115-130</td>
+</tr>
+<tr>
+<td>261</td>
+<td>0</td>
+<td>7</td>
+<td>271</td>
+<td>2</td>
+<td>27-30</td>
+<td>281</td>
+<td>5</td>
+<td>131-162</td>
+</tr>
+<tr>
+<td>262</td>
+<td>0</td>
+<td>8</td>
+<td>272</td>
+<td>2</td>
+<td>31-34</td>
+<td>282</td>
+<td>5</td>
+<td>163-194</td>
+</tr>
+<tr>
+<td>263</td>
+<td>0</td>
+<td>9</td>
+<td>273</td>
+<td>3</td>
+<td>35-42</td>
+<td>283</td>
+<td>5</td>
+<td>195-226</td>
+</tr>
+<tr>
+<td>264</td>
+<td>0</td>
+<td>10</td>
+<td>274</td>
+<td>3</td>
+<td>43-50</td>
+<td>284</td>
+<td>5</td>
+<td>227-257</td>
+</tr>
+<tr>
+<td>265</td>
+<td>1</td>
+<td>11,12</td>
+<td>275</td>
+<td>3</td>
+<td>51-58</td>
+<td>285</td>
+<td>0</td>
+<td>258</td>
+</tr>
+<tr>
+<td>266</td>
+<td>1</td>
+<td>13,14</td>
+<td>276</td>
+<td>3</td>
+<td>59-66</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>对distance的编码：<br>对于距离, 它有 0 至 29 一共 30 个编码. 距离编码的含义如下表所示:</p>
+<table>
+<thead>
+<tr>
+<th>code</th>
+<th>extra info bits</th>
+<th>distance range</th>
+<th>code</th>
+<th>extra info bits</th>
+<th>distance range</th>
+<th>code</th>
+<th>extra info bits</th>
+<th>distance range</th>
+</tr>
+</thead>
+</table>
+<h4 id="fixed-Huffman-block"><a href="#fixed-Huffman-block" class="headerlink" title="fixed Huffman block"></a>fixed Huffman block</h4><p>fixed Huffman block 是数据经过压缩的块，它是用一个定义好的huffman coding tree来进行字符编码的，这个huffman tree并没有存储在当前block里。</p>
+</div><div class="post-copyright"><script type="text/javascript" src="/js/copyright.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copyright.css?v=1.0.0"><p><span>本文标题：</span>deflate无损压缩编码</p><p><span>文章作者：</span>Mr Bluyee</p><p><span>发布时间：</span>2024-03-23</p><p><span>最后更新：</span>2024-03-23</p><p><span>原始链接：</span><a href="/2024/03/23/deflate无损压缩编码/">https://www.mrbluyee.com/2024/03/23/deflate%E6%97%A0%E6%8D%9F%E5%8E%8B%E7%BC%A9%E7%BC%96%E7%A0%81/</a><span class="copy-path"><i class="fa fa-clipboard" data-clipboard-text="https://www.mrbluyee.com/2024/03/23/deflate%E6%97%A0%E6%8D%9F%E5%8E%8B%E7%BC%A9%E7%BC%96%E7%A0%81/"></i></span></p><p><span>版权声明：</span>The author owns the copyright, please indicate the source reproduced.</p></div><br><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%8E%8B%E7%BC%A9/" rel="tag">数据压缩</a></li></ul></div><div class="post-nav"><a class="next" href="/2019/09/23/IPsec/">IPsec</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zOTYxNS8xNjE0Mg"><script>(function(d, s) {
+  var j, e = d.getElementsByTagName(s)[0];
+  if (typeof LivereTower === 'function') { return; }
+  j = d.createElement(s);
+  j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+  j.async = true;
+  e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1 pure-u-md-1-4"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"/><div id="local-search-result"></div></div></div><div class="widget"><div class="author-info"><a class="info-avatar" href="/about/" title="关于"><img class="nofancybox" src="/img/avatar.jpeg"/></a><p>Enjoy life / Hope for future</p><a class="info-icon" href="mr.bluyee@hotmail.com" title="mr.bluyee@hotmail.com" target="_blank" style="margin-inline:5px"> <i class="fa fa-envelope-square" style="margin-inline:5px"></i></a><a class="info-icon" href="https://github.com/MrBluyee" title="https://github.com/MrBluyee" target="_blank" style="margin-inline:5px"> <i class="fa fa-github-square" style="margin-inline:5px"></i></a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C-%E7%AE%97%E6%B3%95/">学习笔记——C 算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">学习笔记——C数据结构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94Python/">学习笔记——Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94android/">学习笔记——android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94expert-c-programming/">学习笔记——expert c programming</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94linux/">学习笔记——linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94opencv/">学习笔记——opencv</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BB%A3%E7%A0%81%E7%AE%A1%E7%90%86/">学习笔记——代码管理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BD%8E%E5%8A%9F%E8%80%97%E6%8A%80%E6%9C%AF/">学习笔记——低功耗技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/">学习笔记——嵌入式开发</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%95%B0%E6%8D%AE%E5%8E%8B%E7%BC%A9/">学习笔记——数据压缩</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">学习笔记——机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%89%A9%E8%81%94%E7%BD%91/">学习笔记——物联网</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">学习笔记——网络协议</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">学习笔记——计算机系统</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" style="font-size: 15px;">计算机系统</a> <a href="/tags/android/" style="font-size: 15px;">android</a> <a href="/tags/C/" style="font-size: 15px;">C</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" style="font-size: 15px;">网络协议</a> <a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/" style="font-size: 15px;">嵌入式开发</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%8E%8B%E7%BC%A9/" style="font-size: 15px;">数据压缩</a> <a href="/tags/opencv/" style="font-size: 15px;">opencv</a> <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" style="font-size: 15px;">机器学习</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2024/03/23/deflate%E6%97%A0%E6%8D%9F%E5%8E%8B%E7%BC%A9%E7%BC%96%E7%A0%81/">deflate无损压缩编码</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/09/23/IPsec/">IPsec</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/21/%E6%95%B0%E7%9A%84%E7%B4%A0%E6%80%A7%E6%B5%8B%E8%AF%95/">数的素性测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/20/%E6%89%A9%E5%B1%95%E7%9A%84%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95/">扩展的欧几里得算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/17/%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95-%E6%B1%82%E6%9C%80%E5%A4%A7%E5%85%AC%E5%9B%A0%E6%95%B0/">欧几里得算法-求最大公因数</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/04/%E5%B8%B8%E7%94%A8%E8%B7%AF%E7%94%B1%E6%96%B9%E5%BC%8F/">常用路由方式</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/19/%E6%97%A0%E7%BA%BF%E4%BC%A0%E6%84%9F%E7%BD%91WSN%E6%A6%82%E8%BF%B0/">无线传感网WSN概述</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/18/%E6%97%A0%E7%BA%BF%E6%A8%A1%E5%9D%97%E4%BC%91%E7%9C%A0%E4%B8%8E%E6%BF%80%E6%B4%BB%E6%9C%BA%E5%88%B6/">无线模块休眠与激活机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E8%AE%BE%E8%AE%A1/">SOC的低功耗设计</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/03/%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97/">电源管理的低功耗</a></li></ul></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2024 <a href="/." rel="nofollow">Mr Bluyee's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><link rel="stylesheet" type="text/css" href="/css/search.css?v=1.0.0"><script type="text/javascript" src="/js/search.js?v=1.0.0"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+  search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>
