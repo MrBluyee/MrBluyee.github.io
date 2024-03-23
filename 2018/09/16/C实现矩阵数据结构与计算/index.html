@@ -1,0 +1,202 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>C实现矩阵数据结构与计算 | Mr Bluyee's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?' + '3dbaf3043b34b1c894c4cd063629b6a9';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><meta name="generator" content="Hexo 7.1.1"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">C实现矩阵数据结构与计算</h1><a id="logo" href="/.">Mr Bluyee's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">C实现矩阵数据结构与计算</h1><div class="post-meta">2018-09-16<span> | </span><span class="category"><a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">学习笔记——C数据结构</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 2.4k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-clock-o"></i><span class="post-count"> 9</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9F%A9%E9%98%B5%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.</span> <span class="toc-text">矩阵的数据结构的设计</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9F%A9%E9%98%B5%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">矩阵的创建</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9F%A9%E9%98%B5%E7%9A%84shape%E7%9B%B8%E5%85%B3%E7%9A%84%E5%87%BD%E6%95%B0"><span class="toc-number">3.</span> <span class="toc-text">矩阵的shape相关的函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9F%A9%E9%98%B5%E6%89%93%E5%8D%B0%E7%9A%84%E5%87%BD%E6%95%B0"><span class="toc-number">4.</span> <span class="toc-text">矩阵打印的函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9F%A9%E9%98%B5%E7%9A%84%E6%B8%85%E7%A9%BA%E4%B8%8E%E9%94%80%E6%AF%81%E5%87%BD%E6%95%B0"><span class="toc-number">5.</span> <span class="toc-text">矩阵的清空与销毁函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E7%9F%A9%E9%98%B5%E7%9A%84%E5%85%83%E7%B4%A0"><span class="toc-number">6.</span> <span class="toc-text">获取矩阵的元素</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9F%A9%E9%98%B5%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="toc-number">7.</span> <span class="toc-text">矩阵的基本操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9F%A9%E9%98%B5%E7%9A%84%E9%AB%98%E7%BA%A7%E6%93%8D%E4%BD%9C"><span class="toc-number">8.</span> <span class="toc-text">矩阵的高级操作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#To-do-list"><span class="toc-number">9.</span> <span class="toc-text">To do list</span></a></li></ol></div></div><div class="post-content"><p>用C实现矩阵写的不像前面的链表等数据结构写的顺利，因为矩阵里面的内容多的多，特别是计算部分，着实花了几天时间。目前还有一小部分算法还没有实现，后续会补上。<br><a target="_blank" rel="noopener" href="https://github.com/MrBluyee/DataStructure_C">github源码</a> 文件夹为Matrix，主要有两个文件：Matrix.c 、Matrix.h</p>
+<span id="more"></span>
+
+<h4 id="矩阵的数据结构的设计"><a href="#矩阵的数据结构的设计" class="headerlink" title="矩阵的数据结构的设计"></a>矩阵的数据结构的设计</h4><p>矩阵是存储的一组或多组数据，所以毫无疑问，应使用顺序存储的方式存储数据元素。矩阵最直观的表示方式是用多维数组来表示，缺点在于不够活，使用前必须确定其长度，而且维度变换时十分麻烦。综合了诸多因素，我设计如下的主要使用堆的动态的矩阵数据结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">typedef struct Dshape&#123;</span><br><span class="line">    int shape[4]; //最多四维</span><br><span class="line">&#125;Dshape;</span><br><span class="line"></span><br><span class="line">typedef struct Matrix&#123;</span><br><span class="line">    double *array;  </span><br><span class="line">    Dshape dshape; //数组结构</span><br><span class="line">    int length; //长度</span><br><span class="line">    int size; //空间大小</span><br><span class="line">&#125;Matrix;</span><br></pre></td></tr></table></figure>
+<p>我们看结构体Matrix，里面首先是一个double型的指针*array，这用于指向的矩阵元素存储块的首地址。在刚开始的设计版本中，我把指针的类型设置为void型，这样*array可以指向任何类型的数据块，但是在存取时需要类型判断和转换，比较麻烦，而且在后面矩阵的一些算法如求行列式等就更为麻烦，所以最终设定Matrix的元素类型为double型。<br>Dshape dshape定义了矩阵的结构，可以看到struct Dshape里定义的是一个int型的大小为4的数组，这个数组用来存储矩阵的结构信息，4个int型代表维数，最多支持4维。例如，一个2X2（二行二列）的二维矩阵的dshape为{0，0，2，2}。要注意的是一个设定：一维矩阵，即只有一行，假设这一行的元素有3个，那么该一维矩阵的dshape为{0，0，0，3}，而不是{0，0，1，3}。还有一种情况，一列元素，假设有n个，那么，该列的dshape为{0，0，n，1}。把int型数组用struct包装一下，这是一个小技巧，好处是struct可以直接整体赋值，在代码中就会简洁一些，不必再用循环依次对数组赋值。存放多维矩阵元素只用一块连续的存储区域，而矩阵的结构由dshape来决定，最大的好处在于，更改数组的维数、结构非常的容易，不需要改矩阵元素的存储区域，只要改一下dshape的值就可以了。<br>int length保存了矩阵*array里数据元素的长度， int size则保存了矩阵*array所占空间的大小。大部分情况下，这两个值是相等的，但在有些时候，不相等，比如说做删除矩阵里的元素操作时，我只改变了length的大小，而size不变。</p>
+<h4 id="矩阵的创建"><a href="#矩阵的创建" class="headerlink" title="矩阵的创建"></a>矩阵的创建</h4><p>矩阵创建时首先要确定dshape，dshape有三种初始化方式：<br>例如要创建的矩阵的结构为4行5列的二维矩阵，<br>方法一：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Dshape dshape；</span><br><span class="line">dshape.shape[0] = 0;</span><br><span class="line">dshape.shape[1] = 0;</span><br><span class="line">dshape.shape[2] = 4;</span><br><span class="line">dshape.shape[3] = 5;</span><br></pre></td></tr></table></figure>
+<p>方法二：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">int a[]=&#123;0,0,4,5&#125;;</span><br><span class="line">Dshape dshape;</span><br><span class="line">initDshape(&amp;dshape,a);</span><br></pre></td></tr></table></figure>
+<p>方法三：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Matrix *a; //a已是一个4行5列的二维矩阵</span><br><span class="line">Dshape dshape;</span><br><span class="line">dshape = a-&gt;dshape;</span><br></pre></td></tr></table></figure>
+<p>矩阵的创建构造了以下函数：<br>1.从数据创建数组</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *creatAsMatrixFromDatas(double *data,int data_len, Dshape dshape);</span><br></pre></td></tr></table></figure>
+<p>浅拷贝，数据不开辟新的内存空间，array的地址就指向data的地址。</p>
+<p>2.从数据创建数组,深拷贝，数据开辟新的内存空间，从data复制一份数据。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *creatMatrixFromDatas(double *data,int data_len, Dshape dshape);</span><br></pre></td></tr></table></figure>
+<p>使用示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Matrix *m = NULL;</span><br><span class="line">m = creatMatrixFromDatas(data,data_len,dshape);</span><br></pre></td></tr></table></figure>
+
+<p>3.创建一个单一值的矩阵</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *creatMatrixFromValue(double value, Dshape dshape);</span><br></pre></td></tr></table></figure>
+
+<p>4.指定初始值和步长，创建等间隔值的矩阵，结束的值根据矩阵的大小变化</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *creatMatrixFromArange(double startVal, double stepVal,Dshape dshape);</span><br></pre></td></tr></table></figure>
+
+<p>5.指定初始值和结束值，创建等间隔的矩阵，间隔根据矩阵的大小变化</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *creatMatrixFromLinspace(double startVal, double endVal,Dshape dshape);</span><br></pre></td></tr></table></figure>
+
+<p>6.创建全0矩阵</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *creatZerosMatrix(Dshape dshape);</span><br></pre></td></tr></table></figure>
+
+<p>7.创建全1矩阵</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *creatOnesMatrix(Dshape dshape);</span><br></pre></td></tr></table></figure>
+
+<p>8.创建二维单位矩阵，要求dshape里行数与列数相等。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *creatIdentitySecondOrderMatrix(Dshape dshape);</span><br></pre></td></tr></table></figure>
+
+<h4 id="矩阵的shape相关的函数"><a href="#矩阵的shape相关的函数" class="headerlink" title="矩阵的shape相关的函数"></a>矩阵的shape相关的函数</h4><p>1.初始化dshape</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void initDshape(Dshape *dshape,int *shapeval);</span><br></pre></td></tr></table></figure>
+
+<p>2.修改dshape</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int reshape(Matrix *m,Dshape dshape);</span><br></pre></td></tr></table></figure>
+
+<p>3.获取矩阵的维数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int getMatrixNdim(Matrix *m);</span><br></pre></td></tr></table></figure>
+
+<h4 id="矩阵打印的函数"><a href="#矩阵打印的函数" class="headerlink" title="矩阵打印的函数"></a>矩阵打印的函数</h4><p>1.打印矩阵的shape</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void printShape(Matrix *m);</span><br></pre></td></tr></table></figure>
+
+<p>2.打印矩阵</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void printarray(Matrix *m);</span><br></pre></td></tr></table></figure>
+
+<h4 id="矩阵的清空与销毁函数"><a href="#矩阵的清空与销毁函数" class="headerlink" title="矩阵的清空与销毁函数"></a>矩阵的清空与销毁函数</h4><p>1.清空矩阵</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void clearMatrix(Matrix *m);</span><br></pre></td></tr></table></figure>
+
+<p>2.销毁矩阵</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">void destroyMatrix(Matrix *m);</span><br></pre></td></tr></table></figure>
+
+<h4 id="获取矩阵的元素"><a href="#获取矩阵的元素" class="headerlink" title="获取矩阵的元素"></a>获取矩阵的元素</h4><p>1.获取矩阵的元素</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int getMatrixElem(Matrix *m,int dimen0,int dimen1,int dimen2,int dimen3,double *elem);</span><br></pre></td></tr></table></figure>
+<p>dimen表示维数，例如要获取3X3的二维矩阵m中第(1,1)个元素（下标从0开始计算）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">double elem;</span><br><span class="line">getMatrixElem(m,0,0,1,1,&amp;elem);</span><br></pre></td></tr></table></figure>
+<p>函数返回的int为状态指示用的，一般都设定为返回0为操作成功，返回-1为操作失败。</p>
+<p>2.修改矩阵的元素</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int modifyMatrixElem(Matrix *m,int dimen0,int dimen1,int dimen2,int dimen3,double elem);</span><br></pre></td></tr></table></figure>
+
+<p>3.获取矩阵的连续几行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *getSecondOrderMatrixRows(Matrix *m,int startRow,int endRow);</span><br></pre></td></tr></table></figure>
+<p>下标从0开始计算，返回一个新的矩阵，用法示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Matrix *n = NULL;</span><br><span class="line">n = getSecondOrderMatrixRows(m,0,1); //获取矩阵m的第一行</span><br></pre></td></tr></table></figure>
+
+<p>4.获取矩阵的连续几列</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *getSecondOrderMatrixColumes(Matrix *m,int startColume,int endColume);</span><br></pre></td></tr></table></figure>
+
+<p>5.获取矩阵的子矩阵</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *getSecondOrderSubMatrix(Matrix *m,int startRow,int startColume,int endRow,int endColume);</span><br></pre></td></tr></table></figure>
+
+<p>6.获取矩阵删除指定一行和一列之后的子矩阵</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *getSecondOrderLeftSubMatrix(Matrix *m,int row,int colume);</span><br></pre></td></tr></table></figure>
+
+<h4 id="矩阵的基本操作"><a href="#矩阵的基本操作" class="headerlink" title="矩阵的基本操作"></a>矩阵的基本操作</h4><p>1.复制矩阵</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *copyMatrix(Matrix *m);</span><br></pre></td></tr></table></figure>
+
+<p>2.转置矩阵</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int transposeSecondOrderMatrix(Matrix *m);</span><br></pre></td></tr></table></figure>
+
+<p>3.求二维矩阵的迹</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">double getSecondOrderMatrixTrace(Matrix *m);</span><br></pre></td></tr></table></figure>
+
+<p>4.交换二维矩阵的两行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int swapSecondOrderMatrixRow(Matrix *m, int row1,int row2);</span><br></pre></td></tr></table></figure>
+
+<p>5.交换二维矩阵的两列</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int swapSecondOrderMatrixColume(Matrix *m, int colume1,int colume2);</span><br></pre></td></tr></table></figure>
+
+<p>6.二维矩阵的指定一行加、减、乘、除一个系数k</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">int kAddSecondOrderMatrixRow(Matrix *m, int row,double k);</span><br><span class="line">int kSubSecondOrderMatrixRow(Matrix *m, int row,double k);</span><br><span class="line">int kMulSecondOrderMatrixRow(Matrix *m, int row,double k);</span><br><span class="line">int kDivSecondOrderMatrixRow(Matrix *m, int row,double k);</span><br></pre></td></tr></table></figure>
+
+<p>7.二维矩阵的指定一列加、减、乘、除一个系数k</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">int kAddSecondOrderMatrixColume(Matrix *m, int colume,double k);</span><br><span class="line">int kSubSecondOrderMatrixColume(Matrix *m, int colume,double k);</span><br><span class="line">int kMulSecondOrderMatrixColume(Matrix *m, int colume,double k);</span><br><span class="line">int kDivSecondOrderMatrixColume(Matrix *m, int colume,double k);</span><br></pre></td></tr></table></figure>
+
+<p>8.二维矩阵的指定两行元素一一对应相加减乘除:row1 &#x3D; row1 +-*&#x2F; row2</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">int addSecondOrderMatrixRows(Matrix *m, int row1,int row2);</span><br><span class="line">int subSecondOrderMatrixRows(Matrix *m, int row1,int row2);</span><br><span class="line">int mulSecondOrderMatrixRows(Matrix *m, int row1,int row2);</span><br><span class="line">int divSecondOrderMatrixRows(Matrix *m, int row1,int row2);</span><br></pre></td></tr></table></figure>
+
+<p>9.二维矩阵的指定两列元素一一对应相加减乘除:colume1 &#x3D; colume1 +-*&#x2F; colume2</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">int addSecondOrderMatrixColumes(Matrix *m, int colume1, int colume2);</span><br><span class="line">int subSecondOrderMatrixColumes(Matrix *m, int colume1, int colume2);</span><br><span class="line">int mulSecondOrderMatrixColumes(Matrix *m, int colume1, int colume2);</span><br><span class="line">int divSecondOrderMatrixColumes(Matrix *m, int colume1, int colume2);</span><br></pre></td></tr></table></figure>
+
+<p>10.删除二维矩阵的指定行数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int deleteSecondOrderMatrixRows(Matrix *m,int startRow,int endRow);</span><br></pre></td></tr></table></figure>
+
+<p>11.删除二维矩阵的指定列数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int deleteSecondOrderMatrixColumes(Matrix *m,int startColume,int endColume);</span><br></pre></td></tr></table></figure>
+
+<p>12.删除二维矩阵的指定一行和一列</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int deleteSecondOrderMatrixRowAndColume(Matrix *m,int row,int colume);</span><br></pre></td></tr></table></figure>
+
+<p>13.按行拼接两个矩阵，要求两个矩阵一行的元素数目要相等</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int spliceSecondOrderMatrixRow(Matrix *m1,Matrix *m2);</span><br></pre></td></tr></table></figure>
+
+<p>14.按列拼接两个矩阵，要求两个矩阵一列的元素数目要相等</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int spliceSecondOrderMatrixColume(Matrix *m1,Matrix *m2);</span><br></pre></td></tr></table></figure>
+
+<p>15.二维矩阵整体加、减、乘、除一个系数k</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">int kAddMatrix(Matrix *m,double k);</span><br><span class="line">int kSubMatrix(Matrix *m,double k);</span><br><span class="line">int kMulMatrix(Matrix *m,double k);</span><br><span class="line">int kDivMatrix(Matrix *m,double k);</span><br></pre></td></tr></table></figure>
+
+<p>16.两个矩阵相加，得到一个新的矩阵，要求两个矩阵的shape要一致</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *addSecondOrderMatrixs(Matrix *m1,Matrix *m2);</span><br></pre></td></tr></table></figure>
+
+<p>17.两个矩阵相减，得到一个新的矩阵，要求两个矩阵的shape要一致</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *subSecondOrderMatrixs(Matrix *m1,Matrix *m2);</span><br></pre></td></tr></table></figure>
+
+<p>18.两个矩阵求点乘，得到一个新的矩阵，要求两个矩阵的shape要一致</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *dotSecondOrderMatrixs(Matrix *m1,Matrix *m2);</span><br></pre></td></tr></table></figure>
+
+<p>19.两个矩阵求叉乘，m1为m X n矩阵，m2为n X p矩阵，乘积返回一个m X p矩阵</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *mulSecondOrderMatrixs(Matrix *m1,Matrix *m2);</span><br></pre></td></tr></table></figure>
+
+<h4 id="矩阵的高级操作"><a href="#矩阵的高级操作" class="headerlink" title="矩阵的高级操作"></a>矩阵的高级操作</h4><p>1.求一个二维方阵的行列式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int detSquareMatrixs(Matrix *m,double *result);</span><br></pre></td></tr></table></figure>
+
+<p>2.求二维方阵中指定元素的代数余子式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int getSquareMatrixElemAlgebraicComplement(Matrix *m,int row,int colume,double *result);</span><br></pre></td></tr></table></figure>
+
+<p>3.求二维方阵中指定一行元素的代数余子式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *getSquareMatrixRawAlgebraicComplement(Matrix *m,int row);</span><br></pre></td></tr></table></figure>
+
+<p>4.求二维方阵的伴随矩阵</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *getSquareMatrixAdjointMatrix(Matrix *m);</span><br></pre></td></tr></table></figure>
+
+<p>5.求解二维方阵的逆矩阵</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *invSquareMatrix(Matrix *m);</span><br></pre></td></tr></table></figure>
+
+<p>6.求二维矩阵的最简阶梯阵</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *getEchelonMatrix(Matrix *m);</span><br></pre></td></tr></table></figure>
+
+<p>7.求二维矩阵的秩</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int getSecondOrderMatrixRank(Matrix *m ,int *rank);</span><br></pre></td></tr></table></figure>
+
+<p>8.求齐次线性方程组AX&#x3D;0的解,结果为全0矩阵或基础解系构成的矩阵</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *solveHomoLinearEquations(Matrix *A);</span><br></pre></td></tr></table></figure>
+
+<p>9.求非齐次线性方程组AX&#x3D;B的解，返回NULL表示无解；一列矩阵表示唯一解；多列矩阵中，除了最后一列为特解，前面几列为基础解系</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Matrix *solveNonHomoLinearEquations(Matrix *A, Matrix *B);</span><br></pre></td></tr></table></figure>
+
+<p>10.求矩阵的无穷范数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">double getMatrixInfNorm(Matrix *m);</span><br></pre></td></tr></table></figure>
+
+<p>11.求矩阵的L0范数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">double getMatrixL0Norm(Matrix *m);</span><br></pre></td></tr></table></figure>
+
+<p>12.求矩阵的L1范数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">double getMatrixL1Norm(Matrix *m);</span><br></pre></td></tr></table></figure>
+
+<p>13.求矩阵的L2范数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">double getMatrixL2Norm(Matrix *m);</span><br></pre></td></tr></table></figure>
+
+<p>14.求矩阵的L21范数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">double getMatrixL21Norm(Matrix *m);</span><br></pre></td></tr></table></figure>
+
+<h4 id="To-do-list"><a href="#To-do-list" class="headerlink" title="To do list"></a>To do list</h4><p>1.求特征值与特征向量<br>2.奇异值分解(SVD)<br>3.QR分解<br>4.最小二乘解<br>5.矩阵的核范数</p>
+</div><div class="post-copyright"><script type="text/javascript" src="/js/copyright.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copyright.css?v=1.0.0"><p><span>本文标题：</span>C实现矩阵数据结构与计算</p><p><span>文章作者：</span>Mr Bluyee</p><p><span>发布时间：</span>2018-09-16</p><p><span>最后更新：</span>2019-07-15</p><p><span>原始链接：</span><a href="/2018/09/16/C实现矩阵数据结构与计算/">https://www.mrbluyee.com/2018/09/16/C%E5%AE%9E%E7%8E%B0%E7%9F%A9%E9%98%B5%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E8%AE%A1%E7%AE%97/</a><span class="copy-path"><i class="fa fa-clipboard" data-clipboard-text="https://www.mrbluyee.com/2018/09/16/C%E5%AE%9E%E7%8E%B0%E7%9F%A9%E9%98%B5%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E8%AE%A1%E7%AE%97/"></i></span></p><p><span>版权声明：</span>The author owns the copyright, please indicate the source reproduced.</p></div><br><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C/" rel="tag">C</a></li></ul></div><div class="post-nav"><a class="pre" href="/2018/09/18/%E5%AF%B9%E5%86%85%E5%AD%98%E7%9A%84%E6%80%9D%E8%80%83/">对内存的思考</a><a class="next" href="/2018/09/11/C%E8%AF%AD%E8%A8%80%E7%9A%84void%E7%B1%BB%E5%9E%8B/">C语言的void类型</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zOTYxNS8xNjE0Mg"><script>(function(d, s) {
+  var j, e = d.getElementsByTagName(s)[0];
+  if (typeof LivereTower === 'function') { return; }
+  j = d.createElement(s);
+  j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+  j.async = true;
+  e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1 pure-u-md-1-4"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"/><div id="local-search-result"></div></div></div><div class="widget"><div class="author-info"><a class="info-avatar" href="/about/" title="关于"><img class="nofancybox" src="/img/avatar.jpeg"/></a><p>Enjoy life / Hope for future</p><a class="info-icon" href="mr.bluyee@hotmail.com" title="mr.bluyee@hotmail.com" target="_blank" style="margin-inline:5px"> <i class="fa fa-envelope-square" style="margin-inline:5px"></i></a><a class="info-icon" href="https://github.com/MrBluyee" title="https://github.com/MrBluyee" target="_blank" style="margin-inline:5px"> <i class="fa fa-github-square" style="margin-inline:5px"></i></a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C-%E7%AE%97%E6%B3%95/">学习笔记——C 算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">学习笔记——C数据结构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94Python/">学习笔记——Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94android/">学习笔记——android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94expert-c-programming/">学习笔记——expert c programming</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94linux/">学习笔记——linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94opencv/">学习笔记——opencv</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BB%A3%E7%A0%81%E7%AE%A1%E7%90%86/">学习笔记——代码管理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BD%8E%E5%8A%9F%E8%80%97%E6%8A%80%E6%9C%AF/">学习笔记——低功耗技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/">学习笔记——嵌入式开发</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">学习笔记——机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%89%A9%E8%81%94%E7%BD%91/">学习笔记——物联网</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">学习笔记——网络协议</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">学习笔记——计算机系统</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" style="font-size: 15px;">计算机系统</a> <a href="/tags/android/" style="font-size: 15px;">android</a> <a href="/tags/C/" style="font-size: 15px;">C</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" style="font-size: 15px;">网络协议</a> <a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/" style="font-size: 15px;">嵌入式开发</a> <a href="/tags/opencv/" style="font-size: 15px;">opencv</a> <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" style="font-size: 15px;">机器学习</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/09/23/IPsec/">IPsec</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/21/%E6%95%B0%E7%9A%84%E7%B4%A0%E6%80%A7%E6%B5%8B%E8%AF%95/">数的素性测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/20/%E6%89%A9%E5%B1%95%E7%9A%84%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95/">扩展的欧几里得算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/17/%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95-%E6%B1%82%E6%9C%80%E5%A4%A7%E5%85%AC%E5%9B%A0%E6%95%B0/">欧几里得算法-求最大公因数</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/04/%E5%B8%B8%E7%94%A8%E8%B7%AF%E7%94%B1%E6%96%B9%E5%BC%8F/">常用路由方式</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/19/%E6%97%A0%E7%BA%BF%E4%BC%A0%E6%84%9F%E7%BD%91WSN%E6%A6%82%E8%BF%B0/">无线传感网WSN概述</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/18/%E6%97%A0%E7%BA%BF%E6%A8%A1%E5%9D%97%E4%BC%91%E7%9C%A0%E4%B8%8E%E6%BF%80%E6%B4%BB%E6%9C%BA%E5%88%B6/">无线模块休眠与激活机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E8%AE%BE%E8%AE%A1/">SOC的低功耗设计</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/03/%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97/">电源管理的低功耗</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/02/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E5%BA%94%E7%94%A8/">SOC的低功耗应用</a></li></ul></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2024 <a href="/." rel="nofollow">Mr Bluyee's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><link rel="stylesheet" type="text/css" href="/css/search.css?v=1.0.0"><script type="text/javascript" src="/js/search.js?v=1.0.0"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+  search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>

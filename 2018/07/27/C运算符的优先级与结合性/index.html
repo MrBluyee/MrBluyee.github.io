@@ -1,0 +1,508 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>C运算符的优先级与结合性 | Mr Bluyee's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?' + '3dbaf3043b34b1c894c4cd063629b6a9';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><meta name="generator" content="Hexo 7.1.1"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">C运算符的优先级与结合性</h1><a id="logo" href="/.">Mr Bluyee's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">C运算符的优先级与结合性</h1><div class="post-meta">2018-07-27<span> | </span><span class="category"><a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94expert-c-programming/">学习笔记——expert c programming</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 2.1k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-clock-o"></i><span class="post-count"> 7</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div></div></div><div class="post-content"><p>C语言运算符优先级与结合性:<br>同一优先级的运算符，运算次序由结合方向所决定。</p>
+<span id="more"></span>
+
+<table>
+<thead>
+<tr>
+<th>优先级</th>
+<th>运算符</th>
+<th>名称或含义</th>
+<th>使用形式</th>
+<th>结合方向</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td><strong>[]</strong></td>
+<td>数组下标</td>
+<td>数组名[常量表达式]</td>
+<td>左到右</td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>()</strong></td>
+<td>圆括号</td>
+<td>(表达式）&#x2F;函数名(形参表)</td>
+<td>左到右</td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>.</strong></td>
+<td>成员选择（对象）</td>
+<td>对象.成员名</td>
+<td>左到右</td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>-&gt;</strong></td>
+<td>成员选择（指针）</td>
+<td>对象指针-&gt;成员名</td>
+<td>左到右</td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>-</strong></td>
+<td>负号运算符</td>
+<td>-表达式</td>
+<td><strong>右到左</strong></td>
+<td>单目运算符</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>~</strong></td>
+<td>按位取反运算符</td>
+<td>~表达式</td>
+<td><strong>右到左</strong></td>
+<td>单目运算符</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>++</strong></td>
+<td>自增运算符</td>
+<td>++变量名&#x2F;变量名++</td>
+<td><strong>右到左</strong></td>
+<td>单目运算符</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>–</strong></td>
+<td>自减运算符</td>
+<td>–变量名&#x2F;变量名–</td>
+<td><strong>右到左</strong></td>
+<td>单目运算符</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>*</strong></td>
+<td>取值运算符</td>
+<td>*指针变量</td>
+<td><strong>右到左</strong></td>
+<td>单目运算符</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>&amp;</strong></td>
+<td>取地址运算符</td>
+<td>&amp;变量名</td>
+<td><strong>右到左</strong></td>
+<td>单目运算符</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>!</strong></td>
+<td>逻辑非运算符</td>
+<td>!表达式</td>
+<td><strong>右到左</strong></td>
+<td>单目运算符</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>(类型)</strong></td>
+<td>强制类型转换</td>
+<td>(数据类型)表达式</td>
+<td><strong>右到左</strong></td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>sizeof</strong></td>
+<td>长度运算符</td>
+<td>sizeof(表达式)</td>
+<td><strong>右到左</strong></td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>&#x2F;</strong></td>
+<td>除</td>
+<td>表达式&#x2F;表达式</td>
+<td>左到右</td>
+<td>双目运算符</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>*</strong></td>
+<td>乘</td>
+<td>表达式*表达式</td>
+<td>左到右</td>
+<td>双目运算符</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>%</strong></td>
+<td>余数（取模）</td>
+<td>整型表达式%整型表达式</td>
+<td>左到右</td>
+<td>双目运算符</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>+</strong></td>
+<td>加</td>
+<td>表达式+表达式</td>
+<td>左到右</td>
+<td>双目运算符</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>-</strong></td>
+<td>减</td>
+<td>表达式-表达式</td>
+<td>左到右</td>
+<td>双目运算符</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>&lt;&lt;</strong></td>
+<td>左移</td>
+<td>变量&lt;&lt;表达式</td>
+<td>左到右</td>
+<td>双目运算符</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>&gt;&gt;</strong></td>
+<td>右移</td>
+<td>变量&gt;&gt;表达式</td>
+<td>左到右</td>
+<td>双目运算符</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>&gt;</strong></td>
+<td>大于</td>
+<td>表达式&gt;表达式</td>
+<td>左到右</td>
+<td>双目运算符</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>&gt;&#x3D;</strong></td>
+<td>大于等于</td>
+<td>表达式&gt;&#x3D;表达式</td>
+<td>左到右</td>
+<td>双目运算符</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>&lt;</strong></td>
+<td>小于</td>
+<td>表达式&lt;表达式</td>
+<td>左到右</td>
+<td>双目运算符</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>&lt;&#x3D;</strong></td>
+<td>小于等于</td>
+<td>表达式&lt;&#x3D;表达式</td>
+<td>左到右</td>
+<td>双目运算符</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>&#x3D;&#x3D;</strong></td>
+<td>等于</td>
+<td>表达式&#x3D;&#x3D;表达式</td>
+<td>左到右</td>
+<td>双目运算符</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>!&#x3D;</strong></td>
+<td>不等于</td>
+<td>表达式!&#x3D; 表达式</td>
+<td>左到右</td>
+<td>双目运算符</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>&amp;</strong></td>
+<td>按位与</td>
+<td>表达式&amp;表达式</td>
+<td>左到右</td>
+<td>双目运算符</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>^</strong></td>
+<td>按位异或</td>
+<td>表达式^表达式</td>
+<td>左到右</td>
+<td>双目运算符</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>｜</strong></td>
+<td>按位或</td>
+<td>表达式｜表达式</td>
+<td>左到右</td>
+<td>双目运算符</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>&amp;&amp;</strong></td>
+<td>逻辑与</td>
+<td>表达式&amp;&amp;表达式</td>
+<td>左到右</td>
+<td>双目运算符</td>
+</tr>
+<tr>
+<td>12</td>
+<td><strong>｜｜</strong></td>
+<td>逻辑或</td>
+<td>表达式｜｜表达式</td>
+<td>左到右</td>
+<td>双目运算符</td>
+</tr>
+<tr>
+<td>13</td>
+<td><strong>?:</strong></td>
+<td>条件运算符</td>
+<td>表达式1?表达式2: 表达式3</td>
+<td><strong>右到左</strong></td>
+<td><strong>三目运算符</strong></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>14</td>
+<td><strong>&#x3D;</strong></td>
+<td>赋值运算符</td>
+<td>变量&#x3D;表达式</td>
+<td><strong>右到左</strong></td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>&#x2F;&#x3D;</strong></td>
+<td>除后赋值</td>
+<td>变量&#x2F;&#x3D;表达式</td>
+<td><strong>右到左</strong></td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>*&#x3D;</strong></td>
+<td>乘后赋值</td>
+<td>变量*&#x3D;表达式</td>
+<td><strong>右到左</strong></td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>%&#x3D;</strong></td>
+<td>取模后赋值</td>
+<td>变量%&#x3D;表达式</td>
+<td><strong>右到左</strong></td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>+&#x3D;</strong></td>
+<td>加后赋值</td>
+<td>变量+&#x3D;表达式</td>
+<td><strong>右到左</strong></td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>-&#x3D;</strong></td>
+<td>减后赋值</td>
+<td>变量-&#x3D;表达式</td>
+<td><strong>右到左</strong></td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>&lt;&lt;&#x3D;</strong></td>
+<td>左移后赋值</td>
+<td>变量&lt;&lt;&#x3D;表达式</td>
+<td><strong>右到左</strong></td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>&gt;&gt;&#x3D;</strong></td>
+<td>右移后赋值</td>
+<td>变量&gt;&gt;&#x3D;表达式</td>
+<td><strong>右到左</strong></td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>&amp;&#x3D;</strong></td>
+<td>按位与后赋值</td>
+<td>变量&amp;&#x3D;表达式</td>
+<td><strong>右到左</strong></td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>^&#x3D;</strong></td>
+<td>按位异或后赋值</td>
+<td>变量^&#x3D;表达式</td>
+<td><strong>右到左</strong></td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>｜&#x3D;</strong></td>
+<td>按位或后赋值</td>
+<td>变量｜&#x3D;表达式</td>
+<td><strong>右到左</strong></td>
+<td>–</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>15</td>
+<td><strong>,</strong></td>
+<td>逗号运算符</td>
+<td>表达式,表达式,…</td>
+<td>左到右</td>
+<td>–</td>
+</tr>
+</tbody></table>
+<p>c语言运算符优先级存在的问题(按照常规方式使用时，可能引起误会的运算符)：</p>
+<table>
+<thead>
+<tr>
+<th>优先级问题</th>
+<th>表达式</th>
+<th>可能误以为的结果</th>
+<th>实际结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>.的优先级高于*。-&gt;操作符用于消除这个问题</td>
+<td>*p.f</td>
+<td>p所指向的字段。 (*p).f</td>
+<td>对p取f偏移，作为指针，然后进行引用。 *(p.f)</td>
+</tr>
+<tr>
+<td>[]高于*</td>
+<td>int *ap[]</td>
+<td>ap是一个指向int数组的指针。 int (*ap)[]</td>
+<td>ap是个元素为int指针的数组。 int *(ap[])</td>
+</tr>
+<tr>
+<td>函数()高于*</td>
+<td>int *fp()</td>
+<td>fp是个函数指针，所指函数返回int。int(*fp)()</td>
+<td>fp是个函数，返回int*。int *(fp())</td>
+</tr>
+<tr>
+<td>&#x3D;&#x3D;和!&#x3D;高于位操作符</td>
+<td>(val &amp; mask !&#x3D; 0)</td>
+<td>(val &amp; mask) !&#x3D; 0</td>
+<td>val &amp; (mask !&#x3D;0)</td>
+</tr>
+<tr>
+<td>&#x3D;&#x3D;和!&#x3D;高于赋值符</td>
+<td>c &#x3D; getchar() !&#x3D; EOF</td>
+<td>(c &#x3D; getchar()) !&#x3D; EOF</td>
+<td>c&#x3D;(getchar() !&#x3D; EOF)</td>
+</tr>
+<tr>
+<td>算术运算高于移位运算</td>
+<td>msb &lt;&lt; 4 + lsb</td>
+<td>(msb &lt;&lt; 4) + lsb</td>
+<td>msb &lt;&lt; (4 + lsb)</td>
+</tr>
+<tr>
+<td>逗号运算符在所有运算符中优先级最低</td>
+<td>i &#x3D; 1,2</td>
+<td>i &#x3D; (1,2)</td>
+<td>(i &#x3D; 1),2</td>
+</tr>
+</tbody></table>
+<p>例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">i = 1,2</span><br></pre></td></tr></table></figure>
+<p>i的最终结果是什么？我们知道逗号运算符的值就是最右边操作数的值，但在这里，赋值符的优先级更高，所以实际情况应该是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(i = 1),2</span><br></pre></td></tr></table></figure>
+<p>i赋值为1，接着执行常量2的运算，计算结果丢弃。最终，i的结果是1而不是2。</p>
+<p>综上，在写代码时，表达式中如果有布尔操作、算术运算、位操作等混合运算，始终应在适当的地方加上括号，使之清楚明了。</p>
+<p>在优先级和结合性规则告诉你哪些符号组成一个意群的同时，这些意群内部如何进行计算的次序始终是未定义的。在下面的表达式里：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x = f() + g() * h();</span><br></pre></td></tr></table></figure>
+<p>g()和h()的返回值先组成一个意群，执行乘法运算，但g()和h()的调用可能以任何顺序出现，g()的调用不一定早于h()。类似，f()可能在乘法之前也可能在乘法之后调用，也可能在g()和h()之间调用。唯一可以确定的就是乘法会在加法之前执行(因为乘法的结果是加法运算的操作数之一)。如果编写程序时要依赖这些意群计算的先后顺序，那就是不好的编程风格。大部分编程语言并未明确规定操作数计算的顺序。之所以未作定义，是想让编译器充分利用自身架构的特点，或者充分利用存储于寄存器中的值。</p>
+<blockquote>
+<p>结合性是什么?它是仲裁者，在几个操作符具有相同的优先级时决定先执行哪一个。</p>
+</blockquote>
+<p>每一个操作符拥有某一级别的优先级，同时也拥有左结合性或者右结合性。优先级决定一个不含括号的表达式中操作数之间的“紧密程度”。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a * b + c </span><br></pre></td></tr></table></figure>
+<p>因为乘法运算符的优先级高于加法运算符的优先级，所以先执行乘法a * b，而不是加法b + c。<br>但是，许多操作符的优先级是相同的，这时，操作符的结合性就开始发挥作用了。在表达式中如果有几个优先级相同的操作符，结合性就起仲裁作用，由它决定哪个操作符先执行。<br>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int a,b =1 ,c =2;</span><br><span class="line">a = b = c;</span><br></pre></td></tr></table></figure>
+<p><strong>所有的赋值符（包括复合赋值符）都具有右结合性。</strong><br>就是说，表达式中最右边的操作最先执行，然后从右到左依次执行。这样，c先赋值给b，然后b再赋值给a，最终a的值就是2。类似的，具有左结合性的操作符（如位操作符 &amp; 和 | ）则是从左至右依次执行。</p>
+<p>结合性只用于表达式中出现两个以上相同优先级的操作符的情况，用于消除歧义。事实上，你会注意到所有优先级相同的操作符，它们的结合性也相同。这是必须如此的，否则结合性依然无法消除歧义。如果在计算表达式的值需要考虑结合性，那么最好把这个表达式一分为二或者使用括号。</p>
+<p>在C语言中，跟顺序有关的问题，有些定义的很好，如优先级和结合性，有些则定义的很含糊，如大部分表达式里各个操作数计算的顺序就是不确定的，它的目的是为了让编译器设计者选区最合适的方法来产生最快的代码。之所以说“大部分”，是因为某些操作符如&amp;&amp;和||等，其操作数的计算是规定顺序的。这两个操作符严格按照从左到右的顺序依次计算两个操作数，当结果提前得知时便忽略剩余的计算。但是，在函数调用中，各个参数的计算顺序是不确定的。</p>
+</div><div class="post-copyright"><script type="text/javascript" src="/js/copyright.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copyright.css?v=1.0.0"><p><span>本文标题：</span>C运算符的优先级与结合性</p><p><span>文章作者：</span>Mr Bluyee</p><p><span>发布时间：</span>2018-07-27</p><p><span>最后更新：</span>2019-07-15</p><p><span>原始链接：</span><a href="/2018/07/27/C运算符的优先级与结合性/">https://www.mrbluyee.com/2018/07/27/C%E8%BF%90%E7%AE%97%E7%AC%A6%E7%9A%84%E4%BC%98%E5%85%88%E7%BA%A7%E4%B8%8E%E7%BB%93%E5%90%88%E6%80%A7/</a><span class="copy-path"><i class="fa fa-clipboard" data-clipboard-text="https://www.mrbluyee.com/2018/07/27/C%E8%BF%90%E7%AE%97%E7%AC%A6%E7%9A%84%E4%BC%98%E5%85%88%E7%BA%A7%E4%B8%8E%E7%BB%93%E5%90%88%E6%80%A7/"></i></span></p><p><span>版权声明：</span>The author owns the copyright, please indicate the source reproduced.</p></div><br><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C/" rel="tag">C</a></li></ul></div><div class="post-nav"><a class="pre" href="/2018/07/28/C%E5%87%BD%E6%95%B0%E7%9A%84%E8%BF%94%E5%9B%9E%E5%80%BC/">C函数的返回值</a><a class="next" href="/2018/07/27/C%E8%AF%AD%E8%A8%80main%E5%87%BD%E6%95%B0%E7%9A%84%E5%8F%82%E6%95%B0/">C语言main函数的参数</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zOTYxNS8xNjE0Mg"><script>(function(d, s) {
+  var j, e = d.getElementsByTagName(s)[0];
+  if (typeof LivereTower === 'function') { return; }
+  j = d.createElement(s);
+  j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+  j.async = true;
+  e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1 pure-u-md-1-4"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"/><div id="local-search-result"></div></div></div><div class="widget"><div class="author-info"><a class="info-avatar" href="/about/" title="关于"><img class="nofancybox" src="/img/avatar.jpeg"/></a><p>Enjoy life / Hope for future</p><a class="info-icon" href="mr.bluyee@hotmail.com" title="mr.bluyee@hotmail.com" target="_blank" style="margin-inline:5px"> <i class="fa fa-envelope-square" style="margin-inline:5px"></i></a><a class="info-icon" href="https://github.com/MrBluyee" title="https://github.com/MrBluyee" target="_blank" style="margin-inline:5px"> <i class="fa fa-github-square" style="margin-inline:5px"></i></a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C-%E7%AE%97%E6%B3%95/">学习笔记——C 算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">学习笔记——C数据结构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94Python/">学习笔记——Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94android/">学习笔记——android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94expert-c-programming/">学习笔记——expert c programming</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94linux/">学习笔记——linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94opencv/">学习笔记——opencv</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BB%A3%E7%A0%81%E7%AE%A1%E7%90%86/">学习笔记——代码管理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BD%8E%E5%8A%9F%E8%80%97%E6%8A%80%E6%9C%AF/">学习笔记——低功耗技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/">学习笔记——嵌入式开发</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">学习笔记——机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%89%A9%E8%81%94%E7%BD%91/">学习笔记——物联网</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">学习笔记——网络协议</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">学习笔记——计算机系统</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" style="font-size: 15px;">计算机系统</a> <a href="/tags/android/" style="font-size: 15px;">android</a> <a href="/tags/C/" style="font-size: 15px;">C</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" style="font-size: 15px;">网络协议</a> <a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/" style="font-size: 15px;">嵌入式开发</a> <a href="/tags/opencv/" style="font-size: 15px;">opencv</a> <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" style="font-size: 15px;">机器学习</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/09/23/IPsec/">IPsec</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/21/%E6%95%B0%E7%9A%84%E7%B4%A0%E6%80%A7%E6%B5%8B%E8%AF%95/">数的素性测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/20/%E6%89%A9%E5%B1%95%E7%9A%84%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95/">扩展的欧几里得算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/17/%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95-%E6%B1%82%E6%9C%80%E5%A4%A7%E5%85%AC%E5%9B%A0%E6%95%B0/">欧几里得算法-求最大公因数</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/04/%E5%B8%B8%E7%94%A8%E8%B7%AF%E7%94%B1%E6%96%B9%E5%BC%8F/">常用路由方式</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/19/%E6%97%A0%E7%BA%BF%E4%BC%A0%E6%84%9F%E7%BD%91WSN%E6%A6%82%E8%BF%B0/">无线传感网WSN概述</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/18/%E6%97%A0%E7%BA%BF%E6%A8%A1%E5%9D%97%E4%BC%91%E7%9C%A0%E4%B8%8E%E6%BF%80%E6%B4%BB%E6%9C%BA%E5%88%B6/">无线模块休眠与激活机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E8%AE%BE%E8%AE%A1/">SOC的低功耗设计</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/03/%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97/">电源管理的低功耗</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/02/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E5%BA%94%E7%94%A8/">SOC的低功耗应用</a></li></ul></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2024 <a href="/." rel="nofollow">Mr Bluyee's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><link rel="stylesheet" type="text/css" href="/css/search.css?v=1.0.0"><script type="text/javascript" src="/js/search.js?v=1.0.0"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+  search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>

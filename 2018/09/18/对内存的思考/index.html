@@ -1,0 +1,153 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>对内存的思考 | Mr Bluyee's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?' + '3dbaf3043b34b1c894c4cd063629b6a9';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><meta name="generator" content="Hexo 7.1.1"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">对内存的思考</h1><a id="logo" href="/.">Mr Bluyee's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">对内存的思考</h1><div class="post-meta">2018-09-18<span> | </span><span class="category"><a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94expert-c-programming/">学习笔记——expert c programming</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 8k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-clock-o"></i><span class="post-count"> 27</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E7%9A%84%E5%8E%86%E5%8F%B2"><span class="toc-number">1.</span> <span class="toc-text">内存的历史</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#intel-80x86%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%BB%A5%E5%8F%8A%E5%AE%83%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">intel 80x86内存模型以及它的工作原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98"><span class="toc-number">3.</span> <span class="toc-text">虚拟内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cache%E5%AD%98%E5%82%A8%E5%99%A8"><span class="toc-number">4.</span> <span class="toc-text">Cache存储器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%AE%B5%E5%92%8C%E5%A0%86"><span class="toc-number">5.</span> <span class="toc-text">数据段和堆</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="toc-number">6.</span> <span class="toc-text">内存泄漏</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%81%BF%E5%85%8D%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="toc-number">7.</span> <span class="toc-text">避免内存泄漏</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E6%A3%80%E6%B5%8B%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="toc-number">8.</span> <span class="toc-text">如何检测内存泄漏</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BA%BF%E9%94%99%E8%AF%AF%E4%B8%8E%E6%AE%B5%E9%94%99%E8%AF%AF"><span class="toc-number">9.</span> <span class="toc-text">总线错误与段错误</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BA%BF%E9%94%99%E8%AF%AF"><span class="toc-number">9.1.</span> <span class="toc-text">总线错误</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AE%B5%E9%94%99%E8%AF%AF"><span class="toc-number">9.2.</span> <span class="toc-text">段错误</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E5%86%85%E5%AD%98%E8%A7%84%E5%88%99%E6%80%BB%E7%BB%93"><span class="toc-number">10.</span> <span class="toc-text">虚拟内存规则总结</span></a></li></ol></div></div><div class="post-content"><h3 id="内存的历史"><a href="#内存的历史" class="headerlink" title="内存的历史"></a>内存的历史</h3><p>现代的intel处理器可以追溯到最早期的intel芯片。<br>1.8085处理器充分利用了芯片整合技术，它将三块芯片组合成一块。在本质上，它是把8080处理器、8224时钟驱动器和8228控制器整合到一块芯片上。虽然它内部的数据总线宽度仍然是8位，但它使用了16位的地址总线，所以能够访问2^16也就是64KB的内存。</p>
+<p>2.8086处理器于1978年诞生，它对8085作了改进，允许16位的数据总线和20位的地址总线，可以访问多大1MB的内存。它通过重叠两个16位的字来形成20位的地址，而不是通过简单的链接两个字来形成32位的地址。第一个16位值称为偏移量，第二个16位字经过移位后称为段，8086芯片有4个段寄存器，用于存储段地址的值，并能自动进入移位和加法操作来产生20位的地址。8086有代码寄存器CS，数据寄存器DS和堆栈寄存器SS，分别存放代码段、数据段和堆栈段的首地址，另外还有一个附加段ES。</p>
+<p>3.80826差不多就是80186，只是内置了一些微不足道的外设端口支持，但它第一次试图扩展内存地址空间。它把内存控制器移到处理器芯片的外面，并提供了一种内存模式，称为虚拟模式（virtual mode）。在虚拟模式中，段寄存器并不与偏移地址相加，而是为一个存放实际段地址的表提供索引。这种地址模式也被称作保护模式（protected mode），它依然是16位的。</p>
+<p>4.80386在80286的基础上增加了两种新的地址模式：32位的保护模式和虚拟的8086模式。Microsoft的windows NT操作系统以及增强模式下的windows都采用了32位的保护模式。这就是为什么windos NT至少需要386才能运行的原因。另一种内存模式，虚拟8086模式，可以创建一种内存空间为1MB的8086虚拟机,几个虚拟机可以同时运行，从而支持MS-DOS的虚拟多任务系统。</p>
+<p>5.80486是一种经过重新包装的80386，它的速度更快一些，因为总线缺乏允许安装协处理器的状态。486适当的增加了一些指令，并在处理器内部集成了cache（高速的处理器内存）。</p>
+<h3 id="intel-80x86内存模型以及它的工作原理"><a href="#intel-80x86内存模型以及它的工作原理" class="headerlink" title="intel 80x86内存模型以及它的工作原理"></a>intel 80x86内存模型以及它的工作原理</h3><p>段（segment）这个术语至少有两种不同的含义：<br>在UNIX中，段就是一块以二进制形式出现的相关内容。<br>在intel 80x86内存模型中，段是内存模型设计的结果，在80x86内存模型中，各处理器的地址空间并不一致，但它们都被分割成以64K为单位的区域，每个这样的区域便称为段。</p>
+<p>作为80x86内存模型最基本的形式，8086中的段是一块64k的内存区域，由一个段寄存器所指向。内存地址的形成过程是：取得段寄存器得值，左移4位，然后就是16位得偏移地址，它表示段内得地址。如果把段寄存器的值（经过移位）加上偏移地址，就得到最终的地址。这就意味着许多不同的段地址&#x2F;偏移地址组合可能指向同一个内存地址。</p>
+<p>今天，计算机系统结构的真正挑战不在于内存的容量，而是内存的速度。在巨型地址空间的机器中，主存访问时间的重要性将进一步凸现。当访问海量数据时，它所耗费的内存访问时间将左右软件的性能。</p>
+<h3 id="虚拟内存"><a href="#虚拟内存" class="headerlink" title="虚拟内存"></a>虚拟内存</h3><p>很早的时候，在计算机领域中人们就提出了虚拟内存的概念。它的基本思路是利用廉价但缓慢的磁盘来扩充内存。在任一给定时刻，程序实际需要使用的虚拟内存区段的内容就被载入物理内存中。当物理内存中的数据有一段时间未被使用，它们就可能被转移到硬盘中，节省下来的物理内存空间用于载入需要使用的其他数据。</p>
+<p>在计算机领域的早期，把未使用的部分数据从内存转移到磁盘的任务是由程序员手工完成的。程序员必须花费极大的精力追踪任一时刻哪些数据是在物理内存中，并根据需要在段之间来回切换。这种方法实在是太过时了，它对于当代的程序员而言根本不具备可操作性。</p>
+<p>多层存储是一个类似的概念，我们可以在一台计算机中到处看到它的存在（如寄存器 vs 主存）。从理论上说，内存的每个位置都可以用寄存器来代替，但在实际上，这样做的成本将是不切实际的昂贵，所以必须牺牲一些访问速度来大幅降低存储系统的实现成本。虚拟内存只是对多层存储进行扩充，使用磁盘而不是主存来保存运行进程的映像，所以说它们实际上是同一种策略。</p>
+<p>SunOS中的进程执行于32位地址空间。操作系统负责具体细节，使每个进程都以为自己拥有整个地址空间的独家访问权。这个幻觉是通过虚拟内存实现的，所有进程共享机器的物理内存，当内存用完时就用磁盘保存数据。在进程运行时，数据在磁盘和内存之间来回移动。内存管理硬件负责把虚拟地址翻译为物理地址，并让一个进程始终运行于系统的真正内存中。应用程序程序员只看到虚拟地址，并不知道自己的进程在磁盘和内存之间来回切换，除非他们观察运行时间或者查看诸如ps之类的系统指令。</p>
+<p>虚拟内存通过“页”的形式组织。页就是操作系统在磁盘和内存之间移来移去或进行保护的单位，一般为几K字节。可以通过键入&#x2F;usr&#x2F;ucb&#x2F;pagesize来观察系统中的页面大小。当内存的映像在磁盘和物理内存间来回移动时，称它们是page in（移入内存）或page out（移到磁盘）。</p>
+<p>从潜在的可能性上说，与进程有关的所有内存都将被系统所使用。如果该进程可能不会马上运行（可能它的优先级低，也可能是它处于睡眠状态），操作系统可以暂时取回所有分配给它的物理内存资源，将该进程的所有相关信息都备份到磁盘上。这样，这个进程就被“换出”。在磁盘中有一个特殊的交换区，用于保存从内存中被换出的进程。在一台机器中，交换区的大小一般是物理内存的几倍。只有用户进程才会被换进换出，SunOS内核常驻于内存中。</p>
+<p>进程只能操作位于物理内存中的页。当进程引用一个不在物理内存中的页面时，MMU就会产生一个页错误。内核对此事件做出响应，并判断该引用是否有效。如果无效，内核向进程发出一个“segmentation violation（段违规）”的信号。如果有效，内核从磁盘取回该页，换入到内存中。一旦页进入内存，进程便被解锁，可以重新运行——进程本身并不知道它曾经因为页换入事件等待了一会。</p>
+<p>SunOS对于磁盘的文件系统和主存有一种统一的观点。操作系统使用相同的底层数据结构(vnode<br>,或称虚拟结点)来操纵这两者。所有的虚拟内存操作都出于同样的设计哲学，就是把文件区域映射到内存区域中。这可以提高性能，并允许可观的代码复用。你可能听说过“hat layer（帽子层）“——就是驱动MMU的”硬件地址翻译“软件。它极度依赖硬件，每出现一个新的计算机架构，它都必须重新改写。</p>
+<p>虚拟内存现在已成为一项操作系统中不可或缺的技术，它允许多个进程运行于较小的物理内存中。</p>
+<h3 id="Cache存储器"><a href="#Cache存储器" class="headerlink" title="Cache存储器"></a>Cache存储器</h3><p>Cache存储器是多层存储概念的更深扩展。它的特点是容量小、价格高、速度快。Cache位于CPU和内存之间，是一种极快的存储缓冲区。从内存管理单元(MMU)的角度看，有些机器的Cache是属于CPU一侧的。在这种情况下，Cache使用的是虚拟地址，在每次进程切换时，它的内容必须进行刷新。也有一些机器的Cache从MMU的角度看是属于物理内存一侧的。在这种情况下，Cache使用的是物理地址，这就容易使多处理器CPU共享同一个Cache。</p>
+<p>所有的现代处理器都使用了Cache存储器。当数据从内存读入时，整行（一般16或者32个字节）的数据被装入Cache。如果程序具有良好的地址引用局部性（如：它顺序浏览一个字符串），那么CPU以后对邻近数据的引用就可以从快速的Cache读取，而不用从缓慢的内存中读取。Cache操作的速度与系统的周期时间相同。与常规的内存相比，Cache要贵的多，所以在系统中我们把它作为存储系统的附加部分，而不是把它作为唯一的存储形式。</p>
+<p>Cache包含一个地址的列表以及它们的内容。随着处理器不断引用新的存储地址，Cache的地址列表也一直处于变化中。所有对内存的读取和写入操作都要经过Cache。当处理器需要从一个特定的地址提取数据时，这个请求首先递交给Cache。如果数据已经存在于Cache中，它就可以立即被提取，否则，Cache向内存传递这个请求，于是就要进行缓慢的访问内存操作。内存读取的数据以行为单位，在读取的同时也装入到Cache中。</p>
+<p>如果你的程序的行为颇为怪异，以致每次都无法命中Cache，那么，程序的性能比不采用Cache还要差。因为每次判断Cache是否命中的额外逻辑需要时间。</p>
+<p>Sun使用两种类型的Cache：</p>
+<ul>
+<li>全写法(write-through)Cache——每次写入Cache时总是同时写入到内存中，使内存和Cache始终保持一致。</li>
+<li>写回法(write-back)Cache——当第一次写入时，只对Cache进行写入。如果已经写入过的Cache行再次需要写入时，此时第一次写入的结果尚未保存，所以要先把它写入到内存中。当内核切换进程时，Cache中的所有数据也都要先写入到内存中。</li>
+</ul>
+<p>在两种情况下，一旦对Cache的访问结束，指令流都将继续执行，不用等待缓慢的内存操作全部完成。</p>
+<p>如果处理器使用内存映射（memory-mapped）的I&#x2F;O,可能会出现提供I&#x2F;O总线使用的Cache。而且现在经常出现分离的指令Cache和数据Cache。事实上还可能出现多层的Cache，而且Cache可以出现在任何存在快速&#x2F;慢速设备的接口上（如磁盘和内存）。PC经常使用由主存构成的Cache来提高速度较慢的磁盘的存取速度。在UNIX中，内存就是磁盘的Cache，因此切断机器电源前如果不使用sync命令把Cache(内存)的内容刷新到磁盘中，文件系统就有可能损坏。</p>
+<p>对于编写应用程序的程序员而言，Cache和虚拟内存都是透明的，但知道它们所提供的好处以及它们可以影响系统性能的行为是非常重要的。</p>
+<p>Cache的组成：</p>
+<table>
+<thead>
+<tr>
+<th>术语</th>
+<th>定义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>行(line)</strong></td>
+<td>行就是对Cache进行访问的单位。每行由两部分组成：一个数据部分以及一个标签，用于指定它所代表的地址。</td>
+</tr>
+<tr>
+<td><strong>块(block)</strong></td>
+<td>一个Cache行内的数据被称作块。块保存来回移动于Cache行和内存之间的字节数据，一个典型的块为32字节。</td>
+</tr>
+<tr>
+<td></td>
+<td>一个Cache行的内容代表特定的内存块，如果处理器试图访问属于该块地址范围的内存，它就会作出反应，速度自然要比访问内存快的多。</td>
+</tr>
+<tr>
+<td></td>
+<td>在计算机行业中，对大多数人而言，”块“和”行“的概念分的并不特别清，两者常常可以交换使用。</td>
+</tr>
+<tr>
+<td><strong>Cache</strong></td>
+<td>一个Cache（一般为64K到1M之间，也可能更多）由许多行组成。有时也使用相关的硬件来加速对标签的访问。为了提高速度，Cache的位置离Cache很近，而且内存系统和总线经过高度优化，尽可能的提高大小等于Cache块的数据块的移动速度。</td>
+</tr>
+</tbody></table>
+<h3 id="数据段和堆"><a href="#数据段和堆" class="headerlink" title="数据段和堆"></a>数据段和堆</h3><p>我们已经讨论了跟系统相关的内存话题的背景信息，现在是重新访问每个进程内部的内存布局的时候了。</p>
+<p>就像堆栈段能够根据需要自动增长一样，数据段也包含了一个对象，用于完成这项工作，这就是堆（heap）。堆的结构如下图所示：<br><img src="https://upload-images.jianshu.io/upload_images/9169686-f76d2c8ab60539ce.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="堆的位置"><br>堆区域用于动态分配的存储，也就是通过malloc（内存分配）函数获得的内存，并通过指针访问。堆中的所有东西都是匿名的——不能按名字直接访问，只能通过指针间接访问。从堆中获取内存的唯一办法就是通过调用malloc（以及同类的calloc、realloc等）库函数。calloc函数与malloc类似，但它在返回指针之前先把分配好的内存的内容都清空为0，不要以为calloc函数中的c跟C语言编程有关——它的意思是”分配清零后的内存“。realloc函数改变一个指针所指向的内存块的大小，既可以将其扩大，也可以把它缩小，它经常把内存拷贝到别的地方然后将指向新地址的指针返回给你，这在动态增长表的大小时很有用。</p>
+<p>堆内存的回收不必与它所分配的顺序一致（它甚至可以不回收），所以无序的malloc&#x2F;free最终会产生堆碎片。堆对它的每块区域都需要密切留心，哪些是已经分配了的，哪些是尚未分配的。其中一种策略就是建立一个可用块（”自由存储区“）的链表，每块由malloc分配的内存块都在自己的前面标明自己的大小。有些人用arena这个术语描述由内存分配器（memory allocator）管理的内存块的集合（在SunOS中，就是从当前break的位置到数据段结尾之间的区域）。</p>
+<p>被分配的内存总是经过对齐，以适合机器上最大尺寸的原子访问，一个malloc请求申请的内存大小为方便起见一般被规整为2的乘方。回收的内存可供重新使用，但并没有（方便的）办法把它从你的进程移出交还给操作系统。</p>
+<p>堆的末端由一个称为break的指针来标识，当堆管理器需要更多内存时，它可以通过系统调用brk和sbrk来移动break指针。一般情况下，不必由自己显示的调用brk，如果分配的内存容量很大，brk最终会被自动调用。</p>
+<p>用于管理内存的调用是：</p>
+<ul>
+<li>malloc和free——从堆中获得内存以及把内存返回给堆。</li>
+<li>brk和sbrk——调整数据段的大小至一个绝对值（通过某个增量）。</li>
+</ul>
+<p>警告：你的程序可能无法同时调用malloc()和brk()。如果你使用malloc，malloc希望当你调用brk和sbrk时，它具有唯一的控制权。由于sbrk向进程提供了唯一的方法将数据段内存返回给系统内核，所以如果使用了malloc，就有效的防止了程序的数据段缩小的可能性。要想获得以后能够返回给系统内核的内存，可以使用mmap系统调用来映射&#x2F;dev&#x2F;zero文件。需要返回这种内存时，可以使用munmap系统调用。</p>
+<h3 id="内存泄漏"><a href="#内存泄漏" class="headerlink" title="内存泄漏"></a>内存泄漏</h3><p>由于C语言通常并不使用垃圾收集器（自动确认并回收不再使用的内存块），在使用malloc()和free()时不得不非常慎重。堆经常会出现两种类型的问题：</p>
+<ul>
+<li>释放或改写仍在使用的内存（称为”内存损坏“）。</li>
+<li>未释放不再使用的内存（称为”内存泄漏“）。</li>
+</ul>
+<p>这是最难被调试发现的问题之一。如果每次已分配的内存块不再使用而程序员并不释放它们，进程就会一边分配越来越多的内存，一边却并不释放不再使用的那部分内存。我们使用”内存泄漏”这个词是因为一种稀有的资源正被一个进程榨干。内存泄漏的主要可见症状就是罪魁进程的速度会减慢。原因是体积大的进程更有可能被系统换出，让别的进程运行，而且大的进程在换进换出时花费的时间也更多。</p>
+<p>即使（从定义上说）泄漏的内存本身并不被引用，但它仍可能存在于页中（内容自然是垃圾），这样就增加了进程的工作页数量，降低了性能。另外需要注意的一点是，泄漏的内存往往比忘记释放的数据结构要大，在资源有限的情况下，即使引起内存泄漏的进程并不运行，整个系统的运行速度也会被拖慢。</p>
+<h3 id="避免内存泄漏"><a href="#避免内存泄漏" class="headerlink" title="避免内存泄漏"></a>避免内存泄漏</h3><p>每次当调用malloc分配内存时，注意在以后要调用相应的free来释放它。</p>
+<p>如果不知道如何调用free与先前的malloc相对应，那么很可能已经造成了内存泄漏。</p>
+<p>一种简单的方法就是在可能的时候使用alloca()来分配动态内存，以避免上述情况。当离开调用alloca的函数时，它所分配的内存会被自动释放。显然，这并不适用于那些比创建它们的函数生命期更长的结构。但如果对象的生命期在该函数结束前便已终止，这种建立在堆栈上的动态内存分配是一种开销很小的选择。有些人不提倡使用alloca，因为它并不是一种可移植的方法。如果处理器在硬件上不支持堆栈，alloca()就很难高效的实现。</p>
+<h3 id="如何检测内存泄漏"><a href="#如何检测内存泄漏" class="headerlink" title="如何检测内存泄漏"></a>如何检测内存泄漏</h3><p>观察内存泄漏是一个两步骤的过程。<br>首先，使用free命令观察还有多少可用的交换空间：<br><img src="https://upload-images.jianshu.io/upload_images/9169686-0d472a015dfb8f16.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="可用的交换空间"><br>在一两分钟内键入该命令三到四次，看看可用的交换区是否在减少。还可以使用其他一些&#x2F;usr&#x2F;bin&#x2F;*stat工具如netstat、vmstat等。如果发现不断有内存被分配且从不释放，一个可能的解释就是有个进程出现了内存泄漏。</p>
+<p>操作系统同时动态管理它的内存使用。内核中的许多数据表是动态分配的，所以预先没有固定的限制。如果一个内核程序错误引起内存泄漏，机器的速度便会慢下来，有时机器干脆挂起或甚至不知所措。如果出现内存泄漏，最终可能导致可以分配的内存无法满足内核的需要，结果每个内核程序都无限制的等待——于是机器便被挂起。内核中的内存泄漏往往很快便被发现，因为绝大多数内核程序的使用都相当频繁。</p>
+<h3 id="总线错误与段错误"><a href="#总线错误与段错误" class="headerlink" title="总线错误与段错误"></a>总线错误与段错误</h3><p>在UNIX上编程时，两个常见的运行时错误：<br>bus error(core dumped) 总线错误（信息已转储）<br>segmentation fault(core dumped) 段错误（信息已转储）<br>错误信息对引起这两种错误的源代码错误并没有作简单的解释，上面的信息并未提供如何从代码中寻找错误的线索，而且两者之间的区别也并不是十分清楚。</p>
+<p>大多数的问题都是出于这样一个事实：错误就是操作系统所检测到的异常，而这个异常是尽可能的以操作系统方便的原则来报告的。总线错误和段错误的准确原因在不同的操作系统版本上各不相同。这里，描述的是运行于SPARC架构的SunOS出现的这两类错误以及产生错误的原因：</p>
+<p>当硬件告诉操作系统一个有问题的内存引用时，就会出现这两种错误。操作系统通过向出错的进程发送一个信号与之交流。信号就是一种事件通知或一个软件中断，在UNIX系统编程中使用很广。在缺省情况下，进程在收到“总线错误”或“段错误”信号后将进行信息转储并终止。不过可以为这些信号设置一个信号处理程序（signal handler），用于修改进程的缺省反应。</p>
+<h4 id="总线错误"><a href="#总线错误" class="headerlink" title="总线错误"></a>总线错误</h4><p>事实上，总线错误几乎都是由于<strong>未对齐的读或写</strong>引起的。它之所以称为总线错误，是因为出现未对齐的内存访问请求时，被堵塞的组件就是地址总线。对齐（alignment）的意思就是数据项只能存储在地址是数据项大小的整数倍的内存位置上。在现代的计算机架构中，尤其是RISC架构，都需要数据对齐，因为与任意的对齐有关的额外逻辑会使整个内存系统更大且更慢。通过迫使每个内存访问局限在一个Cache行或一个单独的页面内，可以极大的简化（并加速）如Cache控制器和内存管理单元这样的硬件。</p>
+<p>我们表达“数据项不能跨越页面或Cache边界”规则的方法多少有些间接，因为我们用地址对齐这个术语来称述这个问题，而不是直截了当说是禁止内存跨页访问，但它们说的是同一回事。例如，访问一个8字节的double数据时，地址只允许是8的整数倍。所以一个double数据可以存储于地址24、8008或32768，但不能存储于地址1006（因为它无法被8整除）。页和Cache的大小是经过精心设计的，这样只要遵守对齐规则就可以保证一个原子数据项不会跨越一个页或Cache块的边界。<br>一个会引起总线错误的代码是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">union &#123;</span><br><span class="line">    char a[10];</span><br><span class="line">    int i;</span><br><span class="line">&#125;u;</span><br><span class="line"></span><br><span class="line">int *p = (int *)&amp;(u.a[1]);</span><br><span class="line">*p = 17; </span><br></pre></td></tr></table></figure>
+<p>因为数组和int的联合确保数组a是按照int的4字节对齐的，所以“a+1”的地址肯定未按int对齐。然后我们试图往这个地址存储4个字节的数据，但这个访问只是按照单字节的char对齐，这就违反了规则。一个好的编译器发现不对齐的情况时会发出警告，但它并不能检测到所有不对齐的情况。</p>
+<h4 id="段错误"><a href="#段错误" class="headerlink" title="段错误"></a>段错误</h4><p>段错误或段违规(segmentation violation)应该已经很清楚，因为前面对段模型已经作了解释。在Sun的硬件中，段错误是由于内存管理单元（负责支持虚拟内存的硬件）的异常所致，而该异常则通常是由于解除引用一个未初始化或非法值得指针引起的。如果指针引用一个并不位于你的地址空间中的地址，操作系统便会对此进行干涉。</p>
+<p>一个会引起段错误的代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int *p = 0;</span><br><span class="line">*p = 17;</span><br></pre></td></tr></table></figure>
+<p>一个微妙之处是，导致指针具有非法的值通常是由于不同的编程错误所引起的。和总线错误不同，段错误更像是一个间接的症状而不是引起错误的原因。</p>
+<p>一个更糟糕的微妙之处是，如果未初始化的指针恰好具有未对齐的值（对于指针所要访问的数据而言），它将会产生总线错误，而不是段错误。对于绝大多数架构的计算机而言确实如此，因为CPU先看到地址，然后再把它发送给MMU。</p>
+<p>在你的代码中，对非法指针值得解引用操作可能会像上面这样显式得的出现，也可能在库函数中出现（传递给它一个非法值）。令人不快的是，你的程序如果进行了修改（如在调试状态下编译或增加额外的调试语句），内存的内容便很容易改变，于是这个问题被转移到别处或干脆消失。段错误是非常难于解决的，而且只有非常顽固的段错误才会一直存在。</p>
+<p>通常导致段错误的几个直接原因：</p>
+<ul>
+<li>解除引用一个包含非法值的指针。</li>
+<li>解除引用一个空指针（常常由于从系统程序中返回空指针，并未检查就使用）。</li>
+<li>在未得到正确的权限时进行访问。例如，试图往一个只读的文本段存储值就会引起段错误。</li>
+<li>用完了堆栈或堆空间（虚拟内存虽然巨大但绝非无限）。</li>
+</ul>
+<p>下面这个说法可能过于简单，但在绝大多数架构的绝大多数情况下，<strong>总线错误意味着CPU对进程引用内存的一些做法不满，而段错误则是MMU对进程引用内存的一些情况发出抱怨。</strong></p>
+<p>以发生频率为序，最终可能导致段错误的常见编程错误是：</p>
+<ul>
+<li><strong>指针值错误：</strong> 在指针初始化之前就用它来引用内存（野指针），或者向库函数传送一个野指针（如果调试器显式系统程序中出现了段错误，并不是因为系统程序引起了段错误，问题很可能还存在于自己的代码中）；对指针进行释放之后再访问它的内容（空悬指针）(可以在free语句后再将指针置为空值)。</li>
+<li><strong>改写(overwrite)错误：</strong> 越过数组边界写入数据，在动态分配的内存两端之外写入数据，或改写一些堆管理数据结构（在动态分配的内存之前的区域写入数据就很容易发生这种情况）。</li>
+<li><strong>指针释放引起的错误：</strong> 释放同一个内存块两次，或释放一块未曾使用malloc分配的内存，或释放仍在使用中的内存，或释放一个无效的指针。一个极为常见的与释放内存有关的错误就是在for(p&#x3D;start;p;p&#x3D;p-&gt;next)这样的循环中迭代一个链表，并在循环体内使用free(p)语句。这样，在下一次循环迭代时，程序就会对已经释放的指针进行解除引用操作，从而导致不可预料的结果。</li>
+</ul>
+<p>当程序出现坏指针值时（野指针、空悬指针），什么样的结果都有可能发生。一种广被接受的说法是，如果你走运，指针将指向你的地址空间之外，这样第一次使用该指针时就会使程序进行信息转储后终止。如果你不走运，指针将指向你的地址空间之内，并损坏（改写）它所指向的内存的任何信息。这将引起隐晦的BUG，非常难以捕捉。</p>
+<h3 id="虚拟内存规则总结"><a href="#虚拟内存规则总结" class="headerlink" title="虚拟内存规则总结"></a>虚拟内存规则总结</h3><p>规则：</p>
+<ul>
+<li>1.每个进程拥有很多的<strong>字节</strong>。</li>
+<li>2.字节存放于<strong>页</strong>中，每页4096个字节。位于同一页上的字节具有<strong>本地引用</strong>关系。</li>
+<li>3.页可以存放在内存中，也可以存放在磁盘中。内存一般不够大，无法容纳所有的页。</li>
+<li>4.总共只有一块内存，但可以有几个磁盘，所有进程共享内存和磁盘。</li>
+<li>5.每个字节都有自己的<strong>虚拟地址</strong>。</li>
+<li>6.进程可以对一个字节进行<strong>引用操作</strong>。每个进程轮流进行引用操作。</li>
+<li>7.每个进程只能引用自己的字节，不能引用其它进程的字节。</li>
+<li>8.字节只有当它们位于内存中时才能被引用。</li>
+<li>9.只有<strong>虚拟内存管理器</strong>知道某个字节位于内存还是位于磁盘。</li>
+<li>10.一个字节不被引用的时间越长，它就被称为越“旧”。</li>
+<li>11.进程必须通过虚拟内存管理器得到字节。它所给的字节数量是2的倍数或乘方数，这有助于减少开销。</li>
+<li>12.进程引用字节的方法就是给出它的虚拟地址。如果进程所给出的虚拟地址恰好位于内存中，那么进程就可以立即引用它。如果它位于磁盘中，虚拟内存管理器会把包含该字节的页移入到内存中。如果内存空间已满，它就寻找内存中最旧的页（可能是该进程自己的，也可能是其他进程的），把它换到磁盘中，腾出来的空间就存放包含你需要字节的页。然后，进程就可以引用该字节，但进程并不知道该页原先位于磁盘中。</li>
+<li>13.每个进程拥有的字节的虚拟地址与其他进程一样。虚拟内存管理器始终知道谁拥有哪个字节以及该轮到谁进行引用操作，所以一个进程不会无意引用其他进程的字节，即使两者的虚拟地址相同。</li>
+</ul>
+<p> 说明：</p>
+<ul>
+<li>1.根据传统，虚拟内存管理器使用一张很大且分段的表，另外还有<strong>页表</strong>用于记住所有字节的位置以及它们的主人。</li>
+<li>2.规则13的一个结果就是各次运行中每位进程的虚拟地址都类似，即使进程的数量有所变化。</li>
+<li>3.虚拟内存管理器也拥有自己的一些字节，它们中的有些也和一般进程的字节一样在内存和磁盘中移来移去。但是，它的有些字节使用频率非常之高，所以常驻内存。</li>
+<li>4.按照上述规则，经常被引用的字节更有可能被存放在内存中，而不太被引用的字节则更可能被存放在磁盘中，这可以提高内存的使用效率。</li>
+</ul>
+</div><div class="post-copyright"><script type="text/javascript" src="/js/copyright.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copyright.css?v=1.0.0"><p><span>本文标题：</span>对内存的思考</p><p><span>文章作者：</span>Mr Bluyee</p><p><span>发布时间：</span>2018-09-18</p><p><span>最后更新：</span>2019-07-15</p><p><span>原始链接：</span><a href="/2018/09/18/对内存的思考/">https://www.mrbluyee.com/2018/09/18/%E5%AF%B9%E5%86%85%E5%AD%98%E7%9A%84%E6%80%9D%E8%80%83/</a><span class="copy-path"><i class="fa fa-clipboard" data-clipboard-text="https://www.mrbluyee.com/2018/09/18/%E5%AF%B9%E5%86%85%E5%AD%98%E7%9A%84%E6%80%9D%E8%80%83/"></i></span></p><p><span>版权声明：</span>The author owns the copyright, please indicate the source reproduced.</p></div><br><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C/" rel="tag">C</a></li></ul></div><div class="post-nav"><a class="pre" href="/2018/09/22/%E5%86%8D%E8%AE%BA%E6%95%B0%E7%BB%84/">再论数组</a><a class="next" href="/2018/09/16/C%E5%AE%9E%E7%8E%B0%E7%9F%A9%E9%98%B5%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E8%AE%A1%E7%AE%97/">C实现矩阵数据结构与计算</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zOTYxNS8xNjE0Mg"><script>(function(d, s) {
+  var j, e = d.getElementsByTagName(s)[0];
+  if (typeof LivereTower === 'function') { return; }
+  j = d.createElement(s);
+  j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+  j.async = true;
+  e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1 pure-u-md-1-4"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"/><div id="local-search-result"></div></div></div><div class="widget"><div class="author-info"><a class="info-avatar" href="/about/" title="关于"><img class="nofancybox" src="/img/avatar.jpeg"/></a><p>Enjoy life / Hope for future</p><a class="info-icon" href="mr.bluyee@hotmail.com" title="mr.bluyee@hotmail.com" target="_blank" style="margin-inline:5px"> <i class="fa fa-envelope-square" style="margin-inline:5px"></i></a><a class="info-icon" href="https://github.com/MrBluyee" title="https://github.com/MrBluyee" target="_blank" style="margin-inline:5px"> <i class="fa fa-github-square" style="margin-inline:5px"></i></a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C-%E7%AE%97%E6%B3%95/">学习笔记——C 算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">学习笔记——C数据结构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94Python/">学习笔记——Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94android/">学习笔记——android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94expert-c-programming/">学习笔记——expert c programming</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94linux/">学习笔记——linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94opencv/">学习笔记——opencv</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BB%A3%E7%A0%81%E7%AE%A1%E7%90%86/">学习笔记——代码管理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BD%8E%E5%8A%9F%E8%80%97%E6%8A%80%E6%9C%AF/">学习笔记——低功耗技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/">学习笔记——嵌入式开发</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">学习笔记——机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%89%A9%E8%81%94%E7%BD%91/">学习笔记——物联网</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">学习笔记——网络协议</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">学习笔记——计算机系统</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" style="font-size: 15px;">计算机系统</a> <a href="/tags/android/" style="font-size: 15px;">android</a> <a href="/tags/C/" style="font-size: 15px;">C</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" style="font-size: 15px;">网络协议</a> <a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/" style="font-size: 15px;">嵌入式开发</a> <a href="/tags/opencv/" style="font-size: 15px;">opencv</a> <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" style="font-size: 15px;">机器学习</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/09/23/IPsec/">IPsec</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/21/%E6%95%B0%E7%9A%84%E7%B4%A0%E6%80%A7%E6%B5%8B%E8%AF%95/">数的素性测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/20/%E6%89%A9%E5%B1%95%E7%9A%84%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95/">扩展的欧几里得算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/17/%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95-%E6%B1%82%E6%9C%80%E5%A4%A7%E5%85%AC%E5%9B%A0%E6%95%B0/">欧几里得算法-求最大公因数</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/04/%E5%B8%B8%E7%94%A8%E8%B7%AF%E7%94%B1%E6%96%B9%E5%BC%8F/">常用路由方式</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/19/%E6%97%A0%E7%BA%BF%E4%BC%A0%E6%84%9F%E7%BD%91WSN%E6%A6%82%E8%BF%B0/">无线传感网WSN概述</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/18/%E6%97%A0%E7%BA%BF%E6%A8%A1%E5%9D%97%E4%BC%91%E7%9C%A0%E4%B8%8E%E6%BF%80%E6%B4%BB%E6%9C%BA%E5%88%B6/">无线模块休眠与激活机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E8%AE%BE%E8%AE%A1/">SOC的低功耗设计</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/03/%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97/">电源管理的低功耗</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/02/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E5%BA%94%E7%94%A8/">SOC的低功耗应用</a></li></ul></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2024 <a href="/." rel="nofollow">Mr Bluyee's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><link rel="stylesheet" type="text/css" href="/css/search.css?v=1.0.0"><script type="text/javascript" src="/js/search.js?v=1.0.0"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+  search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>

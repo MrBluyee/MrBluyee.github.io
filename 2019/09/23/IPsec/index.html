@@ -1,0 +1,148 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>IPsec | Mr Bluyee's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?' + '3dbaf3043b34b1c894c4cd063629b6a9';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><meta name="generator" content="Hexo 7.1.1"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">IPsec</h1><a id="logo" href="/.">Mr Bluyee's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">IPsec</h1><div class="post-meta">2019-09-23<span> | </span><span class="category"><a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">学习笔记——网络协议</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 2k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-clock-o"></i><span class="post-count"> 7</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">1.</span> <span class="toc-text">概述</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#IPsec%E5%8D%8F%E8%AE%AE%E6%97%8F"><span class="toc-number">1.1.</span> <span class="toc-text">IPsec协议族</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#IPsec%E5%AE%89%E5%85%A8%E4%BD%93%E7%B3%BB%E6%A1%86%E6%9E%B6"><span class="toc-number">1.2.</span> <span class="toc-text">IPsec安全体系框架</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#IPsec%E7%9A%84%E5%AE%89%E5%85%A8%E7%89%B9%E6%80%A7"><span class="toc-number">1.3.</span> <span class="toc-text">IPsec的安全特性</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#IPsec-%C3%97%C3%97%C3%97"><span class="toc-number">1.4.</span> <span class="toc-text">IPsec ×××</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AH%E5%8D%8F%E8%AE%AE-%E4%BD%BF%E7%94%A8%E8%BE%83%E5%B0%91"><span class="toc-number">2.</span> <span class="toc-text">AH协议 (使用较少)</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#AH%E5%8D%8F%E8%AE%AE%E5%B7%A5%E4%BD%9C%E5%9C%A8%E4%BC%A0%E8%BE%93%E6%A8%A1%E5%BC%8F"><span class="toc-number">2.1.</span> <span class="toc-text">AH协议工作在传输模式</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#AH%E5%8D%8F%E8%AE%AE%E5%B7%A5%E4%BD%9C%E5%9C%A8%E9%9A%A7%E9%81%93%E6%A8%A1%E5%BC%8F"><span class="toc-number">2.2.</span> <span class="toc-text">AH协议工作在隧道模式</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#AH%E5%A4%B4%E7%BB%93%E6%9E%84"><span class="toc-number">2.3.</span> <span class="toc-text">AH头结构</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ESP%E5%8D%8F%E8%AE%AE-%E4%BD%BF%E7%94%A8%E5%B9%BF%E6%B3%9B"><span class="toc-number">3.</span> <span class="toc-text">ESP协议 (使用广泛)</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#ESP%E5%8D%8F%E8%AE%AE%E5%B7%A5%E4%BD%9C%E5%9C%A8%E4%BC%A0%E8%BE%93%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.1.</span> <span class="toc-text">ESP协议工作在传输模式</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#ESP%E5%8D%8F%E8%AE%AE%E5%B7%A5%E4%BD%9C%E5%9C%A8%E9%9A%A7%E9%81%93%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.2.</span> <span class="toc-text">ESP协议工作在隧道模式</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#ESP%E5%8C%85%E7%BB%93%E6%9E%84"><span class="toc-number">3.3.</span> <span class="toc-text">ESP包结构</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#IPsec%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%A8%A1%E5%BC%8F%E6%AF%94%E8%BE%83"><span class="toc-number">4.</span> <span class="toc-text">IPsec的两种模式比较</span></a></li></ol></div></div><div class="post-content"><h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p>IPsec是IP Security的简称。IPsec不是具体指哪个协议，而是一组开放的基于网络层的，应用密码学的安全通信协议族，它是IETF制定的，在IP层对IP报文提供安全服务，目标是为IP提供高安全性的特性。<br>IPsec本身定义了如何在IP数据中增加字段来保证IP包的完整性、私有性和真实性。</p>
+<span id="more"></span>
+
+<h5 id="IPsec协议族"><a href="#IPsec协议族" class="headerlink" title="IPsec协议族"></a>IPsec协议族</h5><p><img src="/images/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/IPsec/IPsec%E5%8D%8F%E8%AE%AE%E6%97%8F.JPG" alt="IPsec协议族"></p>
+<p>IPsec协议族相关的RFC</p>
+<table>
+<thead>
+<tr>
+<th>RFC</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc2401">2401</a></td>
+<td>IPsect体系结构</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc2402">2402</a></td>
+<td>AH(Authentication Header)协议</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc2403">2403</a></td>
+<td>HMAC-MD5-96在AH和ESP中的应用</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc2404">2404</a></td>
+<td>HMAC-SHA-1-96在AH和ESP中的应用</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc2405">2405</a></td>
+<td>DES-CBC在ESP中的应用</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc2406">2406</a></td>
+<td>ESP(Encapsulating Security Payload)协议</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc2407">2407</a></td>
+<td>IPsec DOI</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc2408">2408</a></td>
+<td>ISAKMP协议</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc2409">2409</a></td>
+<td>IKE(Internet Key Exchange)协议</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc2410">2410</a></td>
+<td>NULL加密算法及在IPsec中的应用</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc2411">2411</a></td>
+<td>IPsec文档路线图</td>
+</tr>
+<tr>
+<td><a target="_blank" rel="noopener" href="https://tools.ietf.org/html/rfc2412">2412</a></td>
+<td>OAKLEY协议</td>
+</tr>
+</tbody></table>
+<h5 id="IPsec安全体系框架"><a href="#IPsec安全体系框架" class="headerlink" title="IPsec安全体系框架"></a>IPsec安全体系框架</h5><p><img src="/images/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/IPsec/IPsec%E5%AE%89%E5%85%A8%E4%BD%93%E7%B3%BB%E6%A1%86%E6%9E%B6.JPG" alt="IPsec安全体系框架"></p>
+<h5 id="IPsec的安全特性"><a href="#IPsec的安全特性" class="headerlink" title="IPsec的安全特性"></a>IPsec的安全特性</h5><p>1.无连接数据完整性(Data Integrity)<br>IPsec接收方对发送方发送来的包进行认证，以确保数据在传输过程中没有被篡改。</p>
+<p>2.数据源认证(Data Authentication)<br>IPsec接收方对IPsec包的源地址进行认证。这项服务基于数据完整性服务。</p>
+<p>3.抗重放服务(Anti-Replay)<br>IPsec接收方可检测并拒绝接收过时或重复的报文。</p>
+<p>4.数据机密性(Confidentiality)<br>IPsec发送方在通过网络传输包前对包进行加密。</p>
+<p>5.有限的数据流保护(Limited Traffic-flow Confidentiality)</p>
+<p>AH和ESP的对比：</p>
+<table>
+<thead>
+<tr>
+<th>安全性</th>
+<th>AH</th>
+<th>ESP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>协议号</td>
+<td>50</td>
+<td>51</td>
+</tr>
+<tr>
+<td>数据完整性校验</td>
+<td>支持</td>
+<td>支持(不验证IP头)</td>
+</tr>
+<tr>
+<td>数据源验证</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>数据加解密</td>
+<td>不支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>抗重放服务</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>有限的数据流保护</td>
+<td>不支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>NAT-T(NAT穿越)</td>
+<td>不支持</td>
+<td>支持</td>
+</tr>
+</tbody></table>
+<h5 id="IPsec-×××"><a href="#IPsec-×××" class="headerlink" title="IPsec ×××"></a>IPsec ×××</h5><p>是基于IPsec协议族构建的在IP层实现的安全虚拟专用网。通过在数据包中插入一个预定义头部的方式，<br>来保证OSI上层协议的安全，主要用于保护TCP、UDP、ICMP和隧道的IP数据包。</p>
+<p>VPN是IPsec的一种应用方式，IPsec VPN的应用场景分为3种：<br><strong>1.Site-to-Site（站点到站点或者网关到网关）</strong><br>企业内网（若干PC）之间的数据通过这些网关建立的IPSec隧道实现安全互联。</p>
+<p><strong>2.End-to-End（端到端或者PC到PC）</strong><br>两个PC之间的通信由两个PC之间的IPSec会话保护。</p>
+<p><strong>3.End-to-Site（端到站点或者PC到网关）</strong><br>两个PC之间的通信由网关和异地PC之间的IPSec进行保护。</p>
+<h4 id="AH协议-使用较少"><a href="#AH协议-使用较少" class="headerlink" title="AH协议 (使用较少)"></a>AH协议 (使用较少)</h4><p>AH为报文验证头协议（协议号51），可以同时提供数据完整性确认、数据来源确认、防重放等安全特性。<br>AH插到标准IP包头后面，它保证数据包的完整性和真实性，防止黑客截断数据包或向网络中插入伪造的数据包。<br>AH常用摘要算法（单向hash函数）MD5和SHA1实现该特性。<br><strong>为什么AH使用较少？</strong><br>1.AH无法提供数据加密，所有数据在传输时以明文传输，而ESP提供数据加密。<br>2.AH因为提供数据来源确认（源IP地址一旦改变，AH校验失败），所以无法穿越NAT。</p>
+<h5 id="AH协议工作在传输模式"><a href="#AH协议工作在传输模式" class="headerlink" title="AH协议工作在传输模式"></a>AH协议工作在传输模式</h5><p><img src="/images/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/IPsec/AH%E5%8D%8F%E8%AE%AE%E4%BC%A0%E8%BE%93%E6%A8%A1%E5%BC%8F.JPG" alt="AH协议工作在传输模式"></p>
+<h5 id="AH协议工作在隧道模式"><a href="#AH协议工作在隧道模式" class="headerlink" title="AH协议工作在隧道模式"></a>AH协议工作在隧道模式</h5><p><img src="/images/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/IPsec/AH%E5%8D%8F%E8%AE%AE%E9%9A%A7%E9%81%93%E6%A8%A1%E5%BC%8F.JPG" alt="AH协议工作在隧道模式"></p>
+<h5 id="AH头结构"><a href="#AH头结构" class="headerlink" title="AH头结构"></a>AH头结构</h5><p><img src="/images/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/IPsec/AH%E5%A4%B4%E7%BB%93%E6%9E%84.JPG" alt="AH头结构"><br><strong>Next Header 下一头部 (8 bits)</strong><br>标识认证头后面的下一个载荷类型（标识被传送数据所属的协议）。<br><strong>Payload Len 载荷长度 (8 bits)</strong><br>表示认证头包的大小，以32bit为单位的AH头部长度-2，default&#x3D;4<br><strong>Reserved 保留 (16 bits)</strong><br>为将来的应用保留（当前都置为0）。<br><strong>Security Parameters Index (SPI) 安全参数索引 (32 bits)</strong><br>与IP地址一同用来标识安全参数，用于表示有相同IP地址和相同安全协议的不同SA。由SA的创建者定义，只有逻辑意义。<br><strong>Sequence Number 序列号 (32 bits)</strong><br>一个单向递增的计数器，用于防止重放攻击，SA建立之初初始化为0，序列号不允许重复。<br><strong>Integrity Check Value (ICV) 完整性校验值  (multiple of 32 bits)</strong><br>认证数据（包含了认证当前包所必须的数据），由SA初始化时指定的算法来计算。</p>
+<h4 id="ESP协议-使用广泛"><a href="#ESP协议-使用广泛" class="headerlink" title="ESP协议 (使用广泛)"></a>ESP协议 (使用广泛)</h4><p>ESP为报文安全封装协议（协议号50），它将需要保护的用户数据进行加密后再封装到IP包中，保证数据的完整性、真实性和私有性。<br>ESP可以同时提供数据完整性确认、数据加密、防重放等安全特性。<br>ESP通常使用DES、3DES、AES等加密算法实现数据加密，使用MD5或SHA1来实现数据完整性。</p>
+<h5 id="ESP协议工作在传输模式"><a href="#ESP协议工作在传输模式" class="headerlink" title="ESP协议工作在传输模式"></a>ESP协议工作在传输模式</h5><p><img src="/images/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/IPsec/ESP%E5%8D%8F%E8%AE%AE%E4%BC%A0%E8%BE%93%E6%A8%A1%E5%BC%8F.JPG" alt="ESP协议工作在传输模式"></p>
+<h5 id="ESP协议工作在隧道模式"><a href="#ESP协议工作在隧道模式" class="headerlink" title="ESP协议工作在隧道模式"></a>ESP协议工作在隧道模式</h5><p><img src="/images/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/IPsec/ESP%E5%8D%8F%E8%AE%AE%E9%9A%A7%E9%81%93%E6%A8%A1%E5%BC%8F.JPG" alt="ESP协议工作在隧道模式"></p>
+<h5 id="ESP包结构"><a href="#ESP包结构" class="headerlink" title="ESP包结构"></a>ESP包结构</h5><p><img src="/images/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/IPsec/ESP%E5%8C%85%E7%BB%93%E6%9E%84.JPG" alt="ESP包结构"><br><strong>Security Parameters Index (SPI) 安全参数索引 (32 bits)</strong><br>与IP地址一同用来标识安全参数，用于表示有相同IP地址和相同安全协议的不同SA。由SA的创建者定义，只有逻辑意义。<br><strong>Sequence Number 序列号 (32 bits)</strong><br>一个单向递增的计数器，用于防止重放攻击，SA建立之初初始化为0，序列号不允许重复。<br><strong>Payload data 载荷数据 (variable)</strong><br>包含由下一个头部字段给出的变长数据<br><strong>Padding 填充字段 (0-255 octets)</strong><br>大多数加密算法要求输入数据包含整数个分组，因此需要填充。<br><strong>Pad Length 填充长度 (8 bits)</strong><br>给出前面填充字段的长度，置0时表示没有填充。<br><strong>Next Header 下一头部 (8 bits)</strong><br>标识认证头后面的下一个载荷类型（标识被传送数据所属的协议）。<br><strong>Integrity Check Value (ICV) 完整性校验值  (multiple of 32 bits)</strong><br>认证数据（包含了认证当前包所必须的数据），由SA初始化时指定的算法来计算。</p>
+<h4 id="IPsec的两种模式比较"><a href="#IPsec的两种模式比较" class="headerlink" title="IPsec的两种模式比较"></a>IPsec的两种模式比较</h4><p><img src="/images/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/IPsec/IPsec%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF.jpg" alt="IPsec的两种模式应用场景"><br>隧道模式可以适用于任何场景.传输模式只能适合PC到PC的场景。<br>隧道模式虽然可以适用于任何场景，但是隧道模式需要多一层IP头（通常为20字节长度）开销，所以在PC到PC的场景，建议还是使用传输模式。<br><strong>传输模式：</strong><br>传输模式在AH、ESP处理前后IP头部保持不变，主要用于End-to-End的应用场景。<br><strong>隧道模式:</strong><br>隧道模式在AH、ESP处理之后再封装了一个外网IP头，主要用于Site-to-site的应用场景。</p>
+<p><strong>为什么在Site-to-Site场景中只能使用隧道模式：</strong><br><img src="/images/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/IPsec/S2S%E5%9C%BA%E6%99%AF%E5%88%86%E6%9E%90.jpg" alt="Site-to-Site场景分析"><br>1.IPSec会话建立在发起方、响应方两个网关之间。<br>2.由于使用传输模式，所以IP头部并不会有任何变化，IP源地址是192.168.1.2，目的地址是10.1.1.2。<br>3.因为源、目的地址都是私有地址，Internet中不会维护企业自己网络的路由，该数据包在Internet中大概率被丢弃。<br>4.假设数据包成功穿越了Internet，因为目的地址不是响应方网关(2.17.1.2),所以响应方直接将包转发给内网PC。<br>5.最后响应方内网PC收到数据包，因为没有参与IPsec协商，没有对应的SA,所以密文数据无法解密而被PC丢弃。</p>
+<p><strong>在Site-to-Site情况下使用传输模式的充要条件：</strong><br>兴趣流必须完全在发起方、响应方IP地址范围内的流量，协议可以是任意的。<br>比如发起方IP地址为6.24.1.2，响应方IP地址为2.17.1.2，那么兴趣流可以是源6.24.1.2&#x2F;32、目的是2.17.1.2&#x2F;32。<br>若数据包的源、目的IP地址不同，则应使用隧道模式。</p>
+</div><div class="post-copyright"><script type="text/javascript" src="/js/copyright.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copyright.css?v=1.0.0"><p><span>本文标题：</span>IPsec</p><p><span>文章作者：</span>Mr Bluyee</p><p><span>发布时间：</span>2019-09-23</p><p><span>最后更新：</span>2019-10-27</p><p><span>原始链接：</span><a href="/2019/09/23/IPsec/">https://www.mrbluyee.com/2019/09/23/IPsec/</a><span class="copy-path"><i class="fa fa-clipboard" data-clipboard-text="https://www.mrbluyee.com/2019/09/23/IPsec/"></i></span></p><p><span>版权声明：</span>The author owns the copyright, please indicate the source reproduced.</p></div><br><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" rel="tag">网络协议</a></li></ul></div><div class="post-nav"><a class="next" href="/2019/07/21/%E6%95%B0%E7%9A%84%E7%B4%A0%E6%80%A7%E6%B5%8B%E8%AF%95/">数的素性测试</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zOTYxNS8xNjE0Mg"><script>(function(d, s) {
+  var j, e = d.getElementsByTagName(s)[0];
+  if (typeof LivereTower === 'function') { return; }
+  j = d.createElement(s);
+  j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+  j.async = true;
+  e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1 pure-u-md-1-4"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"/><div id="local-search-result"></div></div></div><div class="widget"><div class="author-info"><a class="info-avatar" href="/about/" title="关于"><img class="nofancybox" src="/img/avatar.jpeg"/></a><p>Enjoy life / Hope for future</p><a class="info-icon" href="mr.bluyee@hotmail.com" title="mr.bluyee@hotmail.com" target="_blank" style="margin-inline:5px"> <i class="fa fa-envelope-square" style="margin-inline:5px"></i></a><a class="info-icon" href="https://github.com/MrBluyee" title="https://github.com/MrBluyee" target="_blank" style="margin-inline:5px"> <i class="fa fa-github-square" style="margin-inline:5px"></i></a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C-%E7%AE%97%E6%B3%95/">学习笔记——C 算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">学习笔记——C数据结构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94Python/">学习笔记——Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94android/">学习笔记——android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94expert-c-programming/">学习笔记——expert c programming</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94linux/">学习笔记——linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94opencv/">学习笔记——opencv</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BB%A3%E7%A0%81%E7%AE%A1%E7%90%86/">学习笔记——代码管理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BD%8E%E5%8A%9F%E8%80%97%E6%8A%80%E6%9C%AF/">学习笔记——低功耗技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/">学习笔记——嵌入式开发</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">学习笔记——机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%89%A9%E8%81%94%E7%BD%91/">学习笔记——物联网</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">学习笔记——网络协议</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">学习笔记——计算机系统</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" style="font-size: 15px;">计算机系统</a> <a href="/tags/android/" style="font-size: 15px;">android</a> <a href="/tags/C/" style="font-size: 15px;">C</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" style="font-size: 15px;">网络协议</a> <a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/" style="font-size: 15px;">嵌入式开发</a> <a href="/tags/opencv/" style="font-size: 15px;">opencv</a> <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" style="font-size: 15px;">机器学习</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/09/23/IPsec/">IPsec</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/21/%E6%95%B0%E7%9A%84%E7%B4%A0%E6%80%A7%E6%B5%8B%E8%AF%95/">数的素性测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/20/%E6%89%A9%E5%B1%95%E7%9A%84%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95/">扩展的欧几里得算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/17/%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95-%E6%B1%82%E6%9C%80%E5%A4%A7%E5%85%AC%E5%9B%A0%E6%95%B0/">欧几里得算法-求最大公因数</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/04/%E5%B8%B8%E7%94%A8%E8%B7%AF%E7%94%B1%E6%96%B9%E5%BC%8F/">常用路由方式</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/19/%E6%97%A0%E7%BA%BF%E4%BC%A0%E6%84%9F%E7%BD%91WSN%E6%A6%82%E8%BF%B0/">无线传感网WSN概述</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/18/%E6%97%A0%E7%BA%BF%E6%A8%A1%E5%9D%97%E4%BC%91%E7%9C%A0%E4%B8%8E%E6%BF%80%E6%B4%BB%E6%9C%BA%E5%88%B6/">无线模块休眠与激活机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E8%AE%BE%E8%AE%A1/">SOC的低功耗设计</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/03/%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97/">电源管理的低功耗</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/02/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E5%BA%94%E7%94%A8/">SOC的低功耗应用</a></li></ul></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2024 <a href="/." rel="nofollow">Mr Bluyee's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><link rel="stylesheet" type="text/css" href="/css/search.css?v=1.0.0"><script type="text/javascript" src="/js/search.js?v=1.0.0"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+  search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>

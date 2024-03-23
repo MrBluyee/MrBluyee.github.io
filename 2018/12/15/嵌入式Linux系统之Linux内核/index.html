@@ -1,0 +1,123 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>嵌入式Linux系统之Linux内核 | Mr Bluyee's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?' + '3dbaf3043b34b1c894c4cd063629b6a9';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><meta name="generator" content="Hexo 7.1.1"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">嵌入式Linux系统之Linux内核</h1><a id="logo" href="/.">Mr Bluyee's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">嵌入式Linux系统之Linux内核</h1><div class="post-meta">2018-12-15<span> | </span><span class="category"><a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/">学习笔记——嵌入式开发</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 1.8k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-clock-o"></i><span class="post-count"> 6</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Linux%E5%86%85%E6%A0%B8"><span class="toc-number">1.</span> <span class="toc-text">Linux内核</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Linux%E5%86%85%E6%A0%B8%E6%BA%90%E7%A0%81%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="toc-number">1.1.</span> <span class="toc-text">Linux内核源码目录结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Linux%E5%86%85%E6%A0%B8%E5%90%AF%E5%8A%A8%E6%96%B9%E6%A1%88"><span class="toc-number">1.2.</span> <span class="toc-text">Linux内核启动方案</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Linux%E5%86%85%E6%A0%B8%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="toc-number">1.3.</span> <span class="toc-text">Linux内核的配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E9%95%9C%E5%83%8F%E7%9A%84%E5%88%B6%E4%BD%9C"><span class="toc-number">1.4.</span> <span class="toc-text">内核镜像的制作</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%A8U-Boot%E5%90%AF%E5%8A%A8Linux%E5%86%85%E6%A0%B8"><span class="toc-number">1.5.</span> <span class="toc-text">用U-Boot启动Linux内核</span></a></li></ol></li></ol></div></div><div class="post-content"><h3 id="Linux内核"><a href="#Linux内核" class="headerlink" title="Linux内核"></a>Linux内核</h3><p>内核是所有Linux系统的中心软件组件。嵌入式领域所说的Linux，一般是指linux内核。移植也是指的移植linux内核到目标平台。</p>
+<span id="more"></span>
+
+<p>linux内核的版本号说明：<br>例，2.6.24<br>其中，2是主版本号，6是次版本号，24是修订版本号。<br>如果次版本号是偶数，说明是稳定版本。<br>如果次版本号是奇数，则是开发版本。</p>
+<h4 id="Linux内核源码目录结构"><a href="#Linux内核源码目录结构" class="headerlink" title="Linux内核源码目录结构"></a>Linux内核源码目录结构</h4><ul>
+<li>arch<br>包含和硬件体系结构相关的代码，每种平台占一个相应的目录。如arm、avr32、blackfin、mips等。arch目录在系统移植过程中是需要重点修改的部分。</li>
+<li>block<br>块设备驱动程序的IO调度。</li>
+<li>crypto<br>常用的加密和离散算法，还有一些压缩和CRC校验算法。</li>
+<li>drivers<br>drivers目录中是系统中所有的设备驱动程序。它又进一步划分成几类设备驱动，如block、char、mtd、net、usb、video等待，每一种有对应的子目录，如声卡的驱动对应于drivers&#x2F;sound。该目录占用了整个内核发行版本代码的一半以上，其中有些驱动程序是与硬件平台相关的，有些是与硬件平台无关，例如字符设备、块设备、串口、USB以及LCD显示驱动等。</li>
+<li>Documentation<br>内核说明文档。</li>
+<li>fs<br>该目录下列出了linux支持的所有文件系统。<br>目前Linux已经支持包括JFFS2、YAFFS、ext3和NFS在内的多种文件系统，<br>其中JFFS2常用于嵌入式系统NOR Flash中的文件系统，<br>YAFFS常用于NAND Flash中的文件系统，<br>ext3常用于台式PC机的Linux操作系统中的文件系统。<br>还有一些伪文件系统，例如proc文件系统，可以以伪文件的形式提供其他信息<br>（例如，在proc的情况下是提供内核的内部变量和数据结构）。虽然在底层并没有实际的存储设备与这些文件系统相对应，但是进程可以像有实际存储设备一样处理。</li>
+<li>include<br>头文件。与系统相关的头文件放在include&#x2F;linux下，与arm体系结构相关的头文件放在include&#x2F;asm-arm下。</li>
+<li>init<br>内核初始化代码。init目录包含核心的初始化代码（不是系统的引导代码），有main.c和version.c两个文件。这是研究核心如何工作的好起点。</li>
+<li>ipc<br>进程间通信代码。</li>
+<li>kernel<br>内核的核心代码，包括进程调度、定时器等。和arm平台相关的核心代码在arch&#x2F;arm&#x2F;kernel目录下。</li>
+<li>lib<br>lib目录包含了核心的库代码，不过与处理器结构相关的库代码被放在arch&#x2F;lib目录下。Lib&#x2F;inflate.c中的函数能够在系统启动时展开经过压缩的内核。Lib目录下剩余的其他文件实现一个标准C库的有用子集，主要集中在字符串和内存操作的函数（strlen、memcpy和其他类似的函数）及有关sprintf和atoi的系列函数上。</li>
+<li>mm<br>内存管理代码，和arm平台相关的内存管理代码在arch&#x2F;arm&#x2F;mm目录下。</li>
+<li>net<br>网络相关的代码，实现了各种常见的网络协议。例如TCP&#x2F;IP、IPX等。</li>
+<li>scripts<br>scripts目录下没有代码，包含用于配置核心的脚本文件。当运行make menuconfig或make xconfig之类的命令配置内核时，用户就是和位于这个目录下的脚本进行交互的。</li>
+<li>sound<br>音频设备驱动的通用代码和硬件驱动代码都在这个文件下面。</li>
+</ul>
+<h4 id="Linux内核启动方案"><a href="#Linux内核启动方案" class="headerlink" title="Linux内核启动方案"></a>Linux内核启动方案</h4><p>Linux内核有两种映像：</p>
+<ul>
+<li>非压缩内核Image</li>
+<li>压缩内核zImage</li>
+</ul>
+<p>嵌入式系统存储容量有限，因此通常选择压缩内核zImage。要使用压缩内核zImage，需要在映像开头加入解压缩代码，将zImage解压后，才可以执行。</p>
+<p>内核编译完成后，会在arch&#x2F;arm&#x2F;boot目录下生成zImage文件。</p>
+<p>zImgae文件的组成：</p>
+<ul>
+<li>pggy.o  : 压缩后的内核文件</li>
+<li>head.o  : 系统初级初始化代码文件</li>
+<li>misc.o  : 解压缩代码文件</li>
+</ul>
+<h4 id="Linux内核的配置"><a href="#Linux内核的配置" class="headerlink" title="Linux内核的配置"></a>Linux内核的配置</h4><ul>
+<li>.config文件<br>这是linux编译时所依赖的文件。我们在配置内核时所做的任何修改，最终都会在这个文件中体现出来。它是Makefile对内核进行处理的重要依据。<br>一般来说，内核提供了芯片公司demo板的.config文件，我们一般找一个近似的进行修改。如S3C2410平台上可以选择s3c2410_deconfig这个文件。</li>
+</ul>
+<p><strong>三种配置方式</strong></p>
+<ul>
+<li>make config<br>基于文本对话的配置方式，比较细致，但是浪费时间。对专业的内核开发人员比较合适。</li>
+<li>make xconfig<br>基于图形界面的配置方式。非常直观，但是需要特殊的软件支持，一般不推荐。</li>
+<li>make menuconfig<br>推荐的内核配置方式，采用目录的方式，直观，容易使用。</li>
+</ul>
+<p><strong>关于Kconfig</strong><br>在进行make menuconfig时，目录的生成依赖于Kconfig文件。一般来说，每个源代码目录下都有一个Kconfig文件。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">config DM9000</span><br><span class="line">tristate &quot;DM9000 support&quot;</span><br><span class="line">depends on ARM||BLACKFIN||MIPS</span><br><span class="line">select CRC32</span><br><span class="line">select MII</span><br><span class="line">--help--</span><br><span class="line">Support for DM9000 chipset</span><br><span class="line">To compile this driver as a module, choose M here.</span><br><span class="line">The module will be called dm9000.</span><br></pre></td></tr></table></figure>
+
+<p>Kconfig对.config文件的影响：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CONFIG_DM9000=y</span><br></pre></td></tr></table></figure>
+<p>make menuconfig对内核配置所做出的修改最终反应在.config文件中。如上所示，在.config文件中CONFIG_DM9000&#x3D;y被定义为y。<br>CONFIG_DM9000是tristate类型，有三个可能取值：<br>y:编译进内核<br>m:编译成模块<br>n:不进行编译<br>若是bool类型，则只有两种可能，y或者n。</p>
+<p>Kconfig对Makefile的影响：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">obj-$(CONFIG_DM9000) += dm9000.o</span><br></pre></td></tr></table></figure>
+
+<p><strong>关于Makefile</strong><br>linux内核源码的每个目录下都有一个Makefile，由该Makefile对源代码的编译、链接等操作进行控制。</p>
+<p>编译完成后，每个源代码目录下都会生成一个名叫built-in.o的文件。<br>这个文件由源代码目录下的所有源文件编译后的目标文件链接而成；<br>而不同的built-in.o又被上层目录中的Makefile链接成更大的builtin.o，直到最后链接成为一个内核vmlinux.o</p>
+<h4 id="内核镜像的制作"><a href="#内核镜像的制作" class="headerlink" title="内核镜像的制作"></a>内核镜像的制作</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkimage -A arm -T kernel -C none -O linux -a 0x30008000 -e 0x30008040 -d zImage -n &#x27;linux-2.6.24&#x27; uImage</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-A arm</td>
+<td>目标平台是ARM架构的</td>
+</tr>
+<tr>
+<td>-T kernel</td>
+<td>要处理的是内核</td>
+</tr>
+<tr>
+<td>-C none</td>
+<td>不采用任何压缩方式</td>
+</tr>
+<tr>
+<td>-O linux</td>
+<td>要处理的Linux内核</td>
+</tr>
+<tr>
+<td>-a 0x30008000</td>
+<td>加载地址，包括mkimage工具给内核添加的头信息</td>
+</tr>
+<tr>
+<td>-e 0x30008040</td>
+<td>真正的内核入口地址，除掉mkimage添加的0x40长度的头信息</td>
+</tr>
+<tr>
+<td>-d zImage</td>
+<td>使用的源文件是编译Linux内核得到的zImage</td>
+</tr>
+<tr>
+<td>-n ‘linux-2.6.24’</td>
+<td>生成的内核镜像的名字</td>
+</tr>
+<tr>
+<td>uImage</td>
+<td>生成的供U-Boot启动的二进制内核镜像</td>
+</tr>
+</tbody></table>
+<h4 id="用U-Boot启动Linux内核"><a href="#用U-Boot启动Linux内核" class="headerlink" title="用U-Boot启动Linux内核"></a>用U-Boot启动Linux内核</h4><p>1.下载u-boot.bin到SDRAM的0x30008000处<br>tftp 0x30008000 uImage<br>2.启动内核<br>bootm 0x30008000</p>
+<p>文章内容整理自：<br><a target="_blank" rel="noopener" href="http://www.cie-eec.org/">www.cie-eec.org</a> 相关文档</p>
+</div><div class="post-copyright"><script type="text/javascript" src="/js/copyright.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copyright.css?v=1.0.0"><p><span>本文标题：</span>嵌入式Linux系统之Linux内核</p><p><span>文章作者：</span>Mr Bluyee</p><p><span>发布时间：</span>2018-12-15</p><p><span>最后更新：</span>2019-07-15</p><p><span>原始链接：</span><a href="/2018/12/15/嵌入式Linux系统之Linux内核/">https://www.mrbluyee.com/2018/12/15/%E5%B5%8C%E5%85%A5%E5%BC%8FLinux%E7%B3%BB%E7%BB%9F%E4%B9%8BLinux%E5%86%85%E6%A0%B8/</a><span class="copy-path"><i class="fa fa-clipboard" data-clipboard-text="https://www.mrbluyee.com/2018/12/15/%E5%B5%8C%E5%85%A5%E5%BC%8FLinux%E7%B3%BB%E7%BB%9F%E4%B9%8BLinux%E5%86%85%E6%A0%B8/"></i></span></p><p><span>版权声明：</span>The author owns the copyright, please indicate the source reproduced.</p></div><br><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/" rel="tag">嵌入式开发</a></li></ul></div><div class="post-nav"><a class="pre" href="/2018/12/16/%E5%B5%8C%E5%85%A5%E5%BC%8FLinux%E7%B3%BB%E7%BB%9F%E4%B9%8BLinux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">嵌入式Linux系统之Linux文件系统</a><a class="next" href="/2018/12/12/%E6%89%93%E5%8C%85python%E4%B8%BA%E5%8F%AF%E6%89%A7%E8%A1%8C%E6%96%87%E4%BB%B6/">打包python为可执行文件</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zOTYxNS8xNjE0Mg"><script>(function(d, s) {
+  var j, e = d.getElementsByTagName(s)[0];
+  if (typeof LivereTower === 'function') { return; }
+  j = d.createElement(s);
+  j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+  j.async = true;
+  e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1 pure-u-md-1-4"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"/><div id="local-search-result"></div></div></div><div class="widget"><div class="author-info"><a class="info-avatar" href="/about/" title="关于"><img class="nofancybox" src="/img/avatar.jpeg"/></a><p>Enjoy life / Hope for future</p><a class="info-icon" href="mr.bluyee@hotmail.com" title="mr.bluyee@hotmail.com" target="_blank" style="margin-inline:5px"> <i class="fa fa-envelope-square" style="margin-inline:5px"></i></a><a class="info-icon" href="https://github.com/MrBluyee" title="https://github.com/MrBluyee" target="_blank" style="margin-inline:5px"> <i class="fa fa-github-square" style="margin-inline:5px"></i></a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C-%E7%AE%97%E6%B3%95/">学习笔记——C 算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">学习笔记——C数据结构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94Python/">学习笔记——Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94android/">学习笔记——android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94expert-c-programming/">学习笔记——expert c programming</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94linux/">学习笔记——linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94opencv/">学习笔记——opencv</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BB%A3%E7%A0%81%E7%AE%A1%E7%90%86/">学习笔记——代码管理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BD%8E%E5%8A%9F%E8%80%97%E6%8A%80%E6%9C%AF/">学习笔记——低功耗技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/">学习笔记——嵌入式开发</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">学习笔记——机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%89%A9%E8%81%94%E7%BD%91/">学习笔记——物联网</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">学习笔记——网络协议</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">学习笔记——计算机系统</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" style="font-size: 15px;">计算机系统</a> <a href="/tags/android/" style="font-size: 15px;">android</a> <a href="/tags/C/" style="font-size: 15px;">C</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" style="font-size: 15px;">网络协议</a> <a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/" style="font-size: 15px;">嵌入式开发</a> <a href="/tags/opencv/" style="font-size: 15px;">opencv</a> <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" style="font-size: 15px;">机器学习</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/09/23/IPsec/">IPsec</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/21/%E6%95%B0%E7%9A%84%E7%B4%A0%E6%80%A7%E6%B5%8B%E8%AF%95/">数的素性测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/20/%E6%89%A9%E5%B1%95%E7%9A%84%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95/">扩展的欧几里得算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/17/%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95-%E6%B1%82%E6%9C%80%E5%A4%A7%E5%85%AC%E5%9B%A0%E6%95%B0/">欧几里得算法-求最大公因数</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/04/%E5%B8%B8%E7%94%A8%E8%B7%AF%E7%94%B1%E6%96%B9%E5%BC%8F/">常用路由方式</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/19/%E6%97%A0%E7%BA%BF%E4%BC%A0%E6%84%9F%E7%BD%91WSN%E6%A6%82%E8%BF%B0/">无线传感网WSN概述</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/18/%E6%97%A0%E7%BA%BF%E6%A8%A1%E5%9D%97%E4%BC%91%E7%9C%A0%E4%B8%8E%E6%BF%80%E6%B4%BB%E6%9C%BA%E5%88%B6/">无线模块休眠与激活机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E8%AE%BE%E8%AE%A1/">SOC的低功耗设计</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/03/%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97/">电源管理的低功耗</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/02/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E5%BA%94%E7%94%A8/">SOC的低功耗应用</a></li></ul></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2024 <a href="/." rel="nofollow">Mr Bluyee's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><link rel="stylesheet" type="text/css" href="/css/search.css?v=1.0.0"><script type="text/javascript" src="/js/search.js?v=1.0.0"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+  search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>

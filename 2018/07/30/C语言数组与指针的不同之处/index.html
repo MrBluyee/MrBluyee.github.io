@@ -1,0 +1,148 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>C语言数组与指针的不同之处 | Mr Bluyee's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?' + '3dbaf3043b34b1c894c4cd063629b6a9';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><meta name="generator" content="Hexo 7.1.1"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">C语言数组与指针的不同之处</h1><a id="logo" href="/.">Mr Bluyee's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">C语言数组与指针的不同之处</h1><div class="post-meta">2018-07-30<span> | </span><span class="category"><a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94expert-c-programming/">学习笔记——expert c programming</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 3.1k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-clock-o"></i><span class="post-count"> 10</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E5%B9%B6%E9%9D%9E%E6%8C%87%E9%92%88"><span class="toc-number">1.</span> <span class="toc-text">数组并非指针</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A3%B0%E6%98%8E%E4%B8%8E%E5%AE%9A%E4%B9%89"><span class="toc-number">2.</span> <span class="toc-text">声明与定义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AF%B9%E6%95%B0%E7%BB%84%E5%92%8C%E5%AF%B9%E6%8C%87%E9%92%88%E7%9A%84%E5%BC%95%E7%94%A8%E7%9A%84%E4%B8%8D%E5%90%8C%E4%B9%8B%E5%A4%84"><span class="toc-number">3.</span> <span class="toc-text">对数组和对指针的引用的不同之处</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E4%B8%BA%E6%95%B0%E7%BB%84%EF%BC%8C%E4%BD%86%E8%A2%AB%E5%A3%B0%E6%98%8E%E4%B8%BA%E6%8C%87%E9%92%88%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">4.</span> <span class="toc-text">定义为数组，但被声明为指针的问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E5%92%8C%E6%8C%87%E9%92%88%E7%9A%84%E5%85%B6%E4%BB%96%E5%8C%BA%E5%88%AB"><span class="toc-number">5.</span> <span class="toc-text">数组和指针的其他区别</span></a></li></ol></div></div><div class="post-content"><h4 id="数组并非指针"><a href="#数组并非指针" class="headerlink" title="数组并非指针"></a>数组并非指针</h4><p>C编程新手最常听到的说法之一就是“数组和指针是相同的”。不幸的是，这是一种非常危险的说法，并不完全正确。<br>ANSI C标准6.5.4.2节建议：</p>
+<blockquote>
+<p>注意以下声明的区别：<br>extern int *x;<br>extern int y[];<br>第一条语句声明x是个int型的指针；第二条语句声明y是个int型数组，长度尚未确定（不完整的类型），其存储在别处定义。</p>
+</blockquote>
+<p>标准并没有做更细的规定。许多C语言书籍对数组与指针何时相同、何时不同含糊其辞，对于这个应该重点阐述的话题只是一带而过。先看一个例子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">文件1：</span><br><span class="line">int mango[100];</span><br><span class="line"></span><br><span class="line">文件2：</span><br><span class="line">extern int *mango;</span><br></pre></td></tr></table></figure>
+<p>这里，文件1定义了数组mango，但文件2声明它为指针。这有什么错误吗？无论如何，“每个人都知道”在C语言中，数组和指针非常相似。问题在于“每个人”这种说法是错误的！这相当于把整数和浮点数混为一谈：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">文件1：</span><br><span class="line">int guava;</span><br><span class="line"></span><br><span class="line">文件2：</span><br><span class="line">extern float guava;</span><br></pre></td></tr></table></figure>
+<p>上面这个int和float的例子非常明显，类型不匹配，没人会指望这样的代码能够运行。但是为什么人们会认为指针和数组始终应该是可以互换的呢？</p>
+<p>答案是对数组的引用总是可以写成对指针的引用，而且确实存在一种指针和数组的定义完全相同的上下文环境。</p>
+<p>不幸的是，这只是数组的一种极为普通的用法，并非所有情况下都是如此。但是，人们却自然而然的归纳并假定在所有的情况下数组和指针都是等同的，包括上面完全错误的“数组定义等同于指针的外部声明”这种情况。</p>
+<h4 id="声明与定义"><a href="#声明与定义" class="headerlink" title="声明与定义"></a>声明与定义</h4><p>在搞清这个问题之前，需要在头脑里重新整理一些基本的C语言术语。记住，C语言中的对象必须有且只有一个定义，但它可以有多个extern声明。这里所说的对象跟C++中的对象并无关系，这里的对象只是跟链接器有关的东西，比如函数和变量。</p>
+<p>定义是一种特殊的声明，它创建了一个对象；声明简单的说明了在其他地方创建的对象的名字，它允许你使用这个名字。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>定义</td>
+<td>只能出现在一个地方</td>
+<td>确定对象的类型并分配内存，用于创建新的对象。例如：int my_array[100];</td>
+</tr>
+<tr>
+<td>声明</td>
+<td>可以多次出现</td>
+<td>描述对象的类型，用于指代其他地方定义的对象（例如在其他文件里）例：extern int my_array[];</td>
+</tr>
+</tbody></table>
+<p>区分定义和声明：<br>1.声明相当于普通的声明：它所说明的并非自身，而是描述其他地方的创建的对象。<br>2.定义相当于特殊的声明：它为对象分配内存。</p>
+<p><strong>extern</strong> 对象声明告诉编译器对象的类型和名字，对象的内存分配则在别处进行。由于并未在声明中为数组分配内存，所以并不需要提供关于数组长度的信息。对于多维数组，需要提供除最左边一维之外其他维的长度——这就给编译器足够的信息产生相应的代码。</p>
+<h4 id="对数组和对指针的引用的不同之处"><a href="#对数组和对指针的引用的不同之处" class="headerlink" title="对数组和对指针的引用的不同之处"></a>对数组和对指针的引用的不同之处</h4><p>首先需要注意的是“地址y”和“地址y的内容”之间的区别。这是一个相当微妙之处，因为在大多数编程语言中我们用同一个符号来表示这两样东西，由编译器根据上下文环境判断它的具体含义。</p>
+<p>以一个简单的赋值为例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x = y;</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>x</th>
+<th>&#x3D;</th>
+<th>y</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>在这个上下文环境里，符号x的含义是x所代表的地址。</td>
+<td></td>
+<td>在这个上下文里，符号y的含义是y所代表的地址的内容。</td>
+</tr>
+<tr>
+<td>这被称为左值</td>
+<td></td>
+<td>这被称为右值</td>
+</tr>
+<tr>
+<td>左值在编译时可知，左值表示存储结果的地方。</td>
+<td></td>
+<td>右值直到运行时才知。如无特别说明，右值表示“y的内容”。</td>
+</tr>
+</tbody></table>
+<p><strong>c语言引入“可修改的左值”这个术语。<br>它表示左值允许出现在赋值语句的左边，这个奇怪的术语是为了与数组名区分。<br>数组名也用于确定对象在内存中的位置，也是左值，但它不能作为赋值的对象。因此，数组名是个左值但不是可修改的左值。<br>标准规定赋值符必须用可修改的左值作为它左边一侧的操作数。<br>用通俗的话说，只能给可以修改的东西赋值。</strong></p>
+<p>编译器为每个变量分配一个地址（左值），这个地址在编译时可知，而且该变量在运行时一直保存于这个地址。存储于变量中的值（右值）只有在运行时才可知。如果需要用到变量中存储的值，编译器就发出指令从指定地址读入变量值并将它存于寄存器中。</p>
+<p>这里的关键之处在于每个符号的地址在编译时可知。所以，如果编译器需要一个地址（可能还需要加上偏移量）来执行某种操作，它就可以直接进行操作，并不需要增加指令首先取得具体的地址。相反，对于指针，必须首先在运行时取得它的当前值，然后才能对它进行解除引用操作（作为以后进行查找的步骤之一。）</p>
+<p>1.对数组进行下标引用的步骤：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">char a[9] = &quot;abcdefgh&quot;;</span><br><span class="line">...</span><br><span class="line">c = a[i];</span><br></pre></td></tr></table></figure>
+<p>首先，编译器符号表有数组a的地址，假设为9980；<br>运行时步骤1：取i的值，将它与9980相加（获得a[i]对应的偏移地址）<br>运行时步骤2：取地址（9980+i）的内容。</p>
+<p>这就是为什么extern char a[]与extern char a[100]等价的原因。这两个声明都提示a是一个数组，也就是一个内存地址，数组内的字符可以从这个地址找到。编译器并不需要知道数组总共有多长，因为数组长度只用于表示偏离起始地址的最大偏移量。从数组提取一个字符，只要简单的用符号表里a的地址加上下标的偏移量，所需要的字符就位于这个地址中。</p>
+<p>如果声明extern char *p，它将告诉编译器p是一个指针，它指向的对象是一个字符。为了取得这个字符，必须得到地址p的内容，把内容再作为字符的地址，并从这个地址中取得这个字符。指针的访问要灵活的多，但需要增加一次额外的提取。</p>
+<p>2.对指针的引用的步骤：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">char *p;</span><br><span class="line">...</span><br><span class="line">c = *p;</span><br></pre></td></tr></table></figure>
+<p>首先，编译器有符号p的地址，假设为4624；<br>运行时步骤1：取地址4624的内容，为5081；<br>运行时步骤2：取地址5081的内容。</p>
+<p>3.对指针进行下标引用的步骤：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">char *p = &quot;abcdefgh&quot;;</span><br><span class="line">...</span><br><span class="line">c = p[i];</span><br></pre></td></tr></table></figure>
+<p>首先，编译器符号表有一个p，假设地址为4624；<br>运行时步骤1：取地址4624的内容，为5081；<br>运行时步骤2：取得i的值，并将它与5081相加；<br>运行时步骤3：取地址（5081+i）的内容。</p>
+<p>对照1、3的访问方式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">char a[] = &quot;abcdefgh&quot;; ... a[3];</span><br><span class="line">char *p = &quot;abcdefgh&quot;; ... p[3];</span><br></pre></td></tr></table></figure>
+<p>在这两种情况下，都可以取得字符‘d’，但两者的途径非常不一样。</p>
+<p>定义为指针，但以数组方式引用，编译器将会：<br>a.取得符号表中p的地址，提取存储于此处的指针。<br>b.把下标所表示的偏移量与指针的值相加，产生一个地址。<br>c.访问上面这个地址，取得字符。</p>
+<blockquote>
+<p>编译器已被告知p是一个指向字符的指针。p[i]表示”从p所指的地址开始，前进i步，每步都是一个字符（即每个元素的长度为一个字节）。“如果是其他类型的指针（如int或double），其步长（每步的字节数）也各不相同。</p>
+</blockquote>
+<p><strong>既然把p声明成指针，那么不管p原先定义为指针还是数组，都会按照上面所示的三个步骤进行操作，但是只有当p原来定义为指针时这个方法才是正确的。</strong></p>
+<h4 id="定义为数组，但被声明为指针的问题"><a href="#定义为数组，但被声明为指针的问题" class="headerlink" title="定义为数组，但被声明为指针的问题"></a>定义为数组，但被声明为指针的问题</h4><p>假设p原先的定义是char p[10]，p在外部文件被声明为extern char *p。<br>当用p[i]这种形式提取这个声明的指针p的内容时，实际上得到的是一个字符。但按照上面的方法，编译器却把取到的字符当成是一个地址，把ACSII字符解释为地址显然是牛头不对马嘴，它很可能会污染程序地址空间的内容，并出现莫名其妙的错误。</p>
+<p>指针的外部声明与数组定义不匹配的问题很容易修正，只要修改声明，使之与定义相匹配即可，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">文件1：</span><br><span class="line">int mango[100];</span><br><span class="line"></span><br><span class="line">文件2：</span><br><span class="line">extern int mango[];</span><br></pre></td></tr></table></figure>
+<p>mango数组的定义分配了100个int的空间。<br>而指针定义 int *raisin；则申请一个地址容纳该指针。<br>指针的名字是raisin，它可以指向任何一个int变量（或int数组）。<br>指针变量raisin本身始终位于同一个地址，但它的内容在任何时候都可以不同，指向不同地址的int变量。这些不同的int变量可以有不同的值。<br>mango数组的地址并不能改变，在不同的时候它的内容可以不同，但它总是表示100个连续的内存空间。</p>
+<h4 id="数组和指针的其他区别"><a href="#数组和指针的其他区别" class="headerlink" title="数组和指针的其他区别"></a>数组和指针的其他区别</h4><p>比较数组和指针的另外一个方法就是比对两者的特点。</p>
+<table>
+<thead>
+<tr>
+<th>指针</th>
+<th>数组</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>保存数据地址</td>
+<td>保存数据</td>
+</tr>
+<tr>
+<td>间接访问数据，首先取得指针的内容，把它作为地址，然后从这个地址提取数据。如果指针有一个下标[i]，就把指针的内容加上i作为地址，从中提取数据</td>
+<td>直接访问数据，a[i]只是简单的以a+i为地址取得数据。</td>
+</tr>
+<tr>
+<td>通常用于动态数据结构</td>
+<td>通常用于存储固定数目且数据类型相同的元素</td>
+</tr>
+<tr>
+<td>相关的函数为malloc()、free()</td>
+<td>隐式分配和删除</td>
+</tr>
+<tr>
+<td>通常指向匿名数据</td>
+<td>自身即为数据名</td>
+</tr>
+</tbody></table>
+<p>数组和指针都可以在它们的定义中用字符串常量进行初始化。尽管看上去一样，底层的机制却不相同。<br>定义指针时，编译器并不为指针所指向的对象分配空间，它只分配指针本身的空间，除非在定义时同时赋给指针一个字符串常量进行初始化。例如，下面的定义创建了一个字符串常量（为其分配了内存）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">char *p = &quot;breadfruit&quot;;</span><br></pre></td></tr></table></figure>
+<p>注意只有对字符串常量才是如此。不能指望为浮点数之类的常量分配空间，如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">float *pip = 3.141；//错误！无法通过编译。</span><br></pre></td></tr></table></figure>
+<p>在ANSI C中，初始化指针时所创建的字符串常量被定义为只读。如果试图通过指针修改这个字符串的值，程序就会出现未定义的行为。在有些编译器中，字符串常量被存放在只允许读取的文本段中，以防止它被修改。</p>
+<p>数组也可以用字符串常量进行初始化：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">char a[] = &quot;gooseberry&quot;;</span><br></pre></td></tr></table></figure>
+<p>与指针不同，由字符串常量初始化的数组是可以修改的。其中的单个字符在以后可以改变，比如下面的语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">strncpy(a, &quot;black&quot;, 5);</span><br></pre></td></tr></table></figure>
+<p>就将数组的值修改为”blackberry”。</p>
+</div><div class="post-copyright"><script type="text/javascript" src="/js/copyright.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copyright.css?v=1.0.0"><p><span>本文标题：</span>C语言数组与指针的不同之处</p><p><span>文章作者：</span>Mr Bluyee</p><p><span>发布时间：</span>2018-07-30</p><p><span>最后更新：</span>2019-07-15</p><p><span>原始链接：</span><a href="/2018/07/30/C语言数组与指针的不同之处/">https://www.mrbluyee.com/2018/07/30/C%E8%AF%AD%E8%A8%80%E6%95%B0%E7%BB%84%E4%B8%8E%E6%8C%87%E9%92%88%E7%9A%84%E4%B8%8D%E5%90%8C%E4%B9%8B%E5%A4%84/</a><span class="copy-path"><i class="fa fa-clipboard" data-clipboard-text="https://www.mrbluyee.com/2018/07/30/C%E8%AF%AD%E8%A8%80%E6%95%B0%E7%BB%84%E4%B8%8E%E6%8C%87%E9%92%88%E7%9A%84%E4%B8%8D%E5%90%8C%E4%B9%8B%E5%A4%84/"></i></span></p><p><span>版权声明：</span>The author owns the copyright, please indicate the source reproduced.</p></div><br><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C/" rel="tag">C</a></li></ul></div><div class="post-nav"><a class="pre" href="/2018/07/31/gcc%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E7%9A%84%E8%BF%87%E7%A8%8B/">gcc程序编译的过程</a><a class="next" href="/2018/07/29/C%E8%AF%AD%E8%A8%80%E7%9A%84typedef/">C语言的typedef</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zOTYxNS8xNjE0Mg"><script>(function(d, s) {
+  var j, e = d.getElementsByTagName(s)[0];
+  if (typeof LivereTower === 'function') { return; }
+  j = d.createElement(s);
+  j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+  j.async = true;
+  e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1 pure-u-md-1-4"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"/><div id="local-search-result"></div></div></div><div class="widget"><div class="author-info"><a class="info-avatar" href="/about/" title="关于"><img class="nofancybox" src="/img/avatar.jpeg"/></a><p>Enjoy life / Hope for future</p><a class="info-icon" href="mr.bluyee@hotmail.com" title="mr.bluyee@hotmail.com" target="_blank" style="margin-inline:5px"> <i class="fa fa-envelope-square" style="margin-inline:5px"></i></a><a class="info-icon" href="https://github.com/MrBluyee" title="https://github.com/MrBluyee" target="_blank" style="margin-inline:5px"> <i class="fa fa-github-square" style="margin-inline:5px"></i></a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C-%E7%AE%97%E6%B3%95/">学习笔记——C 算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">学习笔记——C数据结构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94Python/">学习笔记——Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94android/">学习笔记——android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94expert-c-programming/">学习笔记——expert c programming</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94linux/">学习笔记——linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94opencv/">学习笔记——opencv</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BB%A3%E7%A0%81%E7%AE%A1%E7%90%86/">学习笔记——代码管理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BD%8E%E5%8A%9F%E8%80%97%E6%8A%80%E6%9C%AF/">学习笔记——低功耗技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/">学习笔记——嵌入式开发</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">学习笔记——机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%89%A9%E8%81%94%E7%BD%91/">学习笔记——物联网</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">学习笔记——网络协议</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">学习笔记——计算机系统</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" style="font-size: 15px;">计算机系统</a> <a href="/tags/android/" style="font-size: 15px;">android</a> <a href="/tags/C/" style="font-size: 15px;">C</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" style="font-size: 15px;">网络协议</a> <a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/" style="font-size: 15px;">嵌入式开发</a> <a href="/tags/opencv/" style="font-size: 15px;">opencv</a> <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" style="font-size: 15px;">机器学习</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/09/23/IPsec/">IPsec</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/21/%E6%95%B0%E7%9A%84%E7%B4%A0%E6%80%A7%E6%B5%8B%E8%AF%95/">数的素性测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/20/%E6%89%A9%E5%B1%95%E7%9A%84%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95/">扩展的欧几里得算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/17/%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95-%E6%B1%82%E6%9C%80%E5%A4%A7%E5%85%AC%E5%9B%A0%E6%95%B0/">欧几里得算法-求最大公因数</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/04/%E5%B8%B8%E7%94%A8%E8%B7%AF%E7%94%B1%E6%96%B9%E5%BC%8F/">常用路由方式</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/19/%E6%97%A0%E7%BA%BF%E4%BC%A0%E6%84%9F%E7%BD%91WSN%E6%A6%82%E8%BF%B0/">无线传感网WSN概述</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/18/%E6%97%A0%E7%BA%BF%E6%A8%A1%E5%9D%97%E4%BC%91%E7%9C%A0%E4%B8%8E%E6%BF%80%E6%B4%BB%E6%9C%BA%E5%88%B6/">无线模块休眠与激活机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E8%AE%BE%E8%AE%A1/">SOC的低功耗设计</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/03/%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97/">电源管理的低功耗</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/02/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E5%BA%94%E7%94%A8/">SOC的低功耗应用</a></li></ul></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2024 <a href="/." rel="nofollow">Mr Bluyee's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><link rel="stylesheet" type="text/css" href="/css/search.css?v=1.0.0"><script type="text/javascript" src="/js/search.js?v=1.0.0"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+  search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>

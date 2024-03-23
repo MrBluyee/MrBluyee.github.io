@@ -1,0 +1,167 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>HTTP请求与响应详解 | Mr Bluyee's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?' + '3dbaf3043b34b1c894c4cd063629b6a9';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><meta name="generator" content="Hexo 7.1.1"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">HTTP请求与响应详解</h1><a id="logo" href="/.">Mr Bluyee's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">HTTP请求与响应详解</h1><div class="post-meta">2018-04-25<span> | </span><span class="category"><a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">学习笔记——网络协议</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 5k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-clock-o"></i><span class="post-count"> 18</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP"><span class="toc-number">1.</span> <span class="toc-text">HTTP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">1.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HTTP%E8%AF%B7%E6%B1%82"><span class="toc-number">1.2.</span> <span class="toc-text">HTTP请求</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#HTTP%E8%AF%B7%E6%B1%82%E6%96%B9%E6%B3%95"><span class="toc-number">1.2.1.</span> <span class="toc-text">HTTP请求方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E7%9A%84%E8%AF%B7%E6%B1%82%E6%8A%A5%E5%A4%B4"><span class="toc-number">1.2.2.</span> <span class="toc-text">常用的请求报头</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HTTP%E5%93%8D%E5%BA%94"><span class="toc-number">1.3.</span> <span class="toc-text">HTTP响应</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E7%9A%84%E5%93%8D%E5%BA%94%E6%8A%A5%E5%A4%B4"><span class="toc-number">1.3.1.</span> <span class="toc-text">常用的响应报头</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%93%8D%E5%BA%94%E7%8A%B6%E6%80%81%E7%A0%81"><span class="toc-number">1.3.2.</span> <span class="toc-text">响应状态码</span></a></li></ol></li></ol></li></ol></div></div><div class="post-content"><h2 id="HTTP"><a href="#HTTP" class="headerlink" title="HTTP"></a>HTTP</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>HTTP协议（HyperText Transfer Protocol，超文本传输协议）。<br>是一种发布和接收 HTML页面的方法。HTTP的端口号为80。</p>
+<span id="more"></span>
+
+<p>浏览器发送HTTP请求的过程：</p>
+<ul>
+<li>1.当用户在浏览器的地址栏中输入一个URL并按回车键之后，浏览器会向HTTP服务器发送HTTP请求。HTTP请求主要分为“Get”和“Post”两种方法。</li>
+<li>2.当我们在浏览器输入URL <a target="_blank" rel="noopener" href="http://www.baidu.com/">http://www.baidu.com</a> 的时候，浏览器发送一个Request请求去获取 <a target="_blank" rel="noopener" href="http://www.baidu.com/">http://www.baidu.com</a> 的html文件，服务器把Response文件对象发送回给浏览器。</li>
+<li>3.浏览器分析Response中的 HTML，发现其中引用了很多其他文件，比如Images文件，CSS文件，JS文件。 浏览器会自动再次发送Request去获取图片，CSS文件，或者JS文件。</li>
+<li>4.当所有的文件都下载成功后，网页会根据HTML语法结构，完整的显示出来了。</li>
+</ul>
+<p><strong>URL（Uniform &#x2F; Universal Resource Locator）</strong><br>统一资源定位符，是用于完整地描述Internet上网页和其他资源的地址的一种标识方法。<br>基本格式：scheme:&#x2F;&#x2F;host[:port#]&#x2F;path&#x2F;…&#x2F;[?query-string][#anchor]</p>
+<ul>
+<li>scheme：协议(例如：http, https, ftp)</li>
+<li>host：服务器的IP地址或者域名</li>
+<li>port#：服务器的端口（如果是走协议默认端口，缺省端口80）</li>
+<li>path：访问资源的路径</li>
+<li>query-string：参数，发送给http服务器的数据</li>
+<li>anchor：锚（跳转到网页的指定锚点位置）</li>
+</ul>
+<h3 id="HTTP请求"><a href="#HTTP请求" class="headerlink" title="HTTP请求"></a>HTTP请求</h3><p>URL只是标识资源的位置，而HTTP是用来提交和获取资源。<br>客户端发送一个HTTP请求到服务器的请求消息，包括以下格式：<br><strong>请求行、请求头部、空行、请求数据</strong><br><img src="https://upload-images.jianshu.io/upload_images/9169686-8ed3c177220f54b7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="HTTP请求格式"><br>一个典型的HTTP请求示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">GET https://www.baidu.com/ HTTP/1.1</span><br><span class="line">Host: www.baidu.com</span><br><span class="line">Connection: keep-alive</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8</span><br><span class="line">Referer: http://www.baidu.com/</span><br><span class="line">Accept-Encoding: gzip, deflate, sdch, br</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.8,en;q=0.6</span><br><span class="line">Cookie: BAIDUID=04E4001F34EA74AD4601512DD3C41A7B:FG=1; BIDUPSID=04E4001F34EA74AD4601512DD3C41A7B;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h4 id="HTTP请求方法"><a href="#HTTP请求方法" class="headerlink" title="HTTP请求方法"></a>HTTP请求方法</h4><p>根据HTTP标准，HTTP请求可以使用多种请求方法。<br>HTTP 0.9：只有基本的文本 GET 功能。<br>HTTP 1.0：完善的请求&#x2F;响应模型，并将协议补充完整，定义了三种请求方法： GET, POST 和 HEAD方法。<br>HTTP 1.1：在 1.0 基础上进行更新，新增了五种请求方法：OPTIONS, PUT, DELETE, TRACE 和 CONNECT 方法。<br>HTTP 2.0（未普及）：请求&#x2F;响应首部的定义基本没有改变，只是所有首部键必须全部小写，而且请求行要独立为 :method、:scheme、:host、:path这些键值对。<br><img src="https://upload-images.jianshu.io/upload_images/9169686-0b21aaeaa35315fc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="HTTP请求方法"><br>HTTP请求主要分为Get和Post两种方法：<br>GET是从服务器上获取数据，POST是向服务器传送数据。</p>
+<p>GET请求参数显示，都显示在浏览器网址上，HTTP服务器根据该请求所包含URL中的参数来产生响应内容，即“Get”请求的参数是URL的一部分。 例如： <a target="_blank" rel="noopener" href="http://www.baidu.com/s?wd=Chinese">http://www.baidu.com/s?wd=Chinese</a></p>
+<p>POST请求参数在请求体当中，消息长度没有限制而且以隐式的方式进行发送，通常用来向HTTP服务器提交量比较大的数据（比如请求中包含许多参数或者文件上传操作等），请求的参数包含在“Content-Type”消息头里，指明该消息体的媒体类型和编码。</p>
+<p>避免使用Get方式提交表单，因为有可能会导致安全问题。 比如说在登陆表单中用Get方式，用户输入的用户名和密码将在地址栏中暴露无遗。</p>
+<h4 id="常用的请求报头"><a href="#常用的请求报头" class="headerlink" title="常用的请求报头"></a>常用的请求报头</h4><ol>
+<li><p>Host (主机和端口号)<br>Host：对应网址URL中的Web名称和端口号，用于指定被请求资源的Internet主机和端口号，通常属于URL的一部分。</p>
+</li>
+<li><p>Connection (链接类型)<br>Connection：表示客户端与服务连接类型</p>
+</li>
+</ol>
+<ul>
+<li>1.Client 发起一个包含 Connection:keep-alive 的请求，HTTP&#x2F;1.1使用 keep-alive 为默认值。</li>
+<li>2.Server收到请求后：如果 Server 支持 keep-alive，回复一个包含 Connection:keep-alive 的响应，不关闭连接；如果 Server 不支持 keep-alive，回复一个包含 Connection:close 的响应，关闭连接。</li>
+<li>3.如果client收到包含 Connection:keep-alive 的响应，向同一个连接发送下一个请求，直到一方主动关闭连接。<br>keep-alive在很多情况下能够重用连接，减少资源消耗，缩短响应时间，比如当浏览器需要多个文件时(比如一个HTML文件和相关的图形文件)，不需要每次都去请求建立连接。</li>
+</ul>
+<ol start="3">
+<li><p>Upgrade-Insecure-Requests (升级为HTTPS请求)<br>升级不安全的请求，意思是会在加载 http 资源时自动替换成 https 请求，让浏览器不再显示https页面中的http请求警报。<br>HTTPS 是以安全为目标的 HTTP 通道，所以在 HTTPS 承载的页面上不允许出现 HTTP 请求，一旦出现就是提示或报错。</p>
+</li>
+<li><p>User-Agent (浏览器名称)</p>
+</li>
+<li><p>Accept (传输文件类型)<br>指浏览器或其他客户端可以接受的MIME（Multipurpose Internet Mail Extensions（多用途互联网邮件扩展））文件类型<br>服务器可以根据它判断并返回适当的文件格式。</p>
+</li>
+</ol>
+<ul>
+<li>Accept: *&#x2F;*：表示什么都可以接收。</li>
+<li>Accept：image&#x2F;gif：表明客户端希望接受GIF图像格式的资源</li>
+<li>Accept：text&#x2F;html：表明客户端希望接受html文本。</li>
+<li>Accept: text&#x2F;html, application&#x2F;xhtml+xml;q&#x3D;0.9, image&#x2F;*;q&#x3D;0.8 ：<br>表示浏览器支持的 MIME 类型分别是 html文本、xhtml和xml文档，所有的图像格式资源。<br>q是权重系数，范围 0 &#x3D;&lt; q &lt;&#x3D; 1，q 值越大，请求越倾向于获得其“;”之前的类型表示的内容。<br>若没有指定q值，则默认为1，按从左到右排序顺序，若被赋值为0，则用于表示浏览器不接受此内容类型。Text：用于标准化地表示的文本信息，文本消息可以是多种字符集和或者多种格式的。Application：用于传输应用程序数据或者二进制数据。</li>
+</ul>
+<ol start="6">
+<li><p>Referer (页面跳转处)<br>表明产生请求的网页来自于哪个URL，用户是从该 Referer页面访问到当前请求的页面。这个属性可以用来跟踪Web请求来自哪个页面，是从什么网站来的等。有时候遇到下载某网站图片，需要对应的referer，否则无法下载图片，那是因为人家做了防盗链，原理就是根据referer去判断是否是本网站的地址，如果不是，则拒绝，如果是，就可以下载。</p>
+</li>
+<li><p>Accept-Encoding（文件编解码格式）<br>指出浏览器可以接受的编码方式。<br>编码方式不同于文件格式，它是为了压缩文件并加速文件传递速度。浏览器在接收到Web响应之后先解码，然后再检查文件格式，许多情形下这可以减少大量的下载时间。<br>举例：Accept-Encoding:gzip;q&#x3D;1.0, identity; q&#x3D;0.5, *;q&#x3D;0<br>如果有多个Encoding同时匹配, 按照q值顺序排列,本例中按顺序支持 gzip, identity压缩编码，支持gzip的浏览器会返回经过gzip编码的HTML页面。<br>如果请求消息中没有设置这个域服务器假定客户端对各种内容编码都可以接受。</p>
+</li>
+<li><p>Accept-Language（语言种类）<br>指出浏览器可以接受的语言种类。<br>如en或en-us指英语，zh或者zh-cn指中文<br>当服务器能够提供一种以上的语言版本时要用到。</p>
+</li>
+<li><p>Accept-Charset（字符编码）<br>指出浏览器可以接受的字符编码。<br>举例：Accept-Charset:iso-8859-1,gb2312,utf-8<br>ISO8859-1：通常叫做Latin-1。Latin-1包括了书写所有西方欧洲语言不可缺少的附加字符，英文浏览器的默认值是ISO-8859-1.<br>gb2312：标准简体中文字符集;<br>utf-8：UNICODE 的一种变长字符编码，可以解决多种语言文本显示问题，从而实现应用国际化和本地化。<br>如果在请求消息中没有设置这个域，缺省是任何字符集都可以接受。</p>
+</li>
+<li><p>Cookie （Cookie）<br>浏览器用这个属性向服务器发送Cookie。<br>Cookie是在浏览器中寄存的小型数据体，它可以记载和服务器相关的用户信息，也可以用来实现会话功能</p>
+</li>
+<li><p>Content-Type (POST数据类型)<br>POST请求里用来表示的内容类型。<br>举例：Content-Type &#x3D; Text&#x2F;XML; charset&#x3D;gb2312：<br>指明该请求的消息体中包含的是纯文本的XML类型的数据，字符编码采用“gb2312”。</p>
+</li>
+</ol>
+<h3 id="HTTP响应"><a href="#HTTP响应" class="headerlink" title="HTTP响应"></a>HTTP响应</h3><p>HTTP响应也由四个部分组成，分别是： 状态行、消息报头、空行、响应正文<br><img src="https://upload-images.jianshu.io/upload_images/9169686-857f650b6bd326d8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="HTTP响应"><br>一个典型的HTTP响应示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Server: Tengine</span><br><span class="line">Connection: keep-alive</span><br><span class="line">Date: Wed, 30 Nov 2016 07:58:21 GMT</span><br><span class="line">Cache-Control: no-cache</span><br><span class="line">Content-Type: text/html;charset=UTF-8</span><br><span class="line">Keep-Alive: timeout=20</span><br><span class="line">Vary: Accept-Encoding</span><br><span class="line">Pragma: no-cache</span><br><span class="line">X-NWS-LOG-UUID: bd27210a-24e5-4740-8f6c-25dbafa9c395</span><br><span class="line">Content-Length: 180945</span><br><span class="line"></span><br><span class="line">&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; ....</span><br></pre></td></tr></table></figure>
+<h4 id="常用的响应报头"><a href="#常用的响应报头" class="headerlink" title="常用的响应报头"></a>常用的响应报头</h4><p>理论上所有的响应头信息都应该是回应请求头的。但是服务端为了效率，安全，还有其他方面的考虑，会添加相对应的响应头信息</p>
+<ol>
+<li>Cache-Control：must-revalidate, no-cache, private。<br>这个值告诉客户端，服务端不希望客户端缓存资源，在下次请求资源时，必须要从新请求服务器，不能从缓存副本中获取资源。</li>
+</ol>
+<p>Cache-Control是响应头中很重要的信息，当客户端请求头中包含Cache-Control:max-age&#x3D;0请求，明确表示不会缓存服务器资源时,Cache-Control作为作为回应信息，通常会返回no-cache，意思就是说，”那就不缓存呗”。</p>
+<p>当客户端在请求头中没有包含Cache-Control时，服务端往往会定,不同的资源不同的缓存策略，比如说oschina在缓存图片资源的策略就是Cache-Control：max-age&#x3D;86400,这个意思是，从当前时间开始，在86400秒的时间内，客户端可以直接从缓存副本中读取资源，而不需要向服务器请求。</p>
+<ol start="2">
+<li><p>Connection：keep-alive<br>这个字段作为回应客户端的Connection：keep-alive，告诉客户端服务器的tcp连接也是一个长连接，客户端可以继续使用这个tcp连接发送http请求。</p>
+</li>
+<li><p>Content-Encoding:gzip<br>告诉客户端，服务端发送的资源是采用gzip编码的，客户端看到这个信息后，应该采用gzip对资源进行解码。</p>
+</li>
+<li><p>Content-Type：text&#x2F;html;charset&#x3D;UTF-8<br>告诉客户端，资源文件的类型，还有字符编码，客户端通过utf-8对资源进行解码，然后对资源进行html解析。通常我们会看到有些网站是乱码的，往往就是服务器端没有返回正确的编码。</p>
+</li>
+<li><p>Date：Sun, 21 Sep 2016 06:18:21 GMT<br>这个是服务端发送资源时的服务器时间，GMT是格林尼治所在地的标准时间。<br>http协议中发送的时间都是GMT的，这主要是解决在互联网上，不同时区在相互请求资源的时候，时间混乱问题。</p>
+</li>
+<li><p>Expires:Sun, 1 Jan 2000 01:00:00 GMT<br>这个响应头也是跟缓存有关的，告诉客户端在这个时间前，可以直接访问缓存副本。<br>很显然这个值会存在问题，因为客户端和服务器的时间不一定会都是相同的，如果时间不同就会导致问题。<br>所以这个响应头是没有Cache-Control：max-age&#x3D;*这个响应头准确的，因为max-age&#x3D;date中的date是个相对时间，不仅更好理解，也更准确。</p>
+</li>
+<li><p>Pragma:no-cache<br>这个含义与Cache-Control等同。</p>
+</li>
+</ol>
+<p>8.Server：Tengine&#x2F;1.4.6<br>这个是服务器和相对应的版本，只是告诉客户端服务器的信息。</p>
+<ol start="9">
+<li><p>Transfer-Encoding：chunked<br>这个响应头告诉客户端，服务器发送的资源的方式是分块发送的。<br>一般分块发送的资源都是服务器动态生成的，在发送时还不知道发送资源的大小，所以采用分块发送，每一块都是独立的，独立的块都能标示自己的长度，最后一块是0长度的，当客户端读到这个0长度的块时，就可以确定资源已经传输完了。</p>
+</li>
+<li><p>Vary: Accept-Encoding<br>告诉缓存服务器，缓存压缩文件和非压缩文件两个版本。<br>现在这个字段用处并不大，因为现在的浏览器都是支持压缩的。</p>
+</li>
+</ol>
+<h4 id="响应状态码"><a href="#响应状态码" class="headerlink" title="响应状态码"></a>响应状态码</h4><p>响应状态代码有三位数字组成，第一个数字定义了响应的类别，且有五种可能取值。<br>100~199：表示服务器成功接收部分请求，要求客户端继续提交其余请求才能完成整个处理过程。</p>
+<p>200~299：表示服务器成功接收请求并已完成整个处理过程。常用200（OK 请求成功）。</p>
+<p>300~399：为完成请求，客户需进一步细化请求。例如：请求的资源已经移动一个新地址、常用302（所请求的页面已经临时转移至新的url）、307和304（使用缓存资源）。</p>
+<p>400~499：客户端的请求有错误，常用404（服务器无法找到被请求的页面）、403（服务器拒绝访问，权限不够）。</p>
+<p>500~599：服务器端出现错误，常用500（请求未完成。服务器遇到不可预知的情况）。</p>
+<hr>
+<p><strong>1xx:信息</strong><br>100 Continue<br>服务器仅接收到部分请求，但是一旦服务器并没有拒绝该请求，客户端应该继续发送其余的请求。</p>
+<p>101 Switching Protocols<br>服务器转换协议：服务器将遵从客户的请求转换到另外一种协议。</p>
+<hr>
+<p><strong>2xx:成功</strong><br>200 OK<br>请求成功（其后是对GET和POST请求的应答文档）</p>
+<p>201 Created<br>请求被创建完成，同时新的资源被创建。</p>
+<p>202 Accepted<br>供处理的请求已被接受，但是处理未完成。</p>
+<p>203 Non-authoritative Information<br>文档已经正常地返回，但一些应答头可能不正确，因为使用的是文档的拷贝。</p>
+<p>204 No Content<br>没有新文档。浏览器应该继续显示原来的文档。如果用户定期地刷新页面，而Servlet可以确定用户文档足够新，这个状态代码是很有用的。</p>
+<p>205 Reset Content<br>没有新文档。但浏览器应该重置它所显示的内容。用来强制浏览器清除表单输入内容。</p>
+<p>206 Partial Content<br>客户发送了一个带有Range头的GET请求，服务器完成了它。</p>
+<hr>
+<p><strong>3xx:重定向</strong><br>300 Multiple Choices<br>多重选择。链接列表。用户可以选择某链接到达目的地。最多允许五个地址。</p>
+<p>301 Moved Permanently<br>所请求的页面已经转移至新的url。</p>
+<p>302 Moved Temporarily<br>所请求的页面已经临时转移至新的url。</p>
+<p>303 See Other<br>所请求的页面可在别的url下被找到。</p>
+<p>304 Not Modified<br>未按预期修改文档。客户端有缓冲的文档并发出了一个条件性的请求（一般是提供If-Modified-Since头表示客户只想比指定日期更新的文档）。服务器告诉客户，原来缓冲的文档还可以继续使用。</p>
+<p>305 Use Proxy<br>客户请求的文档应该通过Location头所指明的代理服务器提取。</p>
+<p>306 Unused<br>此代码被用于前一版本。目前已不再使用，但是代码依然被保留。</p>
+<p>307 Temporary Redirect<br>被请求的页面已经临时移至新的url。</p>
+<hr>
+<p><strong>4xx:客户端错误</strong><br>400 Bad Request<br>服务器未能理解请求。</p>
+<p>401 Unauthorized<br>被请求的页面需要用户名和密码。<br>401.1 登录失败。<br>401.2 服务器配置导致登录失败。<br>401.3 由于 ACL 对资源的限制而未获得授权。<br>401.4 筛选器授权失败。<br>401.5 ISAPI&#x2F;CGI 应用程序授权失败。<br>401.7 访问被 Web 服务器上的 URL 授权策略拒绝。这个错误代码为 IIS 6.0 所专用。</p>
+<p>402 Payment Required<br>此代码尚无法使用。</p>
+<p>403 Forbidden<br>对被请求页面的访问被禁止。<br>403.1 执行访问被禁止。<br>403.2 读访问被禁止。<br>403.3 写访问被禁止。<br>403.4 要求 SSL。<br>403.5 要求 SSL 128。<br>403.6 IP 地址被拒绝。<br>403.7 要求客户端证书。<br>403.8 站点访问被拒绝。<br>403.9 用户数过多。<br>403.10 配置无效。<br>403.11 密码更改。<br>403.12 拒绝访问映射表。<br>403.13 客户端证书被吊销。<br>403.14 拒绝目录列表。<br>403.15 超出客户端访问许可。<br>403.16 客户端证书不受信任或无效。<br>403.17 客户端证书已过期或尚未生效。<br>403.18 在当前的应用程序池中不能执行所请求的 URL。这个错误代码为 IIS 6.0 所专用。<br>403.19 不能为这个应用程序池中的客户端执行 CGI。这个错误代码为 IIS 6.0 所专用。<br>403.20 Passport 登录失败。这个错误代码为 IIS 6.0 所专用。</p>
+<p>404 Not Found<br>服务器无法找到被请求的页面。<br>404.0 没有找到文件或目录。<br>404.1 无法在所请求的端口上访问 Web 站点。<br>404.2 Web 服务扩展锁定策略阻止本请求。<br>404.3 MIME 映射策略阻止本请求。</p>
+<p>405 Method Not Allowed<br>请求中指定的方法不被允许。</p>
+<p>406 Not Acceptable<br>服务器生成的响应无法被客户端所接受。</p>
+<p>407 Proxy Authentication Required<br>用户必须首先使用代理服务器进行验证，这样请求才会被处理。</p>
+<p>408 Request Timeout<br>请求超出了服务器的等待时间。</p>
+<p>409 Conflict<br>由于冲突，请求无法被完成。</p>
+<p>410 Gone<br>被请求的页面不可用。</p>
+<p>411 Length Required<br>“Content-Length” 未被定义。如果无此内容，服务器不会接受请求。</p>
+<p>412 Precondition Failed<br>请求中的前提条件被服务器评估为失败。</p>
+<p>413 Request Entity Too Large<br>由于所请求的实体的太大，服务器不会接受请求。</p>
+<p>414 Request-url Too Long<br>由于url太长，服务器不会接受请求。当post请求被转换为带有很长的查询信息的get请求时，就会发生这种情况。</p>
+<p>415 Unsupported Media Type<br>由于媒介类型不被支持，服务器不会接受请求。</p>
+<p>416 Requested Range Not Satisfiable<br>服务器不能满足客户在请求中指定的Range头。</p>
+<p>417 Expectation Failed<br>执行失败。</p>
+<p>423<br>锁定的错误。</p>
+<hr>
+<p><strong>5xx:服务器错误</strong><br>500 Internal Server Error<br>请求未完成。服务器遇到不可预知的情况。<br>500.12 应用程序正忙于在 Web 服务器上重新启动。<br>500.13 Web 服务器太忙。<br>500.15 不允许直接请求 Global.asa。<br>500.16 UNC 授权凭据不正确。这个错误代码为 IIS 6.0 所专用。<br>500.18 URL 授权存储不能打开。这个错误代码为 IIS 6.0 所专用。<br>500.100 内部 ASP 错误。</p>
+<p>501 Not Implemented<br>请求未完成。服务器不支持所请求的功能。</p>
+<p>502 Bad Gateway<br>请求未完成。服务器从上游服务器收到一个无效的响应。<br>502.1 CGI 应用程序超时。　<br>502.2 CGI 应用程序出错。</p>
+<p>503 Service Unavailable<br>请求未完成。服务器临时过载或当机。</p>
+<p>504 Gateway Timeout<br>网关超时。</p>
+<p>505 HTTP Version Not Supported<br>服务器不支持请求中指明的HTTP协议版本</p>
+<hr>
+</div><div class="post-copyright"><script type="text/javascript" src="/js/copyright.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copyright.css?v=1.0.0"><p><span>本文标题：</span>HTTP请求与响应详解</p><p><span>文章作者：</span>Mr Bluyee</p><p><span>发布时间：</span>2018-04-25</p><p><span>最后更新：</span>2019-07-15</p><p><span>原始链接：</span><a href="/2018/04/25/HTTP请求与响应详解/">https://www.mrbluyee.com/2018/04/25/HTTP%E8%AF%B7%E6%B1%82%E4%B8%8E%E5%93%8D%E5%BA%94%E8%AF%A6%E8%A7%A3/</a><span class="copy-path"><i class="fa fa-clipboard" data-clipboard-text="https://www.mrbluyee.com/2018/04/25/HTTP%E8%AF%B7%E6%B1%82%E4%B8%8E%E5%93%8D%E5%BA%94%E8%AF%A6%E8%A7%A3/"></i></span></p><p><span>版权声明：</span>The author owns the copyright, please indicate the source reproduced.</p></div><br><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" rel="tag">网络协议</a></li></ul></div><div class="post-nav"><a class="pre" href="/2018/05/16/Python%E4%B9%8B%E7%A6%85/">Python之禅</a><a class="next" href="/2018/04/22/%E7%90%86%E8%A7%A3HTTPS/">理解HTTPS</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zOTYxNS8xNjE0Mg"><script>(function(d, s) {
+  var j, e = d.getElementsByTagName(s)[0];
+  if (typeof LivereTower === 'function') { return; }
+  j = d.createElement(s);
+  j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+  j.async = true;
+  e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1 pure-u-md-1-4"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"/><div id="local-search-result"></div></div></div><div class="widget"><div class="author-info"><a class="info-avatar" href="/about/" title="关于"><img class="nofancybox" src="/img/avatar.jpeg"/></a><p>Enjoy life / Hope for future</p><a class="info-icon" href="mr.bluyee@hotmail.com" title="mr.bluyee@hotmail.com" target="_blank" style="margin-inline:5px"> <i class="fa fa-envelope-square" style="margin-inline:5px"></i></a><a class="info-icon" href="https://github.com/MrBluyee" title="https://github.com/MrBluyee" target="_blank" style="margin-inline:5px"> <i class="fa fa-github-square" style="margin-inline:5px"></i></a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C-%E7%AE%97%E6%B3%95/">学习笔记——C 算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">学习笔记——C数据结构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94Python/">学习笔记——Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94android/">学习笔记——android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94expert-c-programming/">学习笔记——expert c programming</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94linux/">学习笔记——linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94opencv/">学习笔记——opencv</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BB%A3%E7%A0%81%E7%AE%A1%E7%90%86/">学习笔记——代码管理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BD%8E%E5%8A%9F%E8%80%97%E6%8A%80%E6%9C%AF/">学习笔记——低功耗技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/">学习笔记——嵌入式开发</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">学习笔记——机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%89%A9%E8%81%94%E7%BD%91/">学习笔记——物联网</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">学习笔记——网络协议</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">学习笔记——计算机系统</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" style="font-size: 15px;">计算机系统</a> <a href="/tags/android/" style="font-size: 15px;">android</a> <a href="/tags/C/" style="font-size: 15px;">C</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" style="font-size: 15px;">网络协议</a> <a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/" style="font-size: 15px;">嵌入式开发</a> <a href="/tags/opencv/" style="font-size: 15px;">opencv</a> <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" style="font-size: 15px;">机器学习</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/09/23/IPsec/">IPsec</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/21/%E6%95%B0%E7%9A%84%E7%B4%A0%E6%80%A7%E6%B5%8B%E8%AF%95/">数的素性测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/20/%E6%89%A9%E5%B1%95%E7%9A%84%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95/">扩展的欧几里得算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/17/%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95-%E6%B1%82%E6%9C%80%E5%A4%A7%E5%85%AC%E5%9B%A0%E6%95%B0/">欧几里得算法-求最大公因数</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/04/%E5%B8%B8%E7%94%A8%E8%B7%AF%E7%94%B1%E6%96%B9%E5%BC%8F/">常用路由方式</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/19/%E6%97%A0%E7%BA%BF%E4%BC%A0%E6%84%9F%E7%BD%91WSN%E6%A6%82%E8%BF%B0/">无线传感网WSN概述</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/18/%E6%97%A0%E7%BA%BF%E6%A8%A1%E5%9D%97%E4%BC%91%E7%9C%A0%E4%B8%8E%E6%BF%80%E6%B4%BB%E6%9C%BA%E5%88%B6/">无线模块休眠与激活机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E8%AE%BE%E8%AE%A1/">SOC的低功耗设计</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/03/%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97/">电源管理的低功耗</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/02/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E5%BA%94%E7%94%A8/">SOC的低功耗应用</a></li></ul></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2024 <a href="/." rel="nofollow">Mr Bluyee's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><link rel="stylesheet" type="text/css" href="/css/search.css?v=1.0.0"><script type="text/javascript" src="/js/search.js?v=1.0.0"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+  search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>04 数据对齐 | Mr Bluyee's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?' + '3dbaf3043b34b1c894c4cd063629b6a9';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><meta name="generator" content="Hexo 7.1.1"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">04 数据对齐</h1><a id="logo" href="/.">Mr Bluyee's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">04 数据对齐</h1><div class="post-meta">2018-11-19<span> | </span><span class="category"><a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">学习笔记——计算机系统</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 5.4k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-clock-o"></i><span class="post-count"> 19</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%AF%B9%E9%BD%90"><span class="toc-number">1.</span> <span class="toc-text">数据对齐</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93%E5%AF%B9%E9%BD%90"><span class="toc-number">2.</span> <span class="toc-text">结构体对齐</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93%E5%AF%B9%E9%BD%90%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">2.1.</span> <span class="toc-text">结构体对齐的基本概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%93%E6%9E%84%E4%BD%93%E7%9A%84%E5%AF%B9%E9%BD%90%E5%87%86%E5%88%99"><span class="toc-number">2.2.</span> <span class="toc-text">结构体的对齐准则</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AF%B9%E9%BD%90%E7%9A%84%E9%9A%90%E6%82%A3"><span class="toc-number">2.3.</span> <span class="toc-text">对齐的隐患</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="toc-number">2.3.1.</span> <span class="toc-text">数据类型转换</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%A4%84%E7%90%86%E5%99%A8%E9%97%B4%E6%95%B0%E6%8D%AE%E9%80%9A%E4%BF%A1"><span class="toc-number">2.3.2.</span> <span class="toc-text">处理器间数据通信</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8E%92%E6%9F%A5%E5%AF%B9%E9%BD%90%E9%97%AE%E9%A2%98"><span class="toc-number">2.4.</span> <span class="toc-text">排查对齐问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9B%B4%E6%94%B9%E5%AF%B9%E9%BD%90%E6%96%B9%E5%BC%8F"><span class="toc-number">2.5.</span> <span class="toc-text">更改对齐方式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%8D%E5%9F%9F%E5%AF%B9%E9%BD%90"><span class="toc-number">2.6.</span> <span class="toc-text">位域对齐</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BD%8D%E5%9F%9F%E5%AF%B9%E9%BD%90%E5%87%86%E5%88%99"><span class="toc-number">2.6.1.</span> <span class="toc-text">位域对齐准则</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BD%8D%E5%9F%9F%E6%93%8D%E4%BD%9C%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">2.6.2.</span> <span class="toc-text">位域操作注意事项</span></a></li></ol></li></ol></li></ol></div></div><div class="post-content"><h3 id="数据对齐"><a href="#数据对齐" class="headerlink" title="数据对齐"></a>数据对齐</h3><p>许多计算机系统对基本数据类型的合法地址做出一个限制，要求某种类型对象的地址必须是某个值K（通常是2、4、8）的倍数。</p>
+<span id="more"></span>
+
+<p>这种对齐限制简化了形成处理器和内存系统之间接口的硬件设计。例如，假设一个处理器总是从内存中取8个字节，则地址必须为8的倍数。如果我们能保证将所有的double类型数据的地址对齐成8的倍数，那么就可以用一个内存操作来读或者写值了。否则，我们可能需要执行两次内存访问，因为对象可能被分放在两个8字节内存块中。</p>
+<p>无论数据是否对齐，x86-64硬件都能正确的工作。不过，intel还是建议要对齐数据以提高内存系统的性能。对齐原则是任何K字节的基本对象的地址必须是K的倍数。可以看到这条原则会得到如下对齐：</p>
+<table>
+<thead>
+<tr>
+<th>K</th>
+<th>类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>char</td>
+</tr>
+<tr>
+<td>2</td>
+<td>short</td>
+</tr>
+<tr>
+<td>4</td>
+<td>int,float</td>
+</tr>
+<tr>
+<td>8</td>
+<td>long,double,char *</td>
+</tr>
+</tbody></table>
+<p>确保每种数据类型都是按照指定方式来组织和分配，即每种类型的对象都满足它的对齐限制，就可保证实施对齐。要注意，在32位机中使用1字节或2字节对齐，反而会降低变量访问速度。因此需要考虑处理器类型。还应考虑编译器的类型。在VC&#x2F;C++和GNU GCC中都是默认是4字节对齐。</p>
+<p>编译器在汇报代码中放入命令，指明全局数据所需的对齐。<br>例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.align 8</span><br></pre></td></tr></table></figure>
+<p>表示它后面的数据的起始地址是8的倍数。</p>
+<h3 id="结构体对齐"><a href="#结构体对齐" class="headerlink" title="结构体对齐"></a>结构体对齐</h3><p>在C语言中，结构体是种复合数据类型，其构成元素既可以是基本数据类型(如int、long、float等)的变量，也可以是一些复合数据类型(如数组、结构体、联合等)的数据单元。编译器为结构体的每个成员按照其自然边界(alignment)分配空间。各成员按照它们被声明的顺序在内存中顺序存储，第一个成员的地址和整个结构的地址相同。</p>
+<p>字节对齐的问题主要就是针对结构体。<br>对于包含结构体的代码，编译器可能需要在字段的分配中插入间隙，以保证每个结构元素都满足它的对齐要求。而结构体本身对它的起始地址也有一些对齐要求。</p>
+<p>先看个简单的例子(32位，X86处理器，GCC编译器)：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">struct A&#123;</span><br><span class="line">    int    a;</span><br><span class="line">    char   b;</span><br><span class="line">    short  c;</span><br><span class="line">&#125;;</span><br><span class="line">struct B&#123;</span><br><span class="line">    char   b;</span><br><span class="line">    int    a;</span><br><span class="line">    short  c;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>已知32位机器上各数据类型的长度为：char为1字节、short为2字节、int为4字节、long为4字节、float为4字节、double为8字节。那么上面两个结构体大小如何呢？</p>
+<p>结果是：sizeof(strcut A)值为8；sizeof(struct B)的值却是12。 </p>
+<p>结构体A中包含一个4字节的int数据，一个1字节char数据和一个2字节short数据；B也一样。按理说A和B大小应该都是7字节。之所以出现上述结果，就是因为编译器要对数据成员在空间上进行对齐。</p>
+<h4 id="结构体对齐的基本概念"><a href="#结构体对齐的基本概念" class="headerlink" title="结构体对齐的基本概念"></a>结构体对齐的基本概念</h4><ul>
+<li><p>数据类型自身的对齐值：<br>char型数据自身对齐值为1字节，short型数据为2字节，int&#x2F;float型为4字节，double型为8字节。</p>
+</li>
+<li><p>结构体或类的自身对齐值：<br>其成员中自身对齐值最大的那个值。</p>
+</li>
+<li><p>指定对齐值：</p>
+</li>
+</ul>
+<p>#pragma pack (value)时的指定对齐值value。</p>
+<ul>
+<li>数据成员、结构体和类的有效对齐值：<br>自身对齐值和指定对齐值中较小者，即有效对齐值&#x3D;min{自身对齐值，当前指定的pack值}。</li>
+</ul>
+<p>基于上面这些值，就可以方便地讨论具体数据结构的成员和其自身的对齐方式。</p>
+<p>其中，有效对齐值N是最终用来决定数据存放地址方式的值。</p>
+<p>有效对齐N表示“对齐在N上”，即该数据的“存放起始地址%N&#x3D;0”。而数据结构中的数据变量都是按定义的先后顺序存放。第一个数据变量的起始地址就是数据结构的起始地址。结构体的成员变量要对齐存放，结构体本身也要根据自身的有效对齐值圆整(即结构体成员变量占用总长度为结构体有效对齐值的整数倍)。</p>
+<p>下面分析这个结构体定义：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct B&#123;</span><br><span class="line">    char   b;</span><br><span class="line">    int    a;</span><br><span class="line">    short  c;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>假设B从地址空间0x0000开始存放，且指定对齐值默认为4(4字节对齐)。</p>
+<p>成员变量b的自身对齐值是1，比默认指定对齐值4小，所以其有效对齐值为1，其存放地址0x0000符合0x0000%1&#x3D;0。</p>
+<p>成员变量a自身对齐值为4，所以有效对齐值也为4，只能存放在起始地址为0x0004~0x0007四个连续的字节空间中，符合0x0004%4&#x3D;0且紧靠第一个变量。</p>
+<p>变量c自身对齐值为2，所以有效对齐值也是2，可存放在0x0008<del>0x0009两个字节空间中，符合0x0008%2&#x3D;0。所以从0x0000</del>0x0009存放的都是B内容。</p>
+<p>再看数据结构B的自身对齐值为其变量中最大对齐值(这里是b)所以就是4，所以结构体的有效对齐值也是4。根据结构体圆整的要求， 0x0000<del>0x0009&#x3D;10字节，(10＋2)％4＝0。所以0x0000A</del>0x000B也为结构体B所占用。故B从0x0000到0x000B 共有12个字节，sizeof(struct B)&#x3D;12。</p>
+<p>之所以编译器在后面补充2个字节，是为了实现结构数组的存取效率。试想如果定义一个结构B的数组，那么第一个结构起始地址是0没有问题，但是第二个结构呢？按照数组的定义，数组中所有元素都紧挨着。如果我们不把结构体大小补充为4的整数倍，那么下一个结构的起始地址将是0x0000A，这显然不能满足结构的地址对齐。因此要把结构体补充成有效对齐大小的整数倍。其实对于char&#x2F;short&#x2F;int&#x2F;float&#x2F;double等已有类型的自身对齐值也是基于数组考虑的，只是因为这些类型的长度已知，所以他们的自身对齐值也就已知。</p>
+<h4 id="结构体的对齐准则"><a href="#结构体的对齐准则" class="headerlink" title="结构体的对齐准则"></a>结构体的对齐准则</h4><p>结构体字节对齐的细节和具体编译器实现相关，但一般而言满足三个准则：</p>
+<ul>
+<li>1.结构体变量的首地址能够被其最宽基本类型成员的大小所整除。</li>
+<li>2.结构体每个成员相对结构体首地址的偏移量(offset)都是成员大小的整数倍，如有需要编译器会在成员之间加上填充字节(internal adding)。</li>
+<li>3.结构体的总大小为结构体最宽基本类型成员大小的整数倍，如有需要编译器会在最末一个成员之后加上填充字节{trailing padding}。</li>
+</ul>
+<p>对于以上规则的说明如下：<br>第一条：编译器在给结构体开辟空间时，首先找到结构体中最宽的基本数据类型，然后寻找内存地址能被该基本数据类型所整除的位置，作为结构体的首地址。将这个最宽的基本数据类型的大小作为上面介绍的对齐模数。</p>
+<p>第二条：为结构体的一个成员开辟空间之前，编译器首先检查预开辟空间的首地址相对于结构体首地址的偏移是否是本成员大小的整数倍，若是，则存放本成员，反之，则在本成员和上一个成员之间填充一定的字节，以达到整数倍的要求，也就是将预开辟空间的首地址后移几个字节。</p>
+<p>第三条：结构体总大小是包括填充字节，最后一个成员满足上面两条以外，还必须满足第三条，否则就必须在最后填充几个字节以达到本条要求。</p>
+<h4 id="对齐的隐患"><a href="#对齐的隐患" class="headerlink" title="对齐的隐患"></a>对齐的隐患</h4><h5 id="数据类型转换"><a href="#数据类型转换" class="headerlink" title="数据类型转换"></a>数据类型转换</h5><p>代码中关于对齐的隐患，很多是隐式的。例如，在强制类型转换的时候：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">int main(void)&#123;  </span><br><span class="line">    unsigned int i = 0x12345678;</span><br><span class="line">        </span><br><span class="line">    unsigned char *p = (unsigned char *)&amp;i;</span><br><span class="line">    *p = 0x00;</span><br><span class="line">    unsigned short *p1 = (unsigned short *)(p+1);</span><br><span class="line">    *p1 = 0x0000;</span><br><span class="line"></span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后两句代码，从奇数边界去访问unsigned short型变量，显然不符合对齐的规定。在X86上，类似的操作只会影响效率；但在MIPS或者SPARC上可能导致error，因为它们要求必须字节对齐。</p>
+<p>又如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">struct B&#123;</span><br><span class="line">    char   b;</span><br><span class="line">    int    a;</span><br><span class="line">    short  c;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">void Func(struct B *p)&#123;</span><br><span class="line">    //Code</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在函数体内如果直接访问p-&gt;a，则很可能会异常。因为MIPS认为a是int，其地址应该是4的倍数，但p-&gt;a的地址很可能不是4的倍数。</p>
+<p>如果p的地址不在对齐边界上就可能出问题，比如p来自一个跨CPU的数据包(多种数据类型的数据被按顺序放置在一个数据包中传输)，或p是经过指针移位算出来的。因此要特别注意跨CPU数据的接口函数对接口输入数据的处理，以及指针移位再强制转换为结构指针进行访问时的安全性。 </p>
+<p>解决方式如下：</p>
+<ul>
+<li>1.定义一个此结构的局部变量，用memmove方式将数据拷贝进来。<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">void Func(struct B *p)&#123;</span><br><span class="line">    struct B tData;</span><br><span class="line">    memmove(&amp;tData, p, sizeof(struct B));</span><br><span class="line">    //此后可安全访问tData.a，因为编译器已将tData分配在正确的起始地址上</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+注意：如果能确定p的起始地址没问题，则不需要这么处理；如果不能确定(比如跨CPU输入数据、或指针移位运算出来的数据要特别小心)，则需要这样处理。</li>
+<li>2.用#pragma pack (1)将STRUCT_T定义为1字节对齐方式。</li>
+</ul>
+<h5 id="处理器间数据通信"><a href="#处理器间数据通信" class="headerlink" title="处理器间数据通信"></a>处理器间数据通信</h5><p>处理器间通过消息(对于C&#x2F;C++而言就是结构体)进行通信时，需要注意字节对齐以及字节序的问题。</p>
+<p>大多数编译器提供内存对其的选项供用户使用。这样用户可以根据处理器的情况选择不同的字节对齐方式。例如C&#x2F;C++编译器提供的#pragma pack(n) n&#x3D;1，2，4等，让编译器在生成目标文件时，使内存数据按照指定的方式排布在1，2，4等字节整除的内存地址处。</p>
+<p>然而在不同编译平台或处理器上，字节对齐会造成消息结构长度的变化。编译器为了使字节对齐可能会对消息结构体进行填充，不同编译平台可能填充为不同的形式，大大增加处理器间数据通信的风险。</p>
+<p>下面以32位处理器为例，提出一种内存对齐方法以解决上述问题。</p>
+<p>对于本地使用的数据结构，为提高内存访问效率，采用四字节对齐方式；同时为了减少内存的开销，合理安排结构体成员的位置，减少四字节对齐导致的成员之间的空隙，降低内存开销。</p>
+<p>对于处理器之间的数据结构，需要保证消息长度不会因不同编译平台或处理器而导致消息结构体长度发生变化，使用一字节对齐方式对消息结构进行紧缩；为保证处理器之间的消息数据结构的内存访问效率，采用字节填充的方式<strong>自己</strong>对消息中成员进行四字节对齐。</p>
+<p><strong>数据结构的成员位置要兼顾成员之间的关系、数据访问效率和空间利用率。顺序安排原则是：四字节的放在最前面，两字节的紧接最后一个四字节成员，一字节紧接最后一个两字节成员，填充字节放在最后。</strong></p>
+<p>举例如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">typedef struct tag_T_MSG&#123;</span><br><span class="line">    long  ParaA;</span><br><span class="line">    long  ParaB;</span><br><span class="line">    short ParaC；</span><br><span class="line">    char  ParaD;</span><br><span class="line">    char  Pad;   //填充字节</span><br><span class="line">&#125;T_MSG;</span><br></pre></td></tr></table></figure>
+
+<h4 id="排查对齐问题"><a href="#排查对齐问题" class="headerlink" title="排查对齐问题"></a>排查对齐问题</h4><p>如果出现对齐或者赋值问题可查看：</p>
+<ul>
+<li>1.编译器的字节序大小端设置；</li>
+<li>2.处理器架构本身是否支持非对齐访问；</li>
+<li>3.如果支持看设置对齐与否，如果没有则看访问时需要加某些特殊的修饰来标志其特殊访问操作。</li>
+</ul>
+<h4 id="更改对齐方式"><a href="#更改对齐方式" class="headerlink" title="更改对齐方式"></a>更改对齐方式</h4><p>主要是更改C编译器的缺省字节对齐方式。   </p>
+<p>在缺省情况下，C编译器为每一个变量或是数据单元按其自然对界条件分配空间。<br>一般地，可以通过下面的方法来改变缺省的对界条件：</p>
+<ul>
+<li>使用伪指令#pragma pack(n)：<br>C编译器将按照n个字节对齐；</li>
+<li>使用伪指令#pragma pack()：<br>取消自定义字节对齐方式。<br>示例：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#pragma pack(2)  //指定按2字节对齐</span><br><span class="line">struct C&#123;</span><br><span class="line">    char  b;</span><br><span class="line">    int   a;</span><br><span class="line">    short c;</span><br><span class="line">&#125;;</span><br><span class="line">#pragma pack()   //取消指定对齐，恢复缺省对齐</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>另外，还有如下的一种方式(GCC特有语法)：</p>
+<ul>
+<li><p>__attribute((aligned (n)))：<br>让所作用的结构成员对齐在n字节自然边界上。如果结构体中有成员的长度大于n，则按照最大成员的长度来对齐。</p>
+</li>
+<li><p>__attribute__ ((packed))：<br>取消结构在编译过程中的优化对齐，按照实际占用字节数进行对齐。</p>
+</li>
+</ul>
+<p>示例，GNU GCC编译器中按1字节对齐可写为以下形式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#define GNUC_PACKED __attribute__((packed))</span><br><span class="line">struct C&#123;</span><br><span class="line">    char  b;</span><br><span class="line">    int   a;</span><br><span class="line">    short c;</span><br><span class="line">&#125;GNUC_PACKED;</span><br></pre></td></tr></table></figure>
+<p>此时sizeof(struct C)的值为7。</p>
+<p><strong>注意：在VC&#x2F;C++中，栈的对齐方式不受结构体成员对齐选项的影响。总是保持对齐且对齐在4字节边界上。</strong></p>
+<h4 id="位域对齐"><a href="#位域对齐" class="headerlink" title="位域对齐"></a>位域对齐</h4><p>有些信息在存储时，并不需要占用一个完整的字节，而只需占几个或一个二进制位。例如在存放一个开关量时，只有0和1两种状态，用一位二进位即可。为了节省存储空间和处理简便，C语言提供了一种数据结构，称为“位域”或“位段”。</p>
+<p>位域是一种特殊的结构成员或联合成员(即只能用在结构或联合中)，用于指定该成员在内存存储时所占用的位数，从而在机器内更紧凑地表示数据。每个位域有一个域名，允许在程序中按域名操作对应的位。这样就可用一个字节的二进制位域来表示几个不同的对象。</p>
+<p>位域定义与结构定义类似，其形式为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">struct 结构体标签&#123;</span><br><span class="line">    类型说明符位域名:位域长度;</span><br><span class="line">&#125;结构体名;</span><br></pre></td></tr></table></figure>
+
+<p>位域允许用各种格式输出。</p>
+<p>位域在本质上就是一种结构类型，不过其成员是按二进位分配的。位域变量的说明与结构变量说明的方式相同，可先定义后说明、同时定义说明或直接说明。      </p>
+<p>位域的使用主要为下面两种情况：</p>
+<ul>
+<li>1.当机器可用内存空间较少而使用位域可大量节省内存时。如把结构作为大数组的元素时。</li>
+<li>2.当需要把一结构体或联合映射成某预定的组织结构时。如需要访问字节内的特定位时。</li>
+</ul>
+<h5 id="位域对齐准则"><a href="#位域对齐准则" class="headerlink" title="位域对齐准则"></a>位域对齐准则</h5><p>位域成员不能单独被取sizeof值。下面主要讨论含有位域的结构体的sizeof。 </p>
+<p>C99规定int、unsigned int和bool可以作为位域类型，但编译器几乎都对此作了扩展，允许其它类型的存在。位域作为嵌入式系统中非常常见的一种编程工具，优点在于压缩程序的存储空间。</p>
+<p>其对齐规则大致为：</p>
+<ul>
+<li>1.如果相邻位域字段的类型相同，且其位宽之和小于类型的sizeof大小，则后面的字段将紧邻前一个字段存储，直到不能容纳为止；</li>
+<li>2.如果相邻位域字段的类型相同，但其位宽之和大于类型的sizeof大小，则后面的字段将从新的存储单元开始，其偏移量为其类型大小的整数倍；</li>
+<li>3.如果相邻的位域字段的类型不同，则各编译器的具体实现有差异，VC6采取不压缩方式，Dev-C++和GCC采取压缩方式；</li>
+<li>4.如果位域字段之间穿插着非位域字段，则不进行压缩；</li>
+<li>5.整个结构体的总大小为最宽基本类型成员大小的整数倍，而位域则按照其最宽类型字节数对齐。</li>
+</ul>
+<p>例1：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct BitField&#123;</span><br><span class="line">    char element1  : 1;</span><br><span class="line">    char element2  : 4;</span><br><span class="line">    char element3  : 5;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>位域类型为char，第1个字节仅能容纳下element1和element2，所以element1和element2被压缩到第1个字节中，而element3只能从下一个字节开始。因此sizeof(BitField)的结果为2。</p>
+<p>例2：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct BitField1&#123;</span><br><span class="line">    char element1   : 1;</span><br><span class="line">    short element2  : 5;</span><br><span class="line">    char element3   : 7;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>由于相邻位域类型不同，在VC6中其sizeof为6，在Dev-C++中为2。</p>
+<p>例3：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct BitField2&#123;</span><br><span class="line">    char element1  : 3;</span><br><span class="line">    char element2  ;</span><br><span class="line">    char element3  : 5;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>非位域字段穿插在其中，不会产生压缩，在VC6和Dev-C++中得到的大小均为3。</p>
+<p>例4：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">struct StructBitField&#123;</span><br><span class="line">    int element1   : 1;</span><br><span class="line">    int element2   : 5;</span><br><span class="line">    int element3   : 29;</span><br><span class="line">    int element4   : 6;</span><br><span class="line">    char element5  :2;</span><br><span class="line">    char stelement;  //在含位域的结构或联合中也可同时说明普通成员</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>位域中最宽类型int的字节数为4，因此结构体按4字节对齐，在VC6中其sizeof为16。</p>
+<h5 id="位域操作注意事项"><a href="#位域操作注意事项" class="headerlink" title="位域操作注意事项"></a>位域操作注意事项</h5><p>关于位域操作有几点需要注意：</p>
+<ul>
+<li>1.位域的地址不能访问，因此不允许将&amp;运算符用于位域。不能使用指向位域的指针也不能使用位域的数组(数组是种特殊指针)。</li>
+</ul>
+<p>例如，scanf函数无法直接向位域中存储数据：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int main(void)&#123;  </span><br><span class="line">    struct BitField1 tBit;</span><br><span class="line">    scanf(&quot;%d&quot;, &amp;tBit.element2); //error: cannot take address of bit-field &#x27;element2&#x27;</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可用scanf函数将输入读入到一个普通的整型变量中，然后再赋值给tBit.element2。</p>
+<ul>
+<li>2.位域不能作为函数返回的结果。</li>
+<li>3.位域以定义的类型为单位，且位域的长度不能够超过所定义类型的长度。例如定义int a:33是不允许的。</li>
+<li>4.位域可以不指定位域名，但不能访问无名的位域。</li>
+</ul>
+<p>位域可以无位域名，只用作填充或调整位置，占位大小取决于该类型。例如，char :0表示整个位域向后推一个字节，即该无名位域后的下一个位域从下一个字节开始存放，同理short :0和int :0分别表示整个位域向后推两个和四个字节。</p>
+<p>当空位域的长度为具体数值N时(如int :2)，该变量仅用来占位N位。<br>例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct BitField3&#123;</span><br><span class="line">    char element1  : 3;</span><br><span class="line">    char  :6;</span><br><span class="line">    char element3  : 5;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>结构体大小为3。因为element1占3位，后面要保留6位而char为8位，所以保留的6位只能放到第2个字节。同样element3只能放到第3字节。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct BitField4&#123;</span><br><span class="line">    char element1  : 3;</span><br><span class="line">    char  :0;</span><br><span class="line">    char element3  : 5;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>长度为0的位域告诉编译器将下一个位域放在一个存储单元的起始位置。如上，编译器会给成员element1分配3位，接着跳过余下的4位到下一个存储单元，然后给成员element3分配5位。故上面的结构体大小为2。</p>
+<ul>
+<li><p>5.位域的表示范围:<br>位域的赋值不能超过其可以表示的范围；<br>位域的类型决定该编码能表示的值的结果。<br>对于第二点，若位域为unsigned类型，则直接转化为正数；若非unsigned类型，则先判断最高位是否为1，若为1表示补码，则对其除符号位外的所有位取反再加一得到最后的结果数据(原码)。如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1 unsigned int p:3 = 111;   //p表示7</span><br><span class="line">2 int p:3 = 111;            //p 表示-1，对除符号位之外的所有位取反再加一</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>6.带位域的结构在内存中各个位域的存储方式取决于编译器，既可从左到右也可从右到左存储。</p>
+</li>
+<li><p>7.位域的实现会因编译器的不同而不同，使用位域会影响程序可移植性。因此除非必要否则最好不要使用位域。</p>
+</li>
+<li><p>8.尽管使用位域可以节省内存空间，但却增加了处理时间。当访问各个位域成员时，需要把位域从它所在的字中分解出来或反过来把一值压缩存到位域所在的字位中。</p>
+</li>
+</ul>
+<p>文章整理自：<br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/clover-toeic/p/3853132.html">C语言字节对齐问题详解</a></p>
+</div><div class="post-copyright"><script type="text/javascript" src="/js/copyright.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copyright.css?v=1.0.0"><p><span>本文标题：</span>04 数据对齐</p><p><span>文章作者：</span>Mr Bluyee</p><p><span>发布时间：</span>2018-11-19</p><p><span>最后更新：</span>2019-07-15</p><p><span>原始链接：</span><a href="/2018/11/19/04-数据对齐/">https://www.mrbluyee.com/2018/11/19/04-%E6%95%B0%E6%8D%AE%E5%AF%B9%E9%BD%90/</a><span class="copy-path"><i class="fa fa-clipboard" data-clipboard-text="https://www.mrbluyee.com/2018/11/19/04-%E6%95%B0%E6%8D%AE%E5%AF%B9%E9%BD%90/"></i></span></p><p><span>版权声明：</span>The author owns the copyright, please indicate the source reproduced.</p></div><br><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" rel="tag">计算机系统</a></li></ul></div><div class="post-nav"><a class="pre" href="/2018/11/20/05-%E5%86%85%E5%AD%98%E8%B6%8A%E7%95%8C%E5%BC%95%E7%94%A8%E5%92%8C%E7%BC%93%E5%86%B2%E5%8C%BA%E6%BA%A2%E5%87%BA/">05 内存越界引用和缓冲区溢出</a><a class="next" href="/2018/11/17/03-%E8%BF%90%E8%A1%8C%E6%97%B6%E6%A0%88/">03 运行时栈</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zOTYxNS8xNjE0Mg"><script>(function(d, s) {
+  var j, e = d.getElementsByTagName(s)[0];
+  if (typeof LivereTower === 'function') { return; }
+  j = d.createElement(s);
+  j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+  j.async = true;
+  e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1 pure-u-md-1-4"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"/><div id="local-search-result"></div></div></div><div class="widget"><div class="author-info"><a class="info-avatar" href="/about/" title="关于"><img class="nofancybox" src="/img/avatar.jpeg"/></a><p>Enjoy life / Hope for future</p><a class="info-icon" href="mr.bluyee@hotmail.com" title="mr.bluyee@hotmail.com" target="_blank" style="margin-inline:5px"> <i class="fa fa-envelope-square" style="margin-inline:5px"></i></a><a class="info-icon" href="https://github.com/MrBluyee" title="https://github.com/MrBluyee" target="_blank" style="margin-inline:5px"> <i class="fa fa-github-square" style="margin-inline:5px"></i></a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C-%E7%AE%97%E6%B3%95/">学习笔记——C 算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">学习笔记——C数据结构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94Python/">学习笔记——Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94android/">学习笔记——android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94expert-c-programming/">学习笔记——expert c programming</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94linux/">学习笔记——linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94opencv/">学习笔记——opencv</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BB%A3%E7%A0%81%E7%AE%A1%E7%90%86/">学习笔记——代码管理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BD%8E%E5%8A%9F%E8%80%97%E6%8A%80%E6%9C%AF/">学习笔记——低功耗技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/">学习笔记——嵌入式开发</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">学习笔记——机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%89%A9%E8%81%94%E7%BD%91/">学习笔记——物联网</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">学习笔记——网络协议</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">学习笔记——计算机系统</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" style="font-size: 15px;">计算机系统</a> <a href="/tags/android/" style="font-size: 15px;">android</a> <a href="/tags/C/" style="font-size: 15px;">C</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" style="font-size: 15px;">网络协议</a> <a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/" style="font-size: 15px;">嵌入式开发</a> <a href="/tags/opencv/" style="font-size: 15px;">opencv</a> <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" style="font-size: 15px;">机器学习</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/09/23/IPsec/">IPsec</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/21/%E6%95%B0%E7%9A%84%E7%B4%A0%E6%80%A7%E6%B5%8B%E8%AF%95/">数的素性测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/20/%E6%89%A9%E5%B1%95%E7%9A%84%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95/">扩展的欧几里得算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/17/%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95-%E6%B1%82%E6%9C%80%E5%A4%A7%E5%85%AC%E5%9B%A0%E6%95%B0/">欧几里得算法-求最大公因数</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/04/%E5%B8%B8%E7%94%A8%E8%B7%AF%E7%94%B1%E6%96%B9%E5%BC%8F/">常用路由方式</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/19/%E6%97%A0%E7%BA%BF%E4%BC%A0%E6%84%9F%E7%BD%91WSN%E6%A6%82%E8%BF%B0/">无线传感网WSN概述</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/18/%E6%97%A0%E7%BA%BF%E6%A8%A1%E5%9D%97%E4%BC%91%E7%9C%A0%E4%B8%8E%E6%BF%80%E6%B4%BB%E6%9C%BA%E5%88%B6/">无线模块休眠与激活机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E8%AE%BE%E8%AE%A1/">SOC的低功耗设计</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/03/%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97/">电源管理的低功耗</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/02/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E5%BA%94%E7%94%A8/">SOC的低功耗应用</a></li></ul></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2024 <a href="/." rel="nofollow">Mr Bluyee's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><link rel="stylesheet" type="text/css" href="/css/search.css?v=1.0.0"><script type="text/javascript" src="/js/search.js?v=1.0.0"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+  search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>

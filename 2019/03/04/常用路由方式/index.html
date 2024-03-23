@@ -1,0 +1,146 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>常用路由方式 | Mr Bluyee's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?' + '3dbaf3043b34b1c894c4cd063629b6a9';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><meta name="generator" content="Hexo 7.1.1"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">常用路由方式</h1><a id="logo" href="/.">Mr Bluyee's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">常用路由方式</h1><div class="post-meta">2019-03-04<span> | </span><span class="category"><a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">学习笔记——网络协议</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 7k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-clock-o"></i><span class="post-count"> 24</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E8%B7%AF%E7%94%B1%E6%96%B9%E5%BC%8F"><span class="toc-number">1.</span> <span class="toc-text">常用路由方式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE%E5%88%86%E7%B1%BB"><span class="toc-number">1.1.</span> <span class="toc-text">路由协议分类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B4%AA%E6%B3%9B%E8%B7%AF%E7%94%B1%E7%AE%97%E6%B3%95"><span class="toc-number">1.2.</span> <span class="toc-text">洪泛路由算法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%9E%E6%8E%A5%E7%8A%B6%E6%80%81%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE"><span class="toc-number">1.3.</span> <span class="toc-text">连接状态路由协议</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B7%9D%E7%A6%BB%E5%90%91%E9%87%8F%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE"><span class="toc-number">1.4.</span> <span class="toc-text">距离向量路由协议</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#OSPF%E5%8D%8F%E8%AE%AE%E4%B8%8E%E9%93%BE%E8%B7%AF%E7%8A%B6%E6%80%81%E7%AE%97%E6%B3%95"><span class="toc-number">1.5.</span> <span class="toc-text">OSPF协议与链路状态算法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DSR%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE"><span class="toc-number">1.6.</span> <span class="toc-text">DSR路由协议</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DSDV%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE"><span class="toc-number">1.7.</span> <span class="toc-text">DSDV路由协议</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ZigBee%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90"><span class="toc-number">1.8.</span> <span class="toc-text">ZigBee路由协议分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#AODVjr%E8%B7%AF%E7%94%B1%E7%AE%97%E6%B3%95"><span class="toc-number">1.9.</span> <span class="toc-text">AODVjr路由算法</span></a></li></ol></li></ol></div></div><div class="post-content"><h3 id="常用路由方式"><a href="#常用路由方式" class="headerlink" title="常用路由方式"></a>常用路由方式</h3><p>在组建网络时，选择路由方法是不可避免的问题。一般所说的路由就是为消息的传输选择一条路径，使得要传输的数据沿着这条路径从源节点发送到目的节点。</p>
+<span id="more"></span>
+
+<h4 id="路由协议分类"><a href="#路由协议分类" class="headerlink" title="路由协议分类"></a>路由协议分类</h4><table>
+<thead>
+<tr>
+<th>分类依据</th>
+<th>路由类型</th>
+<th>特点</th>
+<th>优点</th>
+<th>缺点</th>
+<th>典型路由算法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>根据路由发现策略</td>
+<td>主动路由</td>
+<td>维护路由表，包含邻居节点探测和路由广播</td>
+<td>查表寻径，所需时间较少</td>
+<td>开销较大，路由协议不收敛</td>
+<td>OSPF等</td>
+</tr>
+<tr>
+<td></td>
+<td>被动路由</td>
+<td>在有需求时会按需进行路由发现</td>
+<td>不需周期性的路由信息广播，节省网络资源</td>
+<td>路由发现时存在延时</td>
+<td>DSR、IP、IPX、APPLE TALK</td>
+</tr>
+<tr>
+<td>根据网络管理的逻辑结构</td>
+<td>平面路由</td>
+<td>网络中所有的节点在路由功能上地位相同</td>
+<td>无特殊节点，流量分布均匀，算法易于实现</td>
+<td>扩展性弱，没有对通信资源的管理</td>
+<td>洪泛、SAR、定向扩散</td>
+</tr>
+<tr>
+<td></td>
+<td>分层路由</td>
+<td>采用簇的概念对网络节点进行层次划分</td>
+<td>满足无线网络的扩展性，延长网络的生命周期</td>
+<td>在分簇的过程中会消耗能量</td>
+<td>LEACH、TEEN、多层类聚算法</td>
+</tr>
+</tbody></table>
+<h4 id="洪泛路由算法"><a href="#洪泛路由算法" class="headerlink" title="洪泛路由算法"></a>洪泛路由算法</h4><p>本算法最初应用于交换机和网桥之间的数据传递，即某台设备接收到数据之后再次将此数据发送给除此设备之外的所有设备，类似于洪水流动。采用洪泛路由进行数据传输时，消息会沿着不同的路径进行路由，网络中的所有设备均会收到消息并进行中继，直到消息到达目的设备。</p>
+<p>洪泛路由协议方便实现且简单有效，同时还具有较高的鲁棒性。网络中不存在特定的集中式路由器，且网络中的路由状态信息无需维护。网络中所传输的消息在到达其目的地之前有多条路径可以选择。然而，在实现过程中，传统的洪泛路由算法也存在其固有的缺点。进行洪泛广播时，网络中所有的节点都会对接收到的消息进行中继，这种中继方式很容易产生大量的消息导致广播风暴，同时网络中消息数量的增多还有可能导致消息碰撞。</p>
+<h4 id="连接状态路由协议"><a href="#连接状态路由协议" class="headerlink" title="连接状态路由协议"></a>连接状态路由协议</h4><p>连接状态选路协议（Link State Routing Protocol）为整个拓扑结构保持了一张路由表（routing table），通过这张表来找到拥有最少连接消耗的路径。所有的节点使用 flooding technique定期地发送连接消耗的信息。每一个节点使用收集的新的连接消耗信息来更新自己的路由表。由于拓扑结构的动态行为或无线媒介，连接消耗信息可能是不一致的，例如突如其来的不正确的传播时延。这可能造成在连接更新时发生短暂的路由循环。</p>
+<h4 id="距离向量路由协议"><a href="#距离向量路由协议" class="headerlink" title="距离向量路由协议"></a>距离向量路由协议</h4><p>距离向量路由协议（Distance Vector Routing Protocol）通过使得每个节点i保持一张含有距离或耗费集合{dij(x)}的表来进行操作，其中节点j是节点i的相邻节点。在将数据包发给目的节点x时，如果节点i的相邻节点k是i的所有相邻节点中的最小值，则将节点k当做是节点i的下一跳。这张路由表给出了每个目的节点的最佳距离以及哪个路由可以到达。为了保持最新的距离结合，每个路由器与它所有的相邻节点定期交换信息。如果交换结束后，一个节点 到任何一个相邻节点的最短距离将发生变化，这个过程经一直重复知道所有的节点完成路由表的更新。但是，由于旧的的信息，在更新路由表时，DV路由算法可能引起短暂的或长期的循环。</p>
+<h4 id="OSPF协议与链路状态算法"><a href="#OSPF协议与链路状态算法" class="headerlink" title="OSPF协议与链路状态算法"></a>OSPF协议与链路状态算法</h4><p>OSPF(Open Shortest Path First开放式最短路径优先）是一个内部网关协议(Interior Gateway Protocol，简称IGP），用于在单一自治系统（autonomous system,AS）内决策路由。是对链路状态路由协议的一种实现，隶属内部网关协议（IGP），故运作于自治系统内部。著名的迪克斯加算法（Dijkstra）被用来计算最短路径树。与RIP相比，OSPF是链路状态协议，而RIP是距离矢量协议。</p>
+<p>链路状态算法（也称最短路径优先算法）用于更新路由表。其基本思想是互联网上的每个路由器周期性的向其他路由器广播自己与相邻路由器的连接关系，以使各个路由器都可以画出一张互联网拓扑结构图。利用这张图和最短路径优先算法，路由器就可以计算出自己到达各个网络之间的最短路径。适用于大型网络。收敛速度快。</p>
+<h4 id="DSR路由协议"><a href="#DSR路由协议" class="headerlink" title="DSR路由协议"></a>DSR路由协议</h4><p>动态源路由协议(Dynamic Source Routing, DSR)是在移动自组网(MANET)中使用的一种路由协议。它工作在TCP&#x2F;IP协议族的网络层。</p>
+<p>DSR路由协议是属于按需路由协议的一种，基础为源路由寻径机制，网络中的节点可以动态的发现从源节点到目的节点之间完整的路由信息。在每个分组的头部都具备<br>包含整条路由的信息，在进行分组转发时，路由器首先会获取分组头部的缓存记录，之后按照缓存记录来转发分组。源节点在进行数据发送之前，会先将源节点到目的节点之间的完整路由信息放入需要发送的数据包中，数据包在被转发时免去了路由表查询过程，只需从数据包中取得下一跳节点进行转发即可，同时所有经过的中间节点都不需要为转发数据储存所需的路由消息，这在一定程度上减少了网络的开销。</p>
+<p><strong>1.产生路由请求</strong><br>当源节点需要与某目的节点进行通信时，它首先在本节点维护的路由缓存中查找是否有到达该目的节点的路由。若路由缓存中已包含了到达该目的节点的有效路由，则立即使用此路由发送数据分组，否则它将向所有邻居广播RREQ(Route Request)分组，以启动一个路由发现过程来找到一条到达该目的节点的可用路由。</p>
+<p><strong>2.节点对路由请求的处理</strong></p>
+<ul>
+<li>1.如果接收RREQ的节点是该路由请求的目的节点，则向发起RREQ的源节点返回RREP分组。将收到的RREQ分组的源节点地址、RREQ分组中携带的源路由节点地址列表和本节点的地址按顺序排列作为源路由封装在RREP(Route Reply)分组中发送给源节点，并将处理后的RREQ分组删除。 </li>
+<li>2.收到RREQ的节点检查自己是否已经包含在RREQ携带的源路由节点列表中，如果是则将RREQ分组丢弃。</li>
+<li>3.如果协议要求使用双向链路，节点要检查前一节点是否在自己的通信范围内，如果不在则丢弃该RREQ包；如果不确定则向前一节点发送一TTL值为“1”的RREQ分组，如果收到前一节点回复的RREP这表示两节点之间是双向链路，继续处理RREQ分组，否则表示两节点之间为单向链路则将RREQ分组丢弃。</li>
+<li>4.接收RREQ的节点必须要查找当地的路由请求表看有无发起此RREQ的源节点所对应的路由请求表入口。如果有则在当地缓存中查看有无与(此RREQ路由请求号，此RREQ目的节点IP地址)对相对应的入口，如有则将现在收到的RREQ分组丢弃。</li>
+<li>5.如果接受RREQ的节点的路由请求表中没有和此RREQ对应的表项，说明以前没收接受过此RREQ，则按以下步骤处理该RREQ请求分组：利用此RREQ的(路由请求序号，目的节点IP地址)值，为此RREQ分组在节点的路由请求表中创建一入口；对此RREQ分组做一个完整的拷贝；将节点自己的IP地址追加到RREQ分组的源路由节点列表中；节点在自己的路由缓存中查找到RREQ分组中目的节点的路由，有则向发起RREQ的源节点回复一RREP分组，称为“缓存路径回复(cached Route Reply)”；如果节点在自己的路由缓存中没有找到通往RREQ目的节点的路径，则将新改好的RREQ拷贝广播发送出去。</li>
+</ul>
+<p><strong>3.中间节点回复RREP分组</strong><br> 在2中讲到如果接收RREQ的中间节点在自己的路由缓存中找到通往RREQ分组目的节点的路径则要向源节点回复一cached Route Reply分组。这种机制可以大大减小网络中因为路由发现过程所造成的开销，因为这种机制可以大大减少路由发现过程中的RREQ广播报文。</p>
+<p>下面详细叙述向源节点回复cached Route Reply的过程:</p>
+<ul>
+<li>1.中间节点在回复RREP之前首先要检查被回复的源路由中不会出现节点重复出现的情况。即查看由RREQ原节点地址、RREQ中已经积累的节点IP地址列表、本节点路由缓存中找到的路径中的IP地址顺序排列下来的地址列表中有无重复出现的IP地址，如果有则不能继续进行缓存路径回复，而转到2中步骤5的最后一步继续执行。如不存在重复出现的IP地址就向下执行。</li>
+<li>2.中间节点将从自己路由缓存中得到的路径cached-route追加到RREQ分组头中的源路由地址列表中，这样就得到要发给RREQ源节点的完整路由：&lt;源节点IP地址、RREQ分组头携带的节点的IP地址列表、cached-route&gt;。此中间节点的IP地址已经在RREQ分组头中，不需再追加。将得到的源路由封装在RREP包中发送给发起RREQ的源节点。</li>
+<li>3.中间节点发送完路由缓存回复后，就不再继续广播RREQ分组了。此时如果RREQ数据分组头中除了已经处理过的RREQ选项外不再含有其他任何选项，并DSR选项头后面也不含有其他数据负载(TCP或UDP数据)，则中间节点可将此RREQ分组丢弃。否则作如下处理：将RREQ DSR选项头中的目的节点IP地址作为RREQ IP分组的目的IP地址，即置换掉RREQ分组的广播地址；将RREQ分组中的路由请求选项移除；将从中间接点路由缓存中得到地路径作为源路由添加到新的RREQ分组头中；将重新创建的RREQ数据分组按分组头中的源路由转发出去。</li>
+</ul>
+<p><strong>4.处理并转发路由回复</strong><br>目的节点收到RREQ分组得到完整的源节点到目的节点的路由后，将此路由封装在RREP分组中，然后发送给源节点。RREP分组可以封装成一个单独的IP分组传递给源节点，或封装在其他有数据要传输给源节点的IP分组中被捎带回源节点。 目的节点将自己的IP地址追加到RREQ携带的节点的IP地址列表中，将得到的IP地址列表作为返回给源节点的完整路由封装在RREP分组中。RREP数据分组的源IP地址设为发送RREP分组的节点的IP地址，目的IP地址设为发起RREQ的源节点的IP地址。如果使用的底层MAC协议支持双向路由，RREP数据分组可沿RREP选项中携带的源路由的逆向路由依次传输，否则目的节点为此RREP选项发起新的路由发现过程，且要将RREP选项封装在新产生的RREQ数据分组中以防止出现路由发现过程的反复进行。</p>
+<h4 id="DSDV路由协议"><a href="#DSDV路由协议" class="headerlink" title="DSDV路由协议"></a>DSDV路由协议</h4><p>DSDV （Destination sequenced distance vector routing,目的节点序列距离矢量）路由协议可以用于Ad hoc网络。Ad hoc网络是从传统网络演变而来的，它的不同之处在于相互连接的动态拓扑结构以及设置网络的自动管理。从图论的角度来看，ad hoc网络是由一个节点集合N，一个边的集合E(t)构成的图G(N, E(t))。E(t)中的每条边由两个节点构成，并在一定服务范围之内，它既可以是单向的也可以是双向的。当可移动节点在ad hoc网络中自由移动时，E(t)随着时间发生变化。同时，ad hoc的拓扑结构在任意时间是不定的。由于ad hoc网络拓扑结构的变化性，网络中的节点不得不总是自动更新它们的路由信息。</p>
+<p>以往，分组交换网络中的路由协议使用的是DV（distance-vector）或LS（link-state）路由算法。它们都允许一个主机通过“最短路径”到达目的节点时的下一跳。它们最短路径的形式可能是跳数、延迟时间（以ms为单位）、路径中排队的包的数量或其他类似的信息。这种最短路径协议在许多动态的分组交换网络中被成功应用。原则上，任何一个这样的协议也可以被用于ad hoc网络。而DV和LS协议的主要不足之处在于，他们花费了太长的时间去会聚，以及高度复杂的信息。而由于ad hoc网络中无线连接的带宽限制，信息的复杂性一定要被控制在一个较低的程度。另外，快速变化的拓扑结构需要路由协议快速找到相应的路由器。因此，新的路由协议需要满足这样一个基本的哲学体系。DSDV协议是对传统的BF路由协议的变形，它专注于ad hoc网络，解决了传统的DV路由协议中长期存在的循环和无限技术的问题。</p>
+<p>DSDV路由协议基于 Bellman-ford 算法实现，为了防止产生路由环路和死锁等问题，该路由协议采用序列号来进行路由新旧的区分。网络中的每个节点都具备一张路由表，而且需要对其进行管理更新，该路由表包含目的节点、下一跳节点、路由计量标准及该路由序列号等信息。当网络中的每个节点都要管理更新一张包含大量信息的路由表时，势必会增大网络的整体开销，所以为了避免该缺点，DSDV 路由协议采用了周期更新和触发更新两种更新方式。</p>
+<p>在DSDV中，ad hoc网络中的每个可移动节点保持着一张路由表，它列出了所有有效的目的节点，metric值、到达目的节点的下一跳节点以及由目的节点产生的一个序列号码。利用这样一张存储在每一个可移动节点中的路由表，数据包得以在ad hoc网络的节点之间传送。Ad hoc网络中的每个节点利用定期的广播或当新的重要的信息有效时更新各自的路由表，来保持动态变化的拓扑结构下路由表的一致性。</p>
+<p>当检测到网络拓扑变化时，每个移动节点定期或立即使用广播或多播路由表更新包发布路由信息。更新包从metric为1的直连相邻节点开始发送。接收到更新包后，相邻节点更新路由表，将metric增加1，并将更新包重新发送到本节点的相邻节点。这个过程将重复进行，直到ad hoc网络中的所有节点都收到具有相应metric的更新包。更新包还将保留一段时间，以等待本节点与每个特定目标节点的最佳路由包数据到达，然后更新其路由表并重新传输更新包。如果一个节点在等待时间内接收到同一目的地的多个更新数据包，则通常首选序列号较近的路由作为数据包转发决策的基础，但如果仅更改了序列号，则不必立即公布路由信息。如果更新包具有具有相同节点的相同序列号，则将使用具有最小metric的更新包，并将丢弃现有路由或将其存储为不太可取的路由。在这种情况下，更新包将与序列号一起传播到ad hoc网络中的所有移动节点。路由变化的广播可能会被延迟，直到找到最优路径为止。延迟可能不稳定路径的广播可以抑制路由表的波动，减少可能到达的具有相同序列号的路由条目的重复数。</p>
+<p>每个移动节点的路由表中的元素都是动态变化的，以保持与ad hoc网拓扑动态变化的一致性。为了达到这种一致性，路由信息广播必须足够频繁或快速，以确保每个移动节点几乎总是能够定位到动态的ad hoc网中的所有其他移动节点。在更新路由信息后，每个节点必须根据动态创建的ad hoc网中的请求将数据包中继到其他节点。</p>
+<h4 id="ZigBee路由协议分析"><a href="#ZigBee路由协议分析" class="headerlink" title="ZigBee路由协议分析"></a>ZigBee路由协议分析</h4><p>ZigBee协议采用以下两种算法的结合体作为自身的路由算法。</p>
+<ul>
+<li>AODV：Ad-Hoc On-Demand Distance Vector（按需距离矢量路由）</li>
+<li>Cluster-Tree algorithm（树型网络结构路由）</li>
+</ul>
+<p>其中AODV路由协议是一种按需路由协议，利用扩展环搜索的办法来限制搜索发现过的目的节点的范围，支持组播，可以实现在ZigBee节点间动态的，自发的路由，使节点很快的获得通向所需目的的的路由。这也是ZigBee路由协议的核心。针对自身的特点，ZigBee网络中使用一种简化版本的AODV协议（AODV Junior，AODVjr）。</p>
+<p>Cluster-Tree算法包括地址的分配（configuration of addresses）与寻址路由两部分（addresses routing）。包括子节点的16位网络短地址的分配，以及根据目的节点的网络地址来计算下一跳的算法。</p>
+<p>作为两种算法的结合体，ZigBee网络中，节点可以按照网络树状结构的父子关系使用Cluster-Tree算法选择路径。即每一个节点都会试图将收到的信息包转发给自己的后代节点，如果通过计算发现目的地址不是自己的一个后代节点，则将这个数据包转发给自身上一级的父节点，由父节点进行类似的判断处理，直到找到目的节点。Cluster-Tree算法的特点在于使不具有路由功能的节点间通过与各自的父节点间的通信仍然可以发送数据分组和控制分组，但它的缺点是效率不高。为了提高效率，ZigBee中允许具有路由功能的节点使用AODVjr算法去发现路由，让具有路由功能的节点可以不按照父子关系而直接发送信息到其通信范围内的其他节点。</p>
+<h4 id="AODVjr路由算法"><a href="#AODVjr路由算法" class="headerlink" title="AODVjr路由算法"></a>AODVjr路由算法</h4><p>AODVjr路由时一种按需分配的路由协议，只有在路由节点接收到网络数据包，并且网络数据包的目的地址不在节点的路由表中时才会进行路由发现过程。也就是说，路由表的内容是按照需要建立的，而且它可能仅仅是整个网络拓扑结构的一部分。</p>
+<p>AODVjr的优点是，相对于有线网络的路由协议而言，它不需要周期性的路由信息广播，节省了一定的网络资源，并降低了网络功耗。缺点是在需要时才发起路由寻找过程，会增加数据到达目的地址的时间。由于ZigBee网络中对数据的实时性要求不大，而更重视对网络能量的节省，因此AODVjr非常适合应用在ZigBee网络中。</p>
+<p>一次路由建立由以下三个步骤组成：</p>
+<ul>
+<li>1.路由发现</li>
+<li>2.反向路由建立</li>
+<li>3.正向路由的建立</li>
+</ul>
+<p>经过这三个步骤，即可建立起一条路由节点到目的节点的有效传输路径。在这个路由建立过程中，AODVjr使用3种消息作为控制信息：</p>
+<ul>
+<li>1.Route Request(RREQ)，路由请求</li>
+<li>2.Route Replies(RREP)，路由回复</li>
+<li>3.Route Error(RERR)，路由错误</li>
+</ul>
+<p>以下将对路由建立的三个过程进行详细描述。</p>
+<p><strong>(1)路由发现过程</strong></p>
+<p>对于一个具有路由能力的节点，当接收到一个从网络层的更高层发出的发送数据帧的请求，且路由表中没有和目的节点对应的条目时，它就会发起路由发现过程。源节点首先创建一个路由请求分组(RREQ)，并使用多播(Multi．Broadcast)的方式向周围节点进行广播。</p>
+<p>如果一个节点发起了路由发现过程，它就应该建立相应的路由表条目和路由发现表条目，状态设置为路由发现中。任何一个节点都可能从不同的邻居节点处接收到广播的RREQ。接收到后节点将进行如下分析：</p>
+<ul>
+<li>1.如果是第一次接收到这个RREQ消息，且消息的目的地址不是自己，则节点会保留这个RREQ分组的信息用于建立反向路径，然后将这个RREQ消息广播出去。</li>
+<li>2.如果之前已经接受过这个RREQ消息，表明这是由于网络内多个节点频繁广播产生的多余消息，对路由建立过程没有任何作用，则节点将丢弃这个消息。</li>
+</ul>
+<p><strong>(2)反向路由建立过程</strong></p>
+<p>当RREQ消息从一个源节点转发到不同的目的地时，沿途所经过的节点都要自动建立到源节点的反向路由。也就是记录当前接收到的RREQ消息是由哪一个节点转发而来的的。通过记录收到的第一个RREQ消息的邻居地址来建立反向路由，这些反向路由将会维持一定时间，该段时间足够RREQ消息在网内转发以及产生的RREP消息返回源节点。</p>
+<p>当RREQ消息最终到达了目的节点，节点验证RREQ中的目的地址为自己的地址之后，目的节点就会产生RREP消息，作为一个对RREQ消息的应答。由于之前已经建立了明确的反向路由，因此RREP无需进行广播，只需按照反向路由的指导，采取单播的方式即可把RREP消息传送给源节点。</p>
+<p><strong>(3)正向路由建立过程</strong></p>
+<p>在RREP以单播方式转发回源节点的过程中，沿着这条路径上的每一个节点都会根据PREP的指导建立到目的节点的路由，也就是说确定到目的地址节点的下一跳(next-hop)。方法就是记录RREP是从哪一个节点传播而来．然后将该邻居节点写入路由表中的路由表项。一直到RREP传送到源节点。至此．一次路由建立过程完毕。源节点与目标节点之间可以开始数据传输。可以看出，AODV是按照需求驱动的、使用RREQ．RREP控制实现的、先广播，后单播的路由的路由建立过程。</p>
+<p>附：<br><strong>动态路由中选择最佳路由的几种常见metric</strong></p>
+<p>当到达一个网络有多条路径的时候，路由器会根据甚么来选择最优路径，一般来讲路由器会根据以下几种度量值来选择最佳路由。</p>
+<ul>
+<li>1、跳数<br>它可以简单的记录经过路由器的个数。例如，数据从路由器A发出，经过路由器B到达其他网络，那么其跳数为1，如果经过C到达其他网络，它经过的路由器为2，那么其跳数为2.在RIP中，跳数是衡量路径的主要标准，其最大跳数16，超过16即为不可达。</li>
+<li>2、带宽<br>一般会选择带宽高的路径，但是不是主要标准，如果在T1线路上，链路带宽占用过多，那么它就可能不会选择这个链路了。</li>
+<li>3、负载<br>负载反映了沿途链路的流量大小。最优路径应该是负载最低的路径。负载不会像带宽或者跳数那样，路径上的负载变化，那么度量也会跟着变化。这里需要当心，如果度量变化过于频繁，那么会引起路由振荡，路由振荡会对路由器的CPU、数据链路的带宽和拳王稳定性产生负面影响。</li>
+<li>4、时延<br>时延是报文经过链路经过的时间，使用时延作为度量的路由协议会使用时延较低的链路最为最佳路径。有多种方法可以计算时延，时延不仅要考虑链路时延，而且还要考虑路由器的处理时延和队列时延等因素。另一方面，路由的时延可能根本无法度量。因此，时延可能是沿路各个接口所定义的静态时延的总和。</li>
+<li>5、可靠性<br>此独联是用以度量链路在某种情况下发生故障的可能性。可靠性是可以变化的或者固定的。可靠性高的链路将被优先选择。</li>
+<li>6、花费<br>此度量有管理员设置，可以反映路由的登记。通过任何策略或者链路特性对链路的cost进行定义。同时，花费也可以反映出网络管理员的主观意识。</li>
+</ul>
+<p>一般以上几种度量不是单独使用，一般是综合使用，通过某种算法来计算最佳路径。</p>
+<p>参考内容：<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/u013078669/article/details/49780185">OSPF路由协议分析</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/zcj331/article/details/23438761">OSPF协议与链路状态算法</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_16811963/article/details/52136320">距离矢量路由协议和链路状态路由协议</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/candycat1992/article/details/8087255/">目的节点序列距离矢量（DSDV)协议</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/candycat1992/article/details/8100146">DSDV协议</a><br><a target="_blank" rel="noopener" href="https://product.pconline.com.cn/itbk/wlbg/wlsbjc/1703/8998852.html">动态路由中选择最佳路由的几种常见metric</a><br><a target="_blank" rel="noopener" href="http://www.cnblogs.com/NL34/p/3597494.html?utm_source=tuicool&utm_medium=referral">ZigBee路由协议分析</a></p>
+</div><div class="post-copyright"><script type="text/javascript" src="/js/copyright.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copyright.css?v=1.0.0"><p><span>本文标题：</span>常用路由方式</p><p><span>文章作者：</span>Mr Bluyee</p><p><span>发布时间：</span>2019-03-04</p><p><span>最后更新：</span>2019-03-05</p><p><span>原始链接：</span><a href="/2019/03/04/常用路由方式/">https://www.mrbluyee.com/2019/03/04/%E5%B8%B8%E7%94%A8%E8%B7%AF%E7%94%B1%E6%96%B9%E5%BC%8F/</a><span class="copy-path"><i class="fa fa-clipboard" data-clipboard-text="https://www.mrbluyee.com/2019/03/04/%E5%B8%B8%E7%94%A8%E8%B7%AF%E7%94%B1%E6%96%B9%E5%BC%8F/"></i></span></p><p><span>版权声明：</span>The author owns the copyright, please indicate the source reproduced.</p></div><br><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" rel="tag">网络协议</a></li></ul></div><div class="post-nav"><a class="pre" href="/2019/07/17/%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95-%E6%B1%82%E6%9C%80%E5%A4%A7%E5%85%AC%E5%9B%A0%E6%95%B0/">欧几里得算法-求最大公因数</a><a class="next" href="/2019/02/19/%E6%97%A0%E7%BA%BF%E4%BC%A0%E6%84%9F%E7%BD%91WSN%E6%A6%82%E8%BF%B0/">无线传感网WSN概述</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zOTYxNS8xNjE0Mg"><script>(function(d, s) {
+  var j, e = d.getElementsByTagName(s)[0];
+  if (typeof LivereTower === 'function') { return; }
+  j = d.createElement(s);
+  j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+  j.async = true;
+  e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1 pure-u-md-1-4"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"/><div id="local-search-result"></div></div></div><div class="widget"><div class="author-info"><a class="info-avatar" href="/about/" title="关于"><img class="nofancybox" src="/img/avatar.jpeg"/></a><p>Enjoy life / Hope for future</p><a class="info-icon" href="mr.bluyee@hotmail.com" title="mr.bluyee@hotmail.com" target="_blank" style="margin-inline:5px"> <i class="fa fa-envelope-square" style="margin-inline:5px"></i></a><a class="info-icon" href="https://github.com/MrBluyee" title="https://github.com/MrBluyee" target="_blank" style="margin-inline:5px"> <i class="fa fa-github-square" style="margin-inline:5px"></i></a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C-%E7%AE%97%E6%B3%95/">学习笔记——C 算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">学习笔记——C数据结构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94Python/">学习笔记——Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94android/">学习笔记——android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94expert-c-programming/">学习笔记——expert c programming</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94linux/">学习笔记——linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94opencv/">学习笔记——opencv</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BB%A3%E7%A0%81%E7%AE%A1%E7%90%86/">学习笔记——代码管理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BD%8E%E5%8A%9F%E8%80%97%E6%8A%80%E6%9C%AF/">学习笔记——低功耗技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/">学习笔记——嵌入式开发</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">学习笔记——机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%89%A9%E8%81%94%E7%BD%91/">学习笔记——物联网</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">学习笔记——网络协议</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">学习笔记——计算机系统</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" style="font-size: 15px;">计算机系统</a> <a href="/tags/android/" style="font-size: 15px;">android</a> <a href="/tags/C/" style="font-size: 15px;">C</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" style="font-size: 15px;">网络协议</a> <a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/" style="font-size: 15px;">嵌入式开发</a> <a href="/tags/opencv/" style="font-size: 15px;">opencv</a> <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" style="font-size: 15px;">机器学习</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/09/23/IPsec/">IPsec</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/21/%E6%95%B0%E7%9A%84%E7%B4%A0%E6%80%A7%E6%B5%8B%E8%AF%95/">数的素性测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/20/%E6%89%A9%E5%B1%95%E7%9A%84%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95/">扩展的欧几里得算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/17/%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95-%E6%B1%82%E6%9C%80%E5%A4%A7%E5%85%AC%E5%9B%A0%E6%95%B0/">欧几里得算法-求最大公因数</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/04/%E5%B8%B8%E7%94%A8%E8%B7%AF%E7%94%B1%E6%96%B9%E5%BC%8F/">常用路由方式</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/19/%E6%97%A0%E7%BA%BF%E4%BC%A0%E6%84%9F%E7%BD%91WSN%E6%A6%82%E8%BF%B0/">无线传感网WSN概述</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/18/%E6%97%A0%E7%BA%BF%E6%A8%A1%E5%9D%97%E4%BC%91%E7%9C%A0%E4%B8%8E%E6%BF%80%E6%B4%BB%E6%9C%BA%E5%88%B6/">无线模块休眠与激活机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E8%AE%BE%E8%AE%A1/">SOC的低功耗设计</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/03/%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97/">电源管理的低功耗</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/02/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E5%BA%94%E7%94%A8/">SOC的低功耗应用</a></li></ul></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2024 <a href="/." rel="nofollow">Mr Bluyee's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><link rel="stylesheet" type="text/css" href="/css/search.css?v=1.0.0"><script type="text/javascript" src="/js/search.js?v=1.0.0"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+  search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>
