@@ -1,0 +1,1329 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>deflate format | Mr Bluyee's Blog</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?' + '3dbaf3043b34b1c894c4cd063629b6a9';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><meta name="generator" content="Hexo 7.1.1"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">deflate format</h1><a id="logo" href="/.">Mr Bluyee's Blog</a><p class="description"></p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">deflate format</h1><div class="post-meta">2024-03-23<span> | </span><span class="category"><a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94data-compression/">学习笔记——data compression</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 3k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-clock-o"></i><span class="post-count"> 18</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#deflate-blocks"><span class="toc-number">1.</span> <span class="toc-text">deflate blocks</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#no-compression-block-aka-stored-block"><span class="toc-number">1.1.</span> <span class="toc-text">no compression block (aka stored block)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#dynamic-Huffman-block"><span class="toc-number">1.2.</span> <span class="toc-text">dynamic Huffman block</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#fixed-Huffman-block"><span class="toc-number">1.3.</span> <span class="toc-text">fixed Huffman block</span></a></li></ol></li></ol></div></div><div class="post-content"><p>DEFLATE is a lossless data compression algorithm, it’s a combination of the LZ77 algorithm and Huffman coding.</p>
+<h2 id="deflate-blocks"><a href="#deflate-blocks" class="headerlink" title="deflate blocks"></a>deflate blocks</h2><p>deflate compressed data format consists a series of blocks.<br>Each block has a 3 bit header, they are independent with each other:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>bit 0</td>
+<td>BFINAL</td>
+</tr>
+<tr>
+<td>bit 1-2</td>
+<td>BTYPE</td>
+</tr>
+</tbody></table>
+<p>Note that the header bits do not necessarily begin on a byte boundary,<br>since a block does not necessarily occupy an integral number of bytes.</p>
+<p>BFINAL is set if and only if this is the last block of the data set.</p>
+<p>BTYPE specifies the block type:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>b’00</td>
+<td>no compression</td>
+</tr>
+<tr>
+<td>b’01</td>
+<td>compressed with fixed Huffman codes</td>
+</tr>
+<tr>
+<td>b’10</td>
+<td>compressed with dynamic Huffman codes</td>
+</tr>
+<tr>
+<td>b’11</td>
+<td>reserved (error)</td>
+</tr>
+</tbody></table>
+<h3 id="no-compression-block-aka-stored-block"><a href="#no-compression-block-aka-stored-block" class="headerlink" title="no compression block (aka stored block)"></a>no compression block (aka stored block)</h3><p>no compression block contains the uncompressed original literal data.</p>
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>size</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>BFINAL</td>
+<td>1 bit</td>
+<td>b’* (0 or 1)</td>
+</tr>
+<tr>
+<td>BTYPE</td>
+<td>2 bits</td>
+<td>b’00</td>
+</tr>
+<tr>
+<td>Reserved bits</td>
+<td>&lt; 8 bits</td>
+<td>make sure the offset of LEN is byte aligned</td>
+</tr>
+<tr>
+<td>LEN</td>
+<td>2 bytes</td>
+<td>number of data bytes in the block</td>
+</tr>
+<tr>
+<td>NLEN</td>
+<td>2 bytes</td>
+<td>NLEN &#x3D; 65535 - LEN, used for the number validation</td>
+</tr>
+<tr>
+<td>Literal data</td>
+<td>LEN in bytes</td>
+<td>uncompressed data</td>
+</tr>
+</tbody></table>
+<p>no compression block has the limited block sise, due to the maxium value of LEN is 65535.</p>
+<h3 id="dynamic-Huffman-block"><a href="#dynamic-Huffman-block" class="headerlink" title="dynamic Huffman block"></a>dynamic Huffman block</h3><p>Dynamic Huffman block is compressed using a combination of the LZ77 algorithm and Huffman coding.<br>And the Huffman coding tree is dynamically generated at the compression stage, it’s stored within the block.</p>
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>size</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>BFINAL</td>
+<td>1 bit</td>
+<td>b’* (0 or 1)</td>
+</tr>
+<tr>
+<td>BTYPE</td>
+<td>2 bits</td>
+<td>b’10</td>
+</tr>
+<tr>
+<td>HLIT</td>
+<td>5 bits</td>
+<td>number of Literal&#x2F;Length codes - 257 (257 - 286)</td>
+</tr>
+<tr>
+<td>HDIST</td>
+<td>5 bits</td>
+<td>number of Distance codes - 1 (1 - 32)</td>
+</tr>
+<tr>
+<td>HCLEN</td>
+<td>4 bits</td>
+<td>number of Code Length codes - 4 (4 - 19)</td>
+</tr>
+<tr>
+<td>Code Length codes</td>
+<td>3 bits * (HCLEN + 4)</td>
+<td>code lengths for the code length table</td>
+</tr>
+<tr>
+<td>literal&#x2F;length distance table</td>
+<td>* bits (related to the HLIT, HDIST and the code length table)</td>
+<td>2 huffman tree stored</td>
+</tr>
+<tr>
+<td>huffman encoded bit stream</td>
+<td>* bits</td>
+<td>end with EOB symbol (256)</td>
+</tr>
+</tbody></table>
+<p>In the huffman encoded bit stream, it consist of sequences of symbols drawn from three conceptually distinct alphabets: either literal bytes, from the alphabet of byte values (0..255), or (length, backward distance) pairs,<br>where the length is drawn from (3..258) and the distance is drawn from (1..32,768).</p>
+<p>In fact, the literal and length alphabets are merged into a single alphabet (0..285),<br>where values 0..255 represent literal bytes, the value 256 indicates end-of-block.<br>And values 257..285 represent length codes (possibly in conjunction with extra bits following the symbol code) as follows:</p>
+<table>
+<thead>
+<tr>
+<th>code</th>
+<th>extra bits</th>
+<th>length</th>
+<th>code</th>
+<th>extra bits</th>
+<th>length</th>
+<th>code</th>
+<th>extra bits</th>
+<th>length</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>257</td>
+<td>0</td>
+<td>3</td>
+<td>267</td>
+<td>1</td>
+<td>15,16</td>
+<td>277</td>
+<td>4</td>
+<td>67-82</td>
+</tr>
+<tr>
+<td>258</td>
+<td>0</td>
+<td>4</td>
+<td>268</td>
+<td>1</td>
+<td>17,18</td>
+<td>278</td>
+<td>4</td>
+<td>83-98</td>
+</tr>
+<tr>
+<td>259</td>
+<td>0</td>
+<td>5</td>
+<td>269</td>
+<td>2</td>
+<td>19-22</td>
+<td>279</td>
+<td>4</td>
+<td>99-114</td>
+</tr>
+<tr>
+<td>260</td>
+<td>0</td>
+<td>6</td>
+<td>270</td>
+<td>2</td>
+<td>23-26</td>
+<td>280</td>
+<td>4</td>
+<td>115-130</td>
+</tr>
+<tr>
+<td>261</td>
+<td>0</td>
+<td>7</td>
+<td>271</td>
+<td>2</td>
+<td>27-30</td>
+<td>281</td>
+<td>5</td>
+<td>131-162</td>
+</tr>
+<tr>
+<td>262</td>
+<td>0</td>
+<td>8</td>
+<td>272</td>
+<td>2</td>
+<td>31-34</td>
+<td>282</td>
+<td>5</td>
+<td>163-194</td>
+</tr>
+<tr>
+<td>263</td>
+<td>0</td>
+<td>9</td>
+<td>273</td>
+<td>3</td>
+<td>35-42</td>
+<td>283</td>
+<td>5</td>
+<td>195-226</td>
+</tr>
+<tr>
+<td>264</td>
+<td>0</td>
+<td>10</td>
+<td>274</td>
+<td>3</td>
+<td>43-50</td>
+<td>284</td>
+<td>5</td>
+<td>227-257</td>
+</tr>
+<tr>
+<td>265</td>
+<td>1</td>
+<td>11,12</td>
+<td>275</td>
+<td>3</td>
+<td>51-58</td>
+<td>285</td>
+<td>0</td>
+<td>258</td>
+</tr>
+<tr>
+<td>266</td>
+<td>1</td>
+<td>13,14</td>
+<td>276</td>
+<td>3</td>
+<td>59-66</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>The distance code has another alphabet, the value is from 0 to 29:</p>
+<table>
+<thead>
+<tr>
+<th>code</th>
+<th>extra bits</th>
+<th>distance</th>
+<th>code</th>
+<th>extra bits</th>
+<th>distance</th>
+<th>code</th>
+<th>extra bits</th>
+<th>distance</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>10</td>
+<td>4</td>
+<td>33-48</td>
+<td>20</td>
+<td>9</td>
+<td>1025-1536</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>2</td>
+<td>11</td>
+<td>4</td>
+<td>49-64</td>
+<td>21</td>
+<td>9</td>
+<td>1537-2048</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0</td>
+<td>3</td>
+<td>12</td>
+<td>5</td>
+<td>65-96</td>
+<td>22</td>
+<td>10</td>
+<td>2049-3072</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0</td>
+<td>4</td>
+<td>13</td>
+<td>5</td>
+<td>97-128</td>
+<td>23</td>
+<td>10</td>
+<td>3073-4096</td>
+</tr>
+<tr>
+<td>4</td>
+<td>1</td>
+<td>5,6</td>
+<td>14</td>
+<td>6</td>
+<td>129-192</td>
+<td>24</td>
+<td>11</td>
+<td>4097-6144</td>
+</tr>
+<tr>
+<td>5</td>
+<td>1</td>
+<td>7,8</td>
+<td>15</td>
+<td>6</td>
+<td>193-256</td>
+<td>25</td>
+<td>11</td>
+<td>6145-8192</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2</td>
+<td>9-12</td>
+<td>16</td>
+<td>7</td>
+<td>257-384</td>
+<td>26</td>
+<td>12</td>
+<td>8193-12288</td>
+</tr>
+<tr>
+<td>7</td>
+<td>2</td>
+<td>13-16</td>
+<td>17</td>
+<td>7</td>
+<td>385-512</td>
+<td>27</td>
+<td>12</td>
+<td>12289-16384</td>
+</tr>
+<tr>
+<td>8</td>
+<td>3</td>
+<td>17-24</td>
+<td>18</td>
+<td>8</td>
+<td>513-768</td>
+<td>28</td>
+<td>13</td>
+<td>16385-24576</td>
+</tr>
+<tr>
+<td>9</td>
+<td>3</td>
+<td>25-32</td>
+<td>19</td>
+<td>8</td>
+<td>769-1024</td>
+<td>29</td>
+<td>13</td>
+<td>24577-32768</td>
+</tr>
+</tbody></table>
+<p>Generally, the data in the huffman encoded bit stream has the below format:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">literal huffman code,</span><br><span class="line">.. , </span><br><span class="line">length huffman code, (extra bits), distance huffman code, (extra bits),</span><br><span class="line">.. ,</span><br><span class="line">end of block huffman code.</span><br></pre></td></tr></table></figure>
+<p>And after the huffman decode, it translate to:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">literal symbol (0-255),</span><br><span class="line">.. , </span><br><span class="line">length symbol (257-285), (extra bits), distance symbol (0-29), (extra bits),</span><br><span class="line">.. ,</span><br><span class="line">end of block symbol (256).</span><br></pre></td></tr></table></figure>
+<p>Due to there has 2 alphabets: literal and length shared the same alphabet, distance used another alphabet.<br>There has 2 huffman coding trees, one is for the literal and length code, another is for the distance code. But they don’t get stored into the block directly.</p>
+<p><em>Below steps show how to get these 2 huffman tables from the info stored within the block:</em></p>
+<p>First thing is deflate also pre-defined a code length table:</p>
+<table>
+<thead>
+<tr>
+<th>index</th>
+<th>code length</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>16</td>
+<td>repeat last length for (3 + extra: 3-6) times, follow with extra info (2 bits)</td>
+</tr>
+<tr>
+<td>1</td>
+<td>17</td>
+<td>repeat zero for (3 + extra: 3-10) times, follow with extra info (3 bits)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>18</td>
+<td>repeat zero for (11 + extra: 11-138) times, follow with extra info (7 bits)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 0 bit</td>
+</tr>
+<tr>
+<td>4</td>
+<td>8</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 8 bits</td>
+</tr>
+<tr>
+<td>5</td>
+<td>7</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 7 bits</td>
+</tr>
+<tr>
+<td>6</td>
+<td>9</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 9 bits</td>
+</tr>
+<tr>
+<td>7</td>
+<td>6</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 6 bits</td>
+</tr>
+<tr>
+<td>8</td>
+<td>10</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 10 bits</td>
+</tr>
+<tr>
+<td>9</td>
+<td>5</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 5 bits</td>
+</tr>
+<tr>
+<td>10</td>
+<td>11</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 11 bits</td>
+</tr>
+<tr>
+<td>11</td>
+<td>4</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 4 bits</td>
+</tr>
+<tr>
+<td>12</td>
+<td>12</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 12 bits</td>
+</tr>
+<tr>
+<td>13</td>
+<td>3</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 3 bits</td>
+</tr>
+<tr>
+<td>14</td>
+<td>13</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 13 bits</td>
+</tr>
+<tr>
+<td>15</td>
+<td>2</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 2 bits</td>
+</tr>
+<tr>
+<td>16</td>
+<td>14</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 14 bits</td>
+</tr>
+<tr>
+<td>17</td>
+<td>1</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 1 bit</td>
+</tr>
+<tr>
+<td>18</td>
+<td>15</td>
+<td>literal&#x2F;length &amp; distance code length encoded to 15 bits</td>
+</tr>
+</tbody></table>
+<p>4 bits HCLEN shows that the size of the stored code length info, the value is from 0 to 15,<br>and it indicates the number of the stored code length info, from 4 to 19.</p>
+<p>For example, if HCLEN&#x3D;12, then the first 16 code length info get stored with the block with 3-bit size each.<br>And from the index 16 to index 18, these code length info are just not stored, it means they are not used.<br>Also, if there has the 0 value with the 3-bits, that means the correspond code length is not used.</p>
+<p>Let’s assume, these 16 code length info has the listed 3-bits value: [1,0,5,5,3,0,5,0,4,0,0,4,0,5,0,3]<br>Then, it tells us:</p>
+<table>
+<thead>
+<tr>
+<th>index</th>
+<th>code length</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>16</td>
+<td>code length code 16 huffman encoded length: 1 bit</td>
+</tr>
+<tr>
+<td>1</td>
+<td>17</td>
+<td>code length code 17 not used</td>
+</tr>
+<tr>
+<td>2</td>
+<td>18</td>
+<td>code length code 18 huffman encoded length: 5 bits</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0</td>
+<td>code length code 0 huffman encoded length: 5 bits</td>
+</tr>
+<tr>
+<td>4</td>
+<td>8</td>
+<td>code length code 8 huffman encoded length: 3 bits</td>
+</tr>
+<tr>
+<td>5</td>
+<td>7</td>
+<td>code length code 7 not used</td>
+</tr>
+<tr>
+<td>6</td>
+<td>9</td>
+<td>code length code 9 huffman encoded length: 5 bits</td>
+</tr>
+<tr>
+<td>7</td>
+<td>6</td>
+<td>code length code 6 not used</td>
+</tr>
+<tr>
+<td>8</td>
+<td>10</td>
+<td>code length code 10 huffman encoded length: 4 bits</td>
+</tr>
+<tr>
+<td>9</td>
+<td>5</td>
+<td>code length code 5 not used</td>
+</tr>
+<tr>
+<td>10</td>
+<td>11</td>
+<td>code length code 11 not used</td>
+</tr>
+<tr>
+<td>11</td>
+<td>4</td>
+<td>code length code 4 huffman encoded length: 4 bits</td>
+</tr>
+<tr>
+<td>12</td>
+<td>12</td>
+<td>code length code 12 not used</td>
+</tr>
+<tr>
+<td>13</td>
+<td>3</td>
+<td>code length code 3 huffman encoded length: 5 bits</td>
+</tr>
+<tr>
+<td>14</td>
+<td>13</td>
+<td>code length code 13 not used</td>
+</tr>
+<tr>
+<td>15</td>
+<td>2</td>
+<td>code length code 2 huffman encoded length: 3 bits</td>
+</tr>
+<tr>
+<td>16</td>
+<td>14</td>
+<td>code length code 14 not used, value not stored</td>
+</tr>
+<tr>
+<td>17</td>
+<td>1</td>
+<td>code length code 1 not used, value not stored</td>
+</tr>
+<tr>
+<td>18</td>
+<td>15</td>
+<td>code length code 15 not used, value not stored</td>
+</tr>
+</tbody></table>
+<p>we can define the Huffman code for an alphabet just by giving the bit lengths of the codes for each symbol of the alphabet in order; this is sufficient to determine the actual codes. </p>
+<p>For this example, let’s sort it as:</p>
+<table>
+<thead>
+<tr>
+<th>code length symbol</th>
+<th>encoded length</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>16</td>
+<td>1 bit</td>
+</tr>
+<tr>
+<td>2</td>
+<td>3 bit</td>
+</tr>
+<tr>
+<td>8</td>
+<td>3 bit</td>
+</tr>
+<tr>
+<td>4</td>
+<td>4 bit</td>
+</tr>
+<tr>
+<td>10</td>
+<td>4 bit</td>
+</tr>
+<tr>
+<td>0</td>
+<td>5 bit</td>
+</tr>
+<tr>
+<td>3</td>
+<td>5 bit</td>
+</tr>
+<tr>
+<td>9</td>
+<td>5 bit</td>
+</tr>
+<tr>
+<td>18</td>
+<td>5 bit</td>
+</tr>
+</tbody></table>
+<p>Step 1: Count the number of codes for each code length.<br>Let bl_count[N] be the number of codes of length N, N &gt;&#x3D; 1.</p>
+<table>
+<thead>
+<tr>
+<th>code length symbol</th>
+<th>encoded length</th>
+<th>number of code of length</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>16</td>
+<td>1 bit</td>
+<td>1 symbol encoded to 1 bit</td>
+</tr>
+<tr>
+<td>2</td>
+<td>3 bit</td>
+<td>2 symbol encoded to 3 bits</td>
+</tr>
+<tr>
+<td>8</td>
+<td>3 bit</td>
+<td>-</td>
+</tr>
+<tr>
+<td>4</td>
+<td>4 bit</td>
+<td>2 symbol encoded to 4 bits</td>
+</tr>
+<tr>
+<td>10</td>
+<td>4 bit</td>
+<td>-</td>
+</tr>
+<tr>
+<td>0</td>
+<td>5 bit</td>
+<td>4 symbol encoded to 5 bits</td>
+</tr>
+<tr>
+<td>3</td>
+<td>5 bit</td>
+<td>-</td>
+</tr>
+<tr>
+<td>9</td>
+<td>5 bit</td>
+<td>-</td>
+</tr>
+<tr>
+<td>18</td>
+<td>5 bit</td>
+<td>-</td>
+</tr>
+</tbody></table>
+<p>So, the bl_count has value [0, 1, 0, 2, 2, 4]</p>
+<p>Step 2: Find the numerical value of the smallest code for each code length:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">code = 0;</span><br><span class="line">bl_count[0] = 0;</span><br><span class="line">for (bits = 1; bits &lt;= MAX_BITS; bits++) &#123;</span><br><span class="line">    code = (code + bl_count[bits-1]) &lt;&lt; 1;</span><br><span class="line">    next_code[bits] = code;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>code length symbol</th>
+<th>encoded length</th>
+<th>number of code of length</th>
+<th>encoded code</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>16</td>
+<td>1 bit</td>
+<td>bl_count[1] &#x3D; 1</td>
+<td>0 (b’0)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>3 bit</td>
+<td>bl_count[3] &#x3D; 2</td>
+<td>4 (b’100)</td>
+</tr>
+<tr>
+<td>8</td>
+<td>3 bit</td>
+<td>-</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>4 bit</td>
+<td>bl_count[4] &#x3D; 2</td>
+<td>12 (b’1100)</td>
+</tr>
+<tr>
+<td>10</td>
+<td>4 bit</td>
+<td>-</td>
+<td></td>
+</tr>
+<tr>
+<td>0</td>
+<td>5 bit</td>
+<td>bl_count[5] &#x3D; 4</td>
+<td>28 (b’11100)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>5 bit</td>
+<td>-</td>
+<td></td>
+</tr>
+<tr>
+<td>9</td>
+<td>5 bit</td>
+<td>-</td>
+<td></td>
+</tr>
+<tr>
+<td>18</td>
+<td>5 bit</td>
+<td>-</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>Step 3: Assign numerical values to all codes, using consecutive values for all codes of the same length with the base values determined at step 2. </p>
+<table>
+<thead>
+<tr>
+<th>code length symbol</th>
+<th>encoded length</th>
+<th>number of code of length</th>
+<th>encoded code</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>16</td>
+<td>1 bit</td>
+<td>bl_count[1] &#x3D; 1</td>
+<td>0 (b’0)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>3 bit</td>
+<td>bl_count[3] &#x3D; 2</td>
+<td>4 (b’100)</td>
+</tr>
+<tr>
+<td>8</td>
+<td>3 bit</td>
+<td>-</td>
+<td>5 (b’101)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>4 bit</td>
+<td>bl_count[4] &#x3D; 2</td>
+<td>12 (b’1100)</td>
+</tr>
+<tr>
+<td>10</td>
+<td>4 bit</td>
+<td>-</td>
+<td>13 (b’1101)</td>
+</tr>
+<tr>
+<td>0</td>
+<td>5 bit</td>
+<td>bl_count[5] &#x3D; 4</td>
+<td>28 (b’11100)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>5 bit</td>
+<td>-</td>
+<td>29 (b’11101)</td>
+</tr>
+<tr>
+<td>9</td>
+<td>5 bit</td>
+<td>-</td>
+<td>30 (b’11110)</td>
+</tr>
+<tr>
+<td>18</td>
+<td>5 bit</td>
+<td>-</td>
+<td>31 (b’11111)</td>
+</tr>
+</tbody></table>
+<p>for now, we have constructed the code length huffman tree as shown in below:</p>
+<table>
+<thead>
+<tr>
+<th>index</th>
+<th>code length</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>16</td>
+<td>code length code 16 encoded to 0 (b’0)</td>
+</tr>
+<tr>
+<td>1</td>
+<td>17</td>
+<td>-</td>
+</tr>
+<tr>
+<td>2</td>
+<td>18</td>
+<td>code length code 18 encoded to 31 (b’11111)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0</td>
+<td>code length code 0 encoded to 28 (b’11100)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>8</td>
+<td>code length code 8 encoded to 5 (b’101)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>7</td>
+<td>-</td>
+</tr>
+<tr>
+<td>6</td>
+<td>9</td>
+<td>code length code 9 encoded to 30 (b’11110)</td>
+</tr>
+<tr>
+<td>7</td>
+<td>6</td>
+<td>-</td>
+</tr>
+<tr>
+<td>8</td>
+<td>10</td>
+<td>code length code 10 encoded to 13 (b’1101)</td>
+</tr>
+<tr>
+<td>9</td>
+<td>5</td>
+<td>-</td>
+</tr>
+<tr>
+<td>10</td>
+<td>11</td>
+<td>-</td>
+</tr>
+<tr>
+<td>11</td>
+<td>4</td>
+<td>code length code 4 encoded to 12 (b’1100)</td>
+</tr>
+<tr>
+<td>12</td>
+<td>12</td>
+<td>-</td>
+</tr>
+<tr>
+<td>13</td>
+<td>3</td>
+<td>code length code 3 encoded to 29 (b’11101)</td>
+</tr>
+<tr>
+<td>14</td>
+<td>13</td>
+<td>-</td>
+</tr>
+<tr>
+<td>15</td>
+<td>2</td>
+<td>code length code 2 encoded to 4 (b’100)</td>
+</tr>
+<tr>
+<td>16</td>
+<td>14</td>
+<td>-</td>
+</tr>
+<tr>
+<td>17</td>
+<td>1</td>
+<td>-</td>
+</tr>
+<tr>
+<td>18</td>
+<td>15</td>
+<td>-</td>
+</tr>
+</tbody></table>
+<p>Note: Codes that are never used (which have a bit length of zero) must not be assigned a value.</p>
+<p>This code length huffman tree is used to decode the following literal&#x2F;length distance table.<br>And from this table, we will construct the literal&#x2F;length huffman tree and the distance huffman tree.</p>
+<p>We know that there has 0-285 value in the literal&#x2F;length alphabet, and 0-29 value in the distance alphabet.<br>But not all of them may get used in the current dynamic huffman block, thus, we have the stored value 5 bits HLIT and the 5 bits HDIST to show the symbol usage info.</p>
+<p>For example, if the HLIT value is 1, that means the first (1 + 257) value in the literal&#x2F;length alphabet are get stored in the literal&#x2F;length distance table, and the value 258 to 285 are not in the literal&#x2F;length distance table. (for sure, they are not get used within the current block.)</p>
+<p>If the HDIST value is 23, that means the first (23 + 1) value in the distance alphabet are get stored in the literal&#x2F;length distance table. (after the stored literal&#x2F;length symbol value), and the value 24 to 29 are not in the literal&#x2F;length distance table. (for sure, they are not get used within the current block.)</p>
+<p>Previously, we have construct the code length huffman tree, and it can be used to decode the literal&#x2F;length distance table. Assume, below value is huffman decoded from the literal&#x2F;length distance table:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">5, </span><br><span class="line">0, (3), 0, (3), 0, (3), 0, (3), 0, (3), 0, (3), 0, (3), 0, (3), 0, (3), 0, (3), 0, (3), 0, (3),</span><br><span class="line">0, (3), 0, (3), 0, (3), 0, (3), 0, (3), 0, (3), 0, (3), 0, (3), 0, (3), 0, (3), 0, (3), 0, (3),</span><br><span class="line">5, 30, 5, 0, (3), 0, (3), 0, (3), 0, (3), 0, (3), 0, (3), 0, (3), 0, (3),</span><br><span class="line">13, 13, 31, (6), 12, 12, 28, 4, 4, 4, 29</span><br></pre></td></tr></table></figure>
+
+<p>According this decoded value, we can get the below table:</p>
+<table>
+<thead>
+<tr>
+<th>index</th>
+<th>value from literal&#x2F;length distance table</th>
+<th>symbol code length</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>5</td>
+<td>8 bits</td>
+</tr>
+<tr>
+<td>1-6</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>7-12</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>13-18</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>19-25</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>31-37</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>43-48</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>49-54</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>55-60</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>61-66</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>67-72</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>73-78</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>79-84</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>85-90</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>91-96</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>97-102</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>103-108</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>109-114</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>115-120</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>121-126</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>127-132</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>133-138</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>139-144</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>145-150</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>151-156</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>157-162</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>163-167</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>169-174</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>175-180</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>181-186</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>187-182</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>193-198</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>199-204</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>205</td>
+<td>5</td>
+<td>8 bits</td>
+</tr>
+<tr>
+<td>206</td>
+<td>30</td>
+<td>9 bits</td>
+</tr>
+<tr>
+<td>207</td>
+<td>5</td>
+<td>8 bits</td>
+</tr>
+<tr>
+<td>208-213</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>214-219</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>220-225</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>226-231</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>232-237</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>238-243</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>244-249</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>250-255</td>
+<td>0, (3)</td>
+<td>16, repeat previous length code 8 for 6 times</td>
+</tr>
+<tr>
+<td>256</td>
+<td>13</td>
+<td>10 bits</td>
+</tr>
+<tr>
+<td>257</td>
+<td>13</td>
+<td>10 bits</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>index</th>
+<th>value from literal&#x2F;length distance table</th>
+<th>symbol code length</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0-16</td>
+<td>31, (6)</td>
+<td>18, repeat length code 0 for 17 times</td>
+</tr>
+<tr>
+<td>17</td>
+<td>12</td>
+<td>4 bits</td>
+</tr>
+<tr>
+<td>18</td>
+<td>12</td>
+<td>4 bits</td>
+</tr>
+<tr>
+<td>19</td>
+<td>28</td>
+<td>0 bits</td>
+</tr>
+<tr>
+<td>20</td>
+<td>4</td>
+<td>2 bits</td>
+</tr>
+<tr>
+<td>21</td>
+<td>4</td>
+<td>2 bits</td>
+</tr>
+<tr>
+<td>22</td>
+<td>4</td>
+<td>2 bits</td>
+</tr>
+<tr>
+<td>23</td>
+<td>29</td>
+<td>3 bits</td>
+</tr>
+</tbody></table>
+<p>With the same method of the construct of the code length huffman tree, we can construct the literal&#x2F;length huffman tree and distance huffman tree.</p>
+<h3 id="fixed-Huffman-block"><a href="#fixed-Huffman-block" class="headerlink" title="fixed Huffman block"></a>fixed Huffman block</h3><p>For the fixed Huffman block, the Huffman codes for the two alphabets are fixed, and are not represented explicitly in the data:</p>
+<table>
+<thead>
+<tr>
+<th>type</th>
+<th>size</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>BFINAL</td>
+<td>1 bit</td>
+<td>b’* (0 or 1)</td>
+</tr>
+<tr>
+<td>BTYPE</td>
+<td>2 bits</td>
+<td>b’01</td>
+</tr>
+<tr>
+<td>huffman encoded bit stream</td>
+<td>* bits</td>
+<td>end with EOB symbol (256)</td>
+</tr>
+</tbody></table>
+<p>The Huffman code lengths for the literal&#x2F;length alphabet are:</p>
+<table>
+<thead>
+<tr>
+<th>index</th>
+<th>code length</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0-143</td>
+<td>8 bits</td>
+</tr>
+<tr>
+<td>144-255</td>
+<td>9 bits</td>
+</tr>
+<tr>
+<td>256-279</td>
+<td>7 bits</td>
+</tr>
+<tr>
+<td>280-285</td>
+<td>8 bits</td>
+</tr>
+</tbody></table>
+<p>The Huffman code lengths for the distance alphabet are:</p>
+<table>
+<thead>
+<tr>
+<th>index</th>
+<th>code length</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0-29</td>
+<td>5 bits</td>
+</tr>
+</tbody></table>
+<p>With these info, we can easily construct the 2 huffman trees.</p>
+</div><div class="post-copyright"><script type="text/javascript" src="/js/copyright.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copyright.css?v=1.0.0"><p><span>本文标题：</span>deflate format</p><p><span>文章作者：</span>Mr Bluyee</p><p><span>发布时间：</span>2024-03-23</p><p><span>最后更新：</span>2024-03-24</p><p><span>原始链接：</span><a href="/2024/03/23/deflate format/">https://www.mrbluyee.com/2024/03/23/deflate%20format/</a><span class="copy-path"><i class="fa fa-clipboard" data-clipboard-text="https://www.mrbluyee.com/2024/03/23/deflate%20format/"></i></span></p><p><span>版权声明：</span>The author owns the copyright, please indicate the source reproduced.</p></div><br><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/data-compression/" rel="tag">data compression</a></li></ul></div><div class="post-nav"><a class="next" href="/2019/09/23/IPsec/">IPsec</a></div><div id="lv-container" data-id="city" data-uid="MTAyMC8zOTYxNS8xNjE0Mg"><script>(function(d, s) {
+  var j, e = d.getElementsByTagName(s)[0];
+  if (typeof LivereTower === 'function') { return; }
+  j = d.createElement(s);
+  j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+  j.async = true;
+  e.parentNode.insertBefore(j, e);
+})(document, 'script');
+</script></div></div></div></div><div class="pure-u-1 pure-u-md-1-4"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"/><div id="local-search-result"></div></div></div><div class="widget"><div class="author-info"><a class="info-avatar" href="/about/" title="关于"><img class="nofancybox" src="/img/avatar.jpeg"/></a><p>Enjoy life / Hope for future</p><a class="info-icon" href="mr.bluyee@hotmail.com" title="mr.bluyee@hotmail.com" target="_blank" style="margin-inline:5px"> <i class="fa fa-envelope-square" style="margin-inline:5px"></i></a><a class="info-icon" href="https://github.com/MrBluyee" title="https://github.com/MrBluyee" target="_blank" style="margin-inline:5px"> <i class="fa fa-github-square" style="margin-inline:5px"></i></a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C-%E7%AE%97%E6%B3%95/">学习笔记——C 算法</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">学习笔记——C数据结构</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94Python/">学习笔记——Python</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94android/">学习笔记——android</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94data-compression/">学习笔记——data compression</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94expert-c-programming/">学习笔记——expert c programming</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94linux/">学习笔记——linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94opencv/">学习笔记——opencv</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BB%A3%E7%A0%81%E7%AE%A1%E7%90%86/">学习笔记——代码管理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E4%BD%8E%E5%8A%9F%E8%80%97%E6%8A%80%E6%9C%AF/">学习笔记——低功耗技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/">学习笔记——嵌入式开发</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">学习笔记——机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%89%A9%E8%81%94%E7%BD%91/">学习笔记——物联网</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/">学习笔记——网络协议</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E2%80%94%E2%80%94%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/">学习笔记——计算机系统</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" style="font-size: 15px;">计算机系统</a> <a href="/tags/android/" style="font-size: 15px;">android</a> <a href="/tags/C/" style="font-size: 15px;">C</a> <a href="/tags/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" style="font-size: 15px;">网络协议</a> <a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F%E5%BC%80%E5%8F%91/" style="font-size: 15px;">嵌入式开发</a> <a href="/tags/data-compression/" style="font-size: 15px;">data compression</a> <a href="/tags/opencv/" style="font-size: 15px;">opencv</a> <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" style="font-size: 15px;">机器学习</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2024/03/23/deflate%20format/">deflate format</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/09/23/IPsec/">IPsec</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/21/%E6%95%B0%E7%9A%84%E7%B4%A0%E6%80%A7%E6%B5%8B%E8%AF%95/">数的素性测试</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/20/%E6%89%A9%E5%B1%95%E7%9A%84%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95/">扩展的欧几里得算法</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/07/17/%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95-%E6%B1%82%E6%9C%80%E5%A4%A7%E5%85%AC%E5%9B%A0%E6%95%B0/">欧几里得算法-求最大公因数</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/03/04/%E5%B8%B8%E7%94%A8%E8%B7%AF%E7%94%B1%E6%96%B9%E5%BC%8F/">常用路由方式</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/19/%E6%97%A0%E7%BA%BF%E4%BC%A0%E6%84%9F%E7%BD%91WSN%E6%A6%82%E8%BF%B0/">无线传感网WSN概述</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/18/%E6%97%A0%E7%BA%BF%E6%A8%A1%E5%9D%97%E4%BC%91%E7%9C%A0%E4%B8%8E%E6%BF%80%E6%B4%BB%E6%9C%BA%E5%88%B6/">无线模块休眠与激活机制</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/16/SOC%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97%E8%AE%BE%E8%AE%A1/">SOC的低功耗设计</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/03/%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86%E7%9A%84%E4%BD%8E%E5%8A%9F%E8%80%97/">电源管理的低功耗</a></li></ul></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2024 <a href="/." rel="nofollow">Mr Bluyee's Blog.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><link rel="stylesheet" type="text/css" href="/css/search.css?v=1.0.0"><script type="text/javascript" src="/js/search.js?v=1.0.0"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+  search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>
